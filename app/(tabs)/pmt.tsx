@@ -25,7 +25,7 @@ export default function PMTTabScreen() {
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
             >
                 {/* Status Card */}
-                <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="rounded-2xl p-5 border mb-6">
+                <View style={{ backgroundColor: colors.card }} className="rounded-2xl p-5 mb-6 shadow-sm">
                     <View className="flex-row items-center gap-3 mb-4">
                         <View className="w-12 h-12 rounded-full bg-green-100 items-center justify-center">
                             <MaterialIcons name="verified" size={24} color="#16A34A" />
@@ -62,8 +62,8 @@ export default function PMTTabScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => router.push('/pmt/history')}
-                        style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }}
-                        className="flex-1 py-4 rounded-xl items-center justify-center border"
+                        style={{ backgroundColor: colors.card }}
+                        className="flex-1 py-4 rounded-xl items-center justify-center shadow-sm"
                     >
                         <MaterialIcons name="history" size={24} color={colors.primary} />
                         <Text style={{ color: colors.onSurface }} className="font-bold mt-2">Riwayat</Text>
@@ -72,7 +72,7 @@ export default function PMTTabScreen() {
 
                 {/* Today's Menu */}
                 <Text style={{ color: colors.onSurface }} className="text-lg font-bold mb-4">Menu Hari Ini</Text>
-                <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="rounded-xl p-4 border mb-6">
+                <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 mb-6 shadow-sm">
                     <View className="flex-row items-center gap-4">
                         <View style={{ backgroundColor: colors.secondaryContainer }} className="w-12 h-12 rounded-lg items-center justify-center">
                             <MaterialIcons name="restaurant-menu" size={24} color={colors.primary} />
@@ -94,7 +94,7 @@ export default function PMTTabScreen() {
 
                 <View className="gap-3">
                     {/* History Item 1 */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="rounded-xl p-4 border">
+                    <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
                         <View className="flex-row justify-between items-start">
                             <View>
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">Kemarin</Text>
@@ -108,7 +108,7 @@ export default function PMTTabScreen() {
                     </View>
 
                     {/* History Item 2 */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="rounded-xl p-4 border">
+                    <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
                         <View className="flex-row justify-between items-start">
                             <View>
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">2 hari lalu</Text>

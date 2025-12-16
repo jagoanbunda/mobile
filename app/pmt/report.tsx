@@ -1,4 +1,4 @@
-import Colors from '@/constants/colors';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
@@ -7,11 +7,11 @@ import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } fro
 type PortionType = 'habis' | 'half' | 'less_half' | 'none';
 
 export default function PMTReportScreen() {
+    const { colors } = useTheme();
     const [portion, setPortion] = useState<PortionType>('habis');
     const [notes, setNotes] = useState('');
 
     const handleSubmit = () => {
-        // Logic to submit PMT report
         router.back();
     };
 
@@ -19,35 +19,44 @@ export default function PMTReportScreen() {
         value,
         label,
         icon,
-        iconColor
+        isSelected
     }: {
         value: PortionType;
         label: string;
         icon: keyof typeof MaterialIcons.glyphMap;
-        iconColor: string;
+        isSelected: boolean;
     }) => (
         <TouchableOpacity
             onPress={() => setPortion(value)}
-            className={`flex-1 items-center justify-center p-4 rounded-lg bg-[#4a3535] border-2 ${portion === value ? 'border-primary bg-primary/5' : 'border-transparent'}`}
+            style={{
+                backgroundColor: isSelected ? colors.primaryContainer : colors.surfaceContainerHigh
+            }}
+            className="flex-1 items-center justify-center p-4 rounded-lg"
         >
-            <MaterialIcons name={icon} size={24} color={iconColor} style={{ marginBottom: 8 }} />
-            <Text className="text-sm font-bold text-white">{label}</Text>
+            <MaterialIcons
+                name={icon}
+                size={24}
+                color={isSelected ? colors.primary : colors.onSurfaceVariant}
+                style={{ marginBottom: 8 }}
+            />
+            <Text style={{ color: isSelected ? colors.onPrimaryContainer : colors.onSurface }} className="text-sm font-bold">{label}</Text>
         </TouchableOpacity>
     );
 
     return (
-        <SafeAreaView className="flex-1 bg-background-dark pt-12">
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
-            <View className="flex-row items-center bg-background-dark p-4 pb-2 justify-between">
+            <View style={{ backgroundColor: colors.surface }} className="flex-row items-center p-4 pb-2 justify-between">
                 <TouchableOpacity
                     onPress={() => router.back()}
-                    className="w-12 h-12 items-center justify-center rounded-full"
+                    style={{ backgroundColor: colors.surfaceContainerHigh }}
+                    className="w-10 h-10 items-center justify-center rounded-full"
                 >
-                    <MaterialIcons name="arrow-back" size={24} color="#fff" />
+                    <MaterialIcons name="arrow-back" size={24} color={colors.onSurface} />
                 </TouchableOpacity>
-                <Text className="text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-12">
+                <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
                     Lapor PMT
                 </Text>
             </View>
@@ -59,29 +68,29 @@ export default function PMTReportScreen() {
             >
                 {/* Status Card */}
                 <View className="p-4">
-                    <View className="flex-row items-stretch justify-between gap-4 rounded-lg bg-[#4a3535] p-4 shadow-sm">
+                    <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-stretch justify-between gap-4 rounded-xl p-4">
                         <View className="flex-1 gap-1">
-                            <Text className="text-white text-base font-bold leading-tight">
+                            <Text style={{ color: colors.onSurface }} className="text-base font-bold leading-tight">
                                 Senin, 24 Oktober 2023
                             </Text>
-                            <Text className="text-[#d4a0a0] text-sm font-normal">
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-normal">
                                 Program Hari ke-14
                             </Text>
                         </View>
-                        <View className="w-12 h-12 items-center justify-center bg-[#4a3f21] rounded-lg">
-                            <MaterialIcons name="calendar-month" size={24} color={Colors.primary} />
+                        <View style={{ backgroundColor: colors.primaryContainer }} className="w-12 h-12 items-center justify-center rounded-lg">
+                            <MaterialIcons name="calendar-month" size={24} color={colors.primary} />
                         </View>
                     </View>
                 </View>
 
                 {/* Menu Info */}
-                <View className="flex-row items-center gap-4 bg-background-dark px-4 py-2">
-                    <View className="w-12 h-12 items-center justify-center rounded-lg bg-[#4a3f21]">
-                        <MaterialIcons name="restaurant-menu" size={24} color={Colors.primary} />
+                <View style={{ backgroundColor: colors.surface }} className="flex-row items-center gap-4 px-4 py-2">
+                    <View style={{ backgroundColor: colors.primaryContainer }} className="w-12 h-12 items-center justify-center rounded-lg">
+                        <MaterialIcons name="restaurant-menu" size={24} color={colors.primary} />
                     </View>
                     <View className="flex-1">
-                        <Text className="text-white text-base font-bold leading-normal">Menu Hari Ini</Text>
-                        <Text className="text-[#d4a0a0] text-sm font-normal leading-normal">
+                        <Text style={{ color: colors.onSurface }} className="text-base font-bold leading-normal">Menu Hari Ini</Text>
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-normal leading-normal">
                             Bubur Kacang Hijau + Telur Rebus
                         </Text>
                     </View>
@@ -91,20 +100,20 @@ export default function PMTReportScreen() {
 
                 {/* Photo Upload */}
                 <View className="px-4">
-                    <TouchableOpacity className="items-center gap-6 rounded-lg border-2 border-dashed border-[#5a4040] bg-transparent px-6 py-10">
+                    <TouchableOpacity style={{ borderColor: colors.outlineVariant }} className="items-center gap-4 rounded-xl border-2 border-dashed px-6 py-8">
                         <View className="items-center gap-2">
-                            <View className="bg-[#4a3f21] p-3 rounded-full mb-2">
-                                <MaterialIcons name="photo-camera" size={30} color="#fff" />
+                            <View style={{ backgroundColor: colors.primaryContainer }} className="p-3 rounded-full mb-2">
+                                <MaterialIcons name="photo-camera" size={30} color={colors.primary} />
                             </View>
-                            <Text className="text-white text-lg font-bold leading-tight tracking-tight text-center">
+                            <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight text-center">
                                 Upload Foto Anak Makan
                             </Text>
-                            <Text className="text-gray-400 text-sm font-normal text-center">
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-normal text-center">
                                 Pastikan wajah dan makanan terlihat
                             </Text>
                         </View>
-                        <View className="bg-primary px-6 py-2.5 rounded-lg shadow-sm">
-                            <Text className="text-background-dark text-sm font-bold">Ambil Foto</Text>
+                        <View style={{ backgroundColor: colors.primary }} className="px-6 py-2.5 rounded-lg">
+                            <Text style={{ color: colors.onPrimary }} className="text-sm font-bold">Ambil Foto</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -112,31 +121,32 @@ export default function PMTReportScreen() {
                 <View className="h-2" />
 
                 {/* Portion Section */}
-                <Text className="text-white text-lg font-bold leading-tight tracking-tight px-4 text-left pb-3 pt-6">
+                <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight px-4 text-left pb-3 pt-6">
                     Porsi yang dimakan
                 </Text>
 
                 {/* Portion Selector Grid */}
                 <View className="px-4 flex-row flex-wrap gap-3">
                     <View className="flex-row gap-3 w-full">
-                        <PortionOption value="habis" label="Habis" icon="check-circle" iconColor="#22C55E" />
-                        <PortionOption value="half" label="1/2 Porsi" icon="pie-chart" iconcolor={Colors.primary} />
+                        <PortionOption value="habis" label="Habis" icon="check-circle" isSelected={portion === 'habis'} />
+                        <PortionOption value="half" label="1/2 Porsi" icon="pie-chart" isSelected={portion === 'half'} />
                     </View>
                     <View className="flex-row gap-3 w-full">
-                        <PortionOption value="less_half" label="< 1/2 Porsi" icon="timelapse" iconColor="#FB923C" />
-                        <PortionOption value="none" label="Gk Mau" icon="cancel" iconColor="#F87171" />
+                        <PortionOption value="less_half" label="< 1/2 Porsi" icon="timelapse" isSelected={portion === 'less_half'} />
+                        <PortionOption value="none" label="Gk Mau" icon="cancel" isSelected={portion === 'none'} />
                     </View>
                 </View>
 
                 {/* Notes Section */}
                 <View className="px-4 pt-6">
-                    <Text className="text-sm font-bold text-white mb-2">
+                    <Text style={{ color: colors.onSurface }} className="text-sm font-bold mb-2">
                         Catatan Tambahan (Opsional)
                     </Text>
                     <TextInput
-                        className="w-full rounded-lg bg-[#4a3535] p-4 text-white min-h-[100px]"
+                        style={{ backgroundColor: colors.surfaceContainerHigh, color: colors.onSurface }}
+                        className="w-full rounded-xl p-4 min-h-[100px]"
                         placeholder="Ada keluhan atau catatan lain?"
-                        placeholderTextColor="#d4a0a080"
+                        placeholderTextColor={colors.outline}
                         multiline
                         numberOfLines={4}
                         textAlignVertical="top"
@@ -147,12 +157,13 @@ export default function PMTReportScreen() {
             </ScrollView>
 
             {/* Footer Button */}
-            <View className="absolute bottom-0 left-0 right-0 p-4 bg-background-dark border-t border-transparent">
+            <View style={{ backgroundColor: colors.surface }} className="absolute bottom-0 left-0 right-0 p-4 pb-8">
                 <TouchableOpacity
                     onPress={handleSubmit}
-                    className="w-full h-12 bg-primary rounded-lg items-center justify-center shadow active:opacity-90"
+                    style={{ backgroundColor: colors.primary }}
+                    className="w-full h-14 rounded-xl items-center justify-center"
                 >
-                    <Text className="text-background-dark text-base font-bold leading-normal tracking-wide">
+                    <Text style={{ color: colors.onPrimary }} className="text-base font-bold leading-normal tracking-wide">
                         KIRIM LAPORAN
                     </Text>
                 </TouchableOpacity>

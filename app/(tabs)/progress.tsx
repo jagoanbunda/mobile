@@ -64,10 +64,10 @@ export default function ProgressScreen() {
     const pathData = chartPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
 
     const yLabels = selectedChart === 'BB/U'
-        ? ['16kg', '14kg', '12kg', '10kg', '8kg']
+        ? ['16', '14', '12', '10', '8']
         : selectedChart === 'TB/U'
-            ? ['96cm', '92cm', '88cm', '84cm', '80cm']
-            : ['120%', '110%', '100%', '90%', '80%'];
+            ? ['96', '92', '88', '84', '80']
+            : ['120', '110', '100', '90', '80'];
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -87,7 +87,7 @@ export default function ProgressScreen() {
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
             >
                 {/* Child Profile Card */}
-                <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="p-4 rounded-2xl shadow-sm border mb-6 flex-row items-center gap-4">
+                <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="p-4 rounded-2xl mb-6 flex-row items-center gap-4">
                     <Image
                         source={{ uri: mockData.child.photo }}
                         className="w-12 h-12 rounded-full"
@@ -101,8 +101,8 @@ export default function ProgressScreen() {
                             <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">{mockData.child.gender}</Text>
                         </View>
                     </View>
-                    <View className="px-3 py-1.5 rounded-full bg-green-100 border border-green-200">
-                        <Text className="text-xs font-bold text-green-700">Gizi Baik</Text>
+                    <View style={{ backgroundColor: colors.primaryContainer }} className="px-3 py-1.5 rounded-full">
+                        <Text style={{ color: colors.onPrimaryContainer }} className="text-xs font-bold">Gizi Baik</Text>
                     </View>
                 </View>
 
@@ -126,7 +126,6 @@ export default function ProgressScreen() {
                 <View className="mb-6">
                     <View className="flex-row items-center justify-between mb-3">
                         <View className="flex-row items-center gap-2">
-                            <MaterialIcons name="show-chart" size={20} color={colors.primary} />
                             <Text style={{ color: colors.onSurface }} className="text-base font-bold">
                                 Grafik {selectedChart === 'BB/U' ? 'Berat / Umur' : selectedChart === 'TB/U' ? 'Tinggi / Umur' : 'Berat / Tinggi'}
                             </Text>
@@ -134,50 +133,72 @@ export default function ProgressScreen() {
                     </View>
 
                     {/* Chart Container */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="rounded-2xl p-4 shadow-sm border">
-                        {/* Legend */}
-                        <View className="flex-row items-center gap-3 justify-center mb-4">
-                            <View className="flex-row items-center gap-1">
-                                <View className="w-2 h-2 rounded-full bg-green-500" />
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px]">Normal (-2 to +2 SD)</Text>
-                            </View>
-                            <View className="flex-row items-center gap-1">
-                                <View style={{ backgroundColor: colors.primary }} className="w-3 h-3 rounded-full border-2 border-white" />
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px]">{mockData.child.name}</Text>
-                            </View>
-                        </View>
+                    <View style={{ backgroundColor: '#ecefe5' }} className="rounded-2xl p-4">
+                        {/* Chart Title */}
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-xs mb-3">
+                            {selectedChart === 'BB/U' ? 'Berat badan (kg)' : selectedChart === 'TB/U' ? 'Tinggi badan (cm)' : 'Rasio BB/TB'}
+                        </Text>
 
                         {/* SVG Chart */}
-                        <View className="relative w-full aspect-[16/9]">
+                        <View className="relative w-full" style={{ aspectRatio: 1.4 }}>
                             {/* Y-Axis Labels */}
-                            <View className="absolute left-0 top-0 bottom-6 w-8 justify-between pr-1">
+                            <View className="absolute left-0 top-0 bottom-8 w-6 justify-between">
                                 {yLabels.map((label, idx) => (
-                                    <Text key={idx} style={{ color: colors.onSurfaceVariant }} className="text-[8px] font-medium text-right">{label}</Text>
+                                    <Text key={idx} style={{ color: colors.onSurface }} className="text-xs font-semibold">{label}</Text>
                                 ))}
                             </View>
 
+                            {/* Z-Score Labels (Right side) */}
+                            <View className="absolute right-0 top-0 bottom-8 w-6 justify-between items-end">
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">3</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">2</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">1</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">0</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">-1</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">-2</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] font-medium">-3</Text>
+                            </View>
+
                             {/* Chart Area */}
-                            <View style={{ borderColor: colors.outlineVariant }} className="absolute left-8 top-0 right-0 bottom-6 border-l border-b">
+                            <View className="absolute left-7 top-0 right-7 bottom-8 rounded-xl overflow-hidden">
                                 <Svg height="100%" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                                    {[0, 25, 50, 75, 100].map((y) => (
-                                        <Line key={y} x1="0" y1={y} x2="100" y2={y} stroke={colors.outlineVariant} strokeWidth="0.5" strokeDasharray="4 2" />
+                                    {/* Yellow Zone (At Risk - below -2 SD) */}
+                                    <Path d="M0,92 C10,90 30,85 50,78 C70,71 90,65 100,60 L100,50 C90,55 70,61 50,68 C30,75 10,80 0,82 Z" fill="#FFC107" opacity="0.3" />
+
+                                    {/* Green Zone (Normal - between -2 and +2 SD) */}
+                                    <Path d="M0,82 C10,80 30,75 50,68 C70,61 90,55 100,50 L100,25 C90,30 70,36 50,43 C30,50 10,55 0,57 Z" fill="#4CAF50" opacity="0.3" />
+
+                                    {/* Yellow Zone (At Risk - above +2 SD) */}
+                                    <Path d="M0,57 C10,55 30,50 50,43 C70,36 90,30 100,25 L100,15 C90,20 70,26 50,33 C30,40 10,45 0,47 Z" fill="#FFC107" opacity="0.3" />
+
+                                    {/* Grid Lines */}
+                                    {[0, 14, 28, 43, 57, 71, 85, 100].map((y) => (
+                                        <Line key={y} x1="0" y1={y} x2="100" y2={y} stroke={colors.outlineVariant} strokeWidth="0.3" strokeDasharray="2 2" />
                                     ))}
-                                    <Path d="M0,70 L100,60" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0.6" />
-                                    <Path d="M0,30 L100,20" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0.6" />
-                                    <Path d={pathData} fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+
+                                    {/* Vertical Grid Lines */}
+                                    {[0, 20, 40, 60, 80, 100].map((x) => (
+                                        <Line key={x} x1={x} y1="0" x2={x} y2="100" stroke={colors.outlineVariant} strokeWidth="0.3" strokeDasharray="2 2" />
+                                    ))}
+
+                                    {/* Median Line (0 SD) - Dashed */}
+                                    <Path d="M0,70 C10,68 30,63 50,56 C70,49 90,43 100,38" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="4 2" />
+
+                                    {/* Child Data Line */}
+                                    <Path d={pathData} fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
                                 </Svg>
                             </View>
 
                             {/* X-Axis Labels */}
-                            <View className="absolute left-8 right-0 bottom-0 h-6 flex-row justify-between pt-1 px-1">
+                            <View className="absolute left-7 right-7 bottom-0 h-8 flex-row justify-between items-start pt-1">
                                 {mockData.measurements.map((m, idx) => (
-                                    <Text key={idx} style={{ color: colors.onSurfaceVariant }} className="text-[8px] font-medium">{m.date.split(' ')[0]}</Text>
+                                    <Text key={idx} style={{ color: colors.onSurface }} className="text-xs font-semibold">{m.date.split(' ')[0]}</Text>
                                 ))}
                             </View>
                         </View>
 
                         {/* Latest Value Display */}
-                        <View style={{ borderColor: colors.outlineVariant }} className="mt-3 pt-3 border-t flex-row justify-center gap-6">
+                        <View style={{ borderColor: colors.surfaceContainerHighest }} className="mt-3 pt-3 border-t flex-row justify-center gap-6">
                             <View className="items-center">
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase">Terakhir</Text>
                                 <Text style={{ color: colors.primary }} className="text-lg font-bold">
@@ -190,7 +211,7 @@ export default function ProgressScreen() {
                             </View>
                             <View className="items-center">
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase">Z-Score</Text>
-                                <Text className="text-lg font-bold text-green-600">
+                                <Text style={{ color: colors.primary }} className="text-lg font-bold">
                                     {selectedChart === 'BB/U'
                                         ? mockData.currentStats.weight.zScore
                                         : selectedChart === 'TB/U'
@@ -206,21 +227,21 @@ export default function ProgressScreen() {
                 <View className="mb-6">
                     <Text style={{ color: colors.onSurface }} className="text-base font-bold mb-3">Statistik Terkini</Text>
                     <View className="flex-row gap-3">
-                        <View style={{ backgroundColor: colors.secondaryContainer, borderColor: colors.outlineVariant }} className="flex-1 rounded-xl p-4 border">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-1 rounded-xl p-4">
                             <View className="flex-row items-center gap-2 mb-2">
                                 <MaterialIcons name="monitor-weight" size={18} color={colors.primary} />
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Berat Badan</Text>
                             </View>
-                            <Text style={{ color: colors.onSecondaryContainer }} className="text-2xl font-bold">{mockData.currentStats.weight.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">kg</Text></Text>
-                            <Text className="text-xs text-green-600 font-semibold mt-1">Z-Score: {mockData.currentStats.weight.zScore} SD</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{mockData.currentStats.weight.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">kg</Text></Text>
+                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {mockData.currentStats.weight.zScore} SD</Text>
                         </View>
-                        <View style={{ backgroundColor: colors.secondaryContainer, borderColor: colors.outlineVariant }} className="flex-1 rounded-xl p-4 border">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-1 rounded-xl p-4">
                             <View className="flex-row items-center gap-2 mb-2">
                                 <MaterialIcons name="height" size={18} color={colors.primary} />
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Tinggi Badan</Text>
                             </View>
-                            <Text style={{ color: colors.onSecondaryContainer }} className="text-2xl font-bold">{mockData.currentStats.height.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">cm</Text></Text>
-                            <Text className="text-xs text-green-600 font-semibold mt-1">Z-Score: {mockData.currentStats.height.zScore} SD</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{mockData.currentStats.height.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">cm</Text></Text>
+                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {mockData.currentStats.height.zScore} SD</Text>
                         </View>
                     </View>
                 </View>
@@ -237,8 +258,8 @@ export default function ProgressScreen() {
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => router.push('/anthropometry/growth-chart')}
-                        style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }}
-                        className="flex-1 py-4 rounded-xl items-center justify-center flex-row gap-2 border"
+                        style={{ backgroundColor: colors.surfaceContainerHigh }}
+                        className="flex-1 py-4 rounded-xl items-center justify-center flex-row gap-2"
                     >
                         <MaterialIcons name="history" size={20} color={colors.primary} />
                         <Text style={{ color: colors.onSurface }} className="font-bold">Riwayat</Text>

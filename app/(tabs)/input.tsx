@@ -72,7 +72,7 @@ export default function InputScreen() {
 
                     {/* Search Bar */}
                     <View className="relative mb-6 mt-2">
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="flex-row w-full items-center rounded-2xl h-14 shadow-sm overflow-hidden border">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row w-full items-center rounded-2xl h-14 shadow-sm overflow-hidden">
                             <View className="pl-4 pr-2">
                                 <MaterialIcons name="search" size={24} color={colors.textMuted} />
                             </View>
@@ -90,7 +90,7 @@ export default function InputScreen() {
                         <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-bold uppercase tracking-wider pl-1">Makanan Terpilih</Text>
 
                         {/* Food Item 1 */}
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="flex-row items-center justify-between p-3 pr-4 rounded-2xl shadow-sm border">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center justify-between p-3 pr-4 rounded-2xl shadow-sm">
                             <View className="flex-row items-center gap-3">
                                 <View className="w-12 h-12 rounded-xl bg-orange-100 items-center justify-center">
                                     <MaterialIcons name="rice-bowl" size={24} color="#EA580C" />
@@ -112,7 +112,7 @@ export default function InputScreen() {
                         </View>
 
                         {/* Food Item 2 */}
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="flex-row items-center justify-between p-3 pr-4 rounded-2xl shadow-sm border">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center justify-between p-3 pr-4 rounded-2xl shadow-sm">
                             <View className="flex-row items-center gap-3">
                                 <View className="w-12 h-12 rounded-xl bg-yellow-100 items-center justify-center">
                                     <MaterialIcons name="egg" size={24} color="#CA8A04" />
@@ -135,13 +135,13 @@ export default function InputScreen() {
                     </View>
 
                     {/* Add More Button */}
-                    <TouchableOpacity style={{ borderColor: colors.outlineVariant }} className="flex-row items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed mb-6 active:bg-black/5">
+                    <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerLow }} className="flex-row items-center justify-center gap-2 py-3 rounded-2xl mb-6 active:bg-black/5 shadow-sm">
                         <MaterialIcons name="add-circle-outline" size={20} color={colors.textMuted} />
                         <Text style={{ color: colors.onSurfaceVariant }} className="font-bold">Tambah Menu Lain</Text>
                     </TouchableOpacity>
 
                     {/* Nutrition Summary Card */}
-                    <View style={{ backgroundColor: colors.secondaryContainer, borderColor: colors.outlineVariant }} className="p-5 rounded-3xl relative overflow-hidden border">
+                    <View style={{ backgroundColor: colors.secondaryContainer }} className="p-5 rounded-3xl relative overflow-hidden shadow-sm">
                         <Text style={{ color: colors.onSecondaryContainer }} className="text-sm font-medium mb-3 relative z-10">Ringkasan Nutrisi (Estimasi)</Text>
                         <View className="flex-row gap-6 relative z-10">
                             <View>
