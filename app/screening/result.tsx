@@ -22,7 +22,7 @@ export default function ScreeningResultScreen() {
                 {/* Celebratory Header */}
                 <View className="items-center pt-6 pb-8 px-4">
                     <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-5 shadow-xl shadow-primary/20 bg-yellow-400">
-                        <MaterialIcons name="check-circle" size={48} color={Colors.backgroundDark} />
+                        <MaterialIcons name="check-circle" size={48} color={Colors.textInverted} />
                     </View>
                     <Text className="text-slate-900 dark:text-white tracking-tight text-[28px] font-extrabold leading-tight text-center">Skrining Selesai!</Text>
                     <Text className="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal pt-2 text-center">Data tumbuh kembang anak berhasil disimpan.</Text>

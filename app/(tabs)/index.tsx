@@ -29,7 +29,7 @@ export default function HomeScreen() {
 
         <View className="px-4 mt-2 mb-6">
           <Text className="text-3xl font-bold tracking-tight text-white leading-tight">
-            Good Morning,{"\n"}Bunda Bilqis 👋
+            Good Morning,{"\n"}Bunda Rahma 👋
           </Text>
         </View>
 

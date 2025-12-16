@@ -54,7 +54,7 @@ export default function PMTTabScreen() {
                         onPress={() => router.push('/pmt/report')}
                         className="flex-1 bg-primary py-4 rounded-xl items-center justify-center"
                     >
-                        <MaterialIcons name="add-a-photo" size={24} color={Colors.backgroundDark} />
+                        <MaterialIcons name="add-a-photo" size={24} color={Colors.textInverted} />
                         <Text className="text-background-dark font-bold mt-2">Lapor Hari Ini</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

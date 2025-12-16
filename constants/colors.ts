@@ -1,74 +1,94 @@
 /**
  * Centralized Color Theme Configuration
  * 
- * Change colors here to update the entire app's color scheme.
- * All colors are organized by their semantic purpose.
+ * This file contains both light and dark theme variants.
+ * The app automatically uses the appropriate theme based on user preference.
  */
 
-export const Colors = {
-    // ===================
-    // PRIMARY COLORS
-    // ===================
-    primary: '#F5AFAF',           // Main accent color (coral/salmon)
-    primaryMuted: '#d4a0a0',      // Muted version of primary (for inactive states)
+export type ThemeMode = 'light' | 'dark' | 'system';
 
-    // ===================
-    // BACKGROUND COLORS
-    // ===================
-    backgroundLight: '#FCF8F8',   // Light mode background
-    backgroundDark: '#2d1f1f',    // Dark mode background (main)
+// ===================
+// LIGHT THEME COLORS
+// ===================
+export const LightColors = {
+    // Primary
+    primary: '#F5AFAF',
+    primaryMuted: '#e8a0a0',
 
-    // ===================
-    // CARD/SURFACE COLORS
-    // ===================
-    cardDark: '#3d2a2a',          // Card background (dark mode)
-    cardDarkAlt: '#4a3535',       // Alternative card background (slightly lighter)
+    // Backgrounds
+    background: '#FCF8F8',
+    backgroundAlt: '#FBEFEF',
 
-    // ===================
-    // BORDER COLORS
-    // ===================
-    borderDark: '#5a4040',        // Border color for dark mode
+    // Cards/Surfaces
+    card: '#FFFFFF',
+    cardAlt: '#F9DFDF',
 
-    // ===================
-    // TEXT COLORS
-    // ===================
-    textPrimary: '#FFFFFF',       // Primary text (white)
-    textMuted: '#d4a0a0',         // Muted/secondary text
-    textMutedAlt: 'rgba(255,255,255,0.6)', // Alternative muted text
+    // Borders
+    border: '#F5AFAF40',
+    borderMuted: '#00000010',
 
-    // ===================
-    // STATUS COLORS
-    // ===================
-    success: '#22c55e',           // Green for success states
-    warning: '#f59e0b',           // Orange/amber for warnings
-    error: '#ef4444',             // Red for errors
-    info: '#3b82f6',              // Blue for info
+    // Text
+    text: '#2d1f1f',
+    textSecondary: '#6b5555',
+    textMuted: '#9a8585',
+    textInverted: '#FFFFFF',
 
-    // ===================
-    // UTILITY
-    // ===================
-    transparent: 'transparent',
-    white: '#FFFFFF',
-    black: '#000000',
+    // Status
+    success: '#22c55e',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    info: '#3b82f6',
+
+    // Tab bar specific
+    tabBarBackground: '#FFFFFF',
+    tabBarBorder: '#F5AFAF40',
+    tabBarActive: '#F5AFAF',
+    tabBarInactive: '#9a8585',
 };
 
-// Export individual colors for easy destructuring
-export const {
-    primary,
-    primaryMuted,
-    backgroundLight,
-    backgroundDark,
-    cardDark,
-    cardDarkAlt,
-    borderDark,
-    textPrimary,
-    textMuted,
-    textMutedAlt,
-    success,
-    warning,
-    error,
-    info,
-} = Colors;
+// ===================
+// DARK THEME COLORS
+// ===================
+export const DarkColors = {
+    // Primary
+    primary: '#F5AFAF',
+    primaryMuted: '#d4a0a0',
 
-// Default export for convenience
+    // Backgrounds
+    background: '#2d1f1f',
+    backgroundAlt: '#3d2a2a',
+
+    // Cards/Surfaces
+    card: '#3d2a2a',
+    cardAlt: '#4a3535',
+
+    // Borders
+    border: '#5a4040',
+    borderMuted: '#ffffff10',
+
+    // Text
+    text: '#FFFFFF',
+    textSecondary: '#d4a0a0',
+    textMuted: '#a08585',
+    textInverted: '#2d1f1f',
+
+    // Status
+    success: '#22c55e',
+    warning: '#f59e0b',
+    error: '#ef4444',
+    info: '#3b82f6',
+
+    // Tab bar specific
+    tabBarBackground: '#2d1f1f',
+    tabBarBorder: '#5a4040',
+    tabBarActive: '#F5AFAF',
+    tabBarInactive: '#d4a0a0',
+};
+
+// Type for theme colors
+export type ThemeColors = typeof LightColors;
+
+// Legacy Colors export for backward compatibility (defaults to dark)
+export const Colors = DarkColors;
+
 export default Colors;

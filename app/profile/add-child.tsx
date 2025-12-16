@@ -63,7 +63,7 @@ export default function AddChildScreen() {
                             <MaterialIcons name="face" size={48} color="rgba(255,255,255,0.2)" />
                         </View>
                         <View className="absolute bottom-0 right-0 bg-primary w-9 h-9 rounded-full items-center justify-center shadow-lg border-2 border-background-dark">
-                            <MaterialIcons name="add-a-photo" size={18} color={Colors.backgroundDark} />
+                            <MaterialIcons name="add-a-photo" size={18} color={Colors.textInverted} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -168,7 +168,7 @@ export default function AddChildScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save & Continue</Text>
-                    <MaterialIcons name="arrow-forward" size={20} color={Colors.backgroundDark} />
+                    <MaterialIcons name="arrow-forward" size={20} color={Colors.textInverted} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

@@ -98,7 +98,7 @@ export default function AnthropometryInputScreen() {
                             className="flex-row items-center gap-3 mt-3"
                         >
                             <View className={`h-5 w-5 rounded-md border-2 items-center justify-center ${isLying ? 'bg-primary border-primary' : 'border-[#5a4040] bg-transparent'}`}>
-                                {isLying && <MaterialIcons name="check" size={14} color={Colors.backgroundDark} />}
+                                {isLying && <MaterialIcons name="check" size={14} color={Colors.textInverted} />}
                             </View>
                             <Text className="text-sm text-[#d4a0a0]">Pengukuran Terlentang</Text>
                         </TouchableOpacity>

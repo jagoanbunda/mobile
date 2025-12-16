@@ -225,7 +225,7 @@ export default function GrowthChartScreen() {
                     onPress={() => router.push('/anthropometry/input')}
                     className="w-full h-14 bg-primary active:bg-yellow-500 rounded-xl flex-row items-center justify-center gap-2 shadow-lg shadow-primary/20"
                 >
-                    <MaterialIcons name="add" size={24} color={Colors.backgroundDark} />
+                    <MaterialIcons name="add" size={24} color={Colors.textInverted} />
                     <Text className="text-background-dark font-bold text-base tracking-wide">TAMBAH DATA BARU</Text>
                 </TouchableOpacity>
             </View>

@@ -150,7 +150,7 @@ export default function RegisterScreen() {
                         className="flex-row items-start gap-3"
                     >
                         <View className={`w-5 h-5 border-2 rounded-md items-center justify-center ${termsAccepted ? 'bg-primary border-primary' : 'border-[#5a4040] bg-[#4a3535]'}`}>
-                            {termsAccepted && <MaterialIcons name="check" size={14} color={Colors.backgroundDark} />}
+                            {termsAccepted && <MaterialIcons name="check" size={14} color={Colors.textInverted} />}
                         </View>
                         <View className="flex-1">
                             <Text className="text-white text-sm font-medium">

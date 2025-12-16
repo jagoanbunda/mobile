@@ -102,7 +102,7 @@ export default function InputScreen() {
                                 </TouchableOpacity>
                                 <Text className="w-8 text-center text-sm font-bold text-white">1</Text>
                                 <TouchableOpacity className="w-7 h-7 items-center justify-center rounded-full bg-primary shadow-sm active:scale-95">
-                                    <MaterialIcons name="add" size={16} color={Colors.backgroundDark} />
+                                    <MaterialIcons name="add" size={16} color={Colors.textInverted} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -124,7 +124,7 @@ export default function InputScreen() {
                                 </TouchableOpacity>
                                 <Text className="w-8 text-center text-sm font-bold text-white">2</Text>
                                 <TouchableOpacity className="w-7 h-7 items-center justify-center rounded-full bg-primary shadow-sm active:scale-95">
-                                    <MaterialIcons name="add" size={16} color={Colors.backgroundDark} />
+                                    <MaterialIcons name="add" size={16} color={Colors.textInverted} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -157,7 +157,7 @@ export default function InputScreen() {
 
                     {/* Save Button */}
                     <TouchableOpacity className="w-full flex-row items-center justify-center gap-2 bg-primary active:scale-[0.98] rounded-full py-4 shadow-lg shadow-primary/25 mt-6">
-                        <MaterialIcons name="check-circle" size={24} color={Colors.backgroundDark} />
+                        <MaterialIcons name="check-circle" size={24} color={Colors.textInverted} />
                         <Text className="text-background-dark font-bold text-lg">Simpan Asupan</Text>
                     </TouchableOpacity>
 

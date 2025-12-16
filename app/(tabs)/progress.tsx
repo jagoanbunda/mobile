@@ -240,7 +240,7 @@ export default function ProgressScreen() {
                         onPress={() => router.push('/anthropometry/input')}
                         className="flex-1 bg-primary py-4 rounded-xl items-center justify-center flex-row gap-2"
                     >
-                        <MaterialIcons name="add" size={20} color={Colors.backgroundDark} />
+                        <MaterialIcons name="add" size={20} color={Colors.textInverted} />
                         <Text className="text-background-dark font-bold">Input Data</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

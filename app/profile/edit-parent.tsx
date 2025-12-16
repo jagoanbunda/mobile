@@ -1,10 +1,12 @@
 import Colors from '@/constants/colors';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
 import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function EditParentScreen() {
+    const { themeMode, setThemeMode, colors } = useTheme();
     const [fullName, setFullName] = useState('Sarah Anderson');
     const [email, setEmail] = useState('sarah@example.com');
     const [newPassword, setNewPassword] = useState('');
@@ -54,7 +56,7 @@ export default function EditParentScreen() {
                             <MaterialIcons name="person" size={48} color="rgba(255,255,255,0.2)" />
                         </View>
                         <View className="absolute bottom-0 right-0 bg-primary w-9 h-9 rounded-full items-center justify-center shadow-lg border-2 border-background-dark">
-                            <MaterialIcons name="edit" size={18} color={Colors.backgroundDark} />
+                            <MaterialIcons name="edit" size={18} color={Colors.textInverted} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -189,6 +191,61 @@ export default function EditParentScreen() {
                         </View>
                     </View>
                 </View>
+
+                {/* Appearance Section */}
+                <View className="mt-6">
+                    <Text className="text-sm font-bold uppercase tracking-wider text-white/40 mb-4 ml-1">Appearance</Text>
+                    <View className="gap-3">
+                        {/* Theme Selector */}
+                        <View className="p-4 bg-[#2d2616] rounded-xl border border-white/5">
+                            <View className="flex-row items-center gap-2 mb-3">
+                                <MaterialIcons name="palette" size={18} color={Colors.primary} />
+                                <Text className="text-sm font-bold text-white">Theme Mode</Text>
+                            </View>
+                            <View className="flex-row gap-2">
+                                <TouchableOpacity
+                                    onPress={() => setThemeMode('light')}
+                                    className={`flex-1 py-3 px-4 rounded-lg flex-row items-center justify-center gap-2 ${themeMode === 'light' ? 'bg-primary' : 'bg-white/5'}`}
+                                >
+                                    <MaterialIcons
+                                        name="light-mode"
+                                        size={18}
+                                        color={themeMode === 'light' ? Colors.textInverted : 'rgba(255,255,255,0.6)'}
+                                    />
+                                    <Text className={`text-sm font-bold ${themeMode === 'light' ? 'text-background-dark' : 'text-white/60'}`}>
+                                        Light
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setThemeMode('dark')}
+                                    className={`flex-1 py-3 px-4 rounded-lg flex-row items-center justify-center gap-2 ${themeMode === 'dark' ? 'bg-primary' : 'bg-white/5'}`}
+                                >
+                                    <MaterialIcons
+                                        name="dark-mode"
+                                        size={18}
+                                        color={themeMode === 'dark' ? Colors.textInverted : 'rgba(255,255,255,0.6)'}
+                                    />
+                                    <Text className={`text-sm font-bold ${themeMode === 'dark' ? 'text-background-dark' : 'text-white/60'}`}>
+                                        Dark
+                                    </Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => setThemeMode('system')}
+                                    className={`flex-1 py-3 px-4 rounded-lg flex-row items-center justify-center gap-2 ${themeMode === 'system' ? 'bg-primary' : 'bg-white/5'}`}
+                                >
+                                    <MaterialIcons
+                                        name="settings-brightness"
+                                        size={18}
+                                        color={themeMode === 'system' ? Colors.textInverted : 'rgba(255,255,255,0.6)'}
+                                    />
+                                    <Text className={`text-sm font-bold ${themeMode === 'system' ? 'text-background-dark' : 'text-white/60'}`}>
+                                        Auto
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </View>
             </ScrollView>
 
             {/* Bottom Action Bar */}
@@ -198,7 +255,7 @@ export default function EditParentScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save Changes</Text>
-                    <MaterialIcons name="check" size={20} color={Colors.backgroundDark} />
+                    <MaterialIcons name="check" size={20} color={Colors.textInverted} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

@@ -50,7 +50,7 @@ export default function EditChildScreen() {
                             <MaterialIcons name="child-care" size={56} color="rgba(250,198,56,0.8)" />
                         </View>
                         <View className="absolute bottom-1 right-1 bg-primary w-10 h-10 rounded-full items-center justify-center shadow-lg border-4 border-background-dark">
-                            <MaterialIcons name="camera-alt" size={20} color={Colors.backgroundDark} />
+                            <MaterialIcons name="camera-alt" size={20} color={Colors.textInverted} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -134,7 +134,7 @@ export default function EditChildScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save Changes</Text>
-                    <MaterialIcons name="check" size={20} color={Colors.backgroundDark} />
+                    <MaterialIcons name="check" size={20} color={Colors.textInverted} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
