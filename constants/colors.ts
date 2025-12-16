@@ -1,14 +1,14 @@
 /**
  * Material 3 Color System
  * 
- * Sage Green Palette from ColorHunt:
- * - #96A78D (Sage Dark)
- * - #B6CEB4 (Sage Medium)
- * - #D9E9CF (Sage Light)
- * - #F0F0F0 (Off-White)
+ * Inspired by Android Developer Documentation Plant App Theme
+ * https://developer.android.com/design/ui/mobile/guides/styles/themes
  * 
- * Following Android Material 3 color guidelines:
- * https://developer.android.com/design/ui/mobile/guides/styles/color
+ * Color Palette:
+ * - Primary (Green accent): #7A8A6E (sage green for checkboxes, icons)
+ * - Secondary (Brand/Card): #E8D5C4 (soft beige/pink for cards)
+ * - Tertiary (Wallpaper): #5B7CB5 (muted blue for profile accents)
+ * - Surface: #F5F5F0 (off-white/cream background)
  */
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -17,23 +17,23 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 // LIGHT THEME (M3 Color Roles)
 // ===================
 export const LightColors = {
-    // === PRIMARY ===
-    primary: '#96A78D',              // Main brand color
-    onPrimary: '#FFFFFF',            // Text/icons on primary
-    primaryContainer: '#D9E9CF',     // Container using primary
-    onPrimaryContainer: '#1a2a1a',   // Text on primary container
+    // === PRIMARY (Green - for interactive elements, checkboxes) ===
+    primary: '#7A8A6E',              // Sage green
+    onPrimary: '#FFFFFF',
+    primaryContainer: '#D4E4C8',     // Light sage
+    onPrimaryContainer: '#1A2A16',
 
-    // === SECONDARY ===
-    secondary: '#B6CEB4',            // Supporting color
-    onSecondary: '#1a2a1a',          // Text on secondary
-    secondaryContainer: '#E8F0E6',   // Container using secondary
-    onSecondaryContainer: '#2a3a2a', // Text on secondary container
+    // === SECONDARY (Beige/Pink - for cards, containers) ===
+    secondary: '#C4A484',            // Warm beige
+    onSecondary: '#FFFFFF',
+    secondaryContainer: '#F5E6D3',   // Light beige/cream
+    onSecondaryContainer: '#3D2E1E',
 
-    // === TERTIARY ===
-    tertiary: '#7a8a7a',             // Accent for contrast
+    // === TERTIARY (Blue - for special accents) ===
+    tertiary: '#5B7CB5',             // Muted blue
     onTertiary: '#FFFFFF',
-    tertiaryContainer: '#C9D9C7',
-    onTertiaryContainer: '#2a3a2a',
+    tertiaryContainer: '#D6E3FF',
+    onTertiaryContainer: '#1A2A4A',
 
     // === ERROR ===
     error: '#BA1A1A',
@@ -42,53 +42,53 @@ export const LightColors = {
     onErrorContainer: '#410002',
 
     // === SURFACE (Backgrounds) ===
-    surface: '#F0F0F0',              // Main background
-    onSurface: '#1a2a1a',            // Text on surface
-    surfaceVariant: '#E0E8DE',       // Variant for cards/sheets
-    onSurfaceVariant: '#3a4a3a',     // Text on variant
-    surfaceDim: '#D9E1D7',           // Dimmed surface
-    surfaceBright: '#FAFAFA',        // Bright surface
+    surface: '#F5F5F0',              // Off-white/cream
+    onSurface: '#1C1B1A',
+    surfaceVariant: '#E8E1D9',       // Warm gray
+    onSurfaceVariant: '#4A4640',
+    surfaceDim: '#E0DDD6',
+    surfaceBright: '#FEFCF8',
     surfaceContainerLowest: '#FFFFFF',
-    surfaceContainerLow: '#F5F5F5',
-    surfaceContainer: '#EFEFEF',     // Default container
-    surfaceContainerHigh: '#E8E8E8',
-    surfaceContainerHighest: '#E0E0E0',
+    surfaceContainerLow: '#FAF8F3',
+    surfaceContainer: '#F5F2ED',
+    surfaceContainerHigh: '#EFE9E4',
+    surfaceContainerHighest: '#E8E1DC',
 
     // === OUTLINE ===
-    outline: '#96A78D',              // Borders, dividers
-    outlineVariant: '#C9D1C7',       // Subtle borders
+    outline: '#7A7670',
+    outlineVariant: '#CCC5BD',
 
     // === INVERSE ===
-    inverseSurface: '#2a3a2a',
-    inverseOnSurface: '#F0F0F0',
-    inversePrimary: '#D9E9CF',
+    inverseSurface: '#31302E',
+    inverseOnSurface: '#F4F0EB',
+    inversePrimary: '#B8CCAA',
 
-    // === SCRIM & SHADOW ===
+    // === SCRIM ===
     scrim: '#000000',
     shadow: '#000000',
 
-    // === STATUS COLORS ===
-    success: '#22c55e',
-    warning: '#f59e0b',
-    info: '#3b82f6',
+    // === STATUS ===
+    success: '#4A7A3E',
+    warning: '#8A6B24',
+    info: '#4A6A8A',
 
-    // === LEGACY MAPPINGS (for backward compatibility) ===
-    background: '#F0F0F0',
-    backgroundAlt: '#E0E8DE',
+    // === LEGACY MAPPINGS ===
+    background: '#F5F5F0',
+    backgroundAlt: '#EFE9E4',
     card: '#FFFFFF',
-    cardAlt: '#F5F5F5',
-    border: '#96A78D',
-    borderMuted: '#C9D1C7',
-    text: '#1a2a1a',
-    textSecondary: '#3a4a3a',
-    textMuted: '#5a6a5a',
+    cardAlt: '#F5E6D3',
+    border: '#CCC5BD',
+    borderMuted: '#E8E1D9',
+    text: '#1C1B1A',
+    textSecondary: '#4A4640',
+    textMuted: '#7A7670',
     textInverted: '#FFFFFF',
 
     // === TAB BAR ===
     tabBarBackground: '#FFFFFF',
-    tabBarBorder: '#C9D1C7',
-    tabBarActive: '#96A78D',
-    tabBarInactive: '#5a6a5a',
+    tabBarBorder: '#E8E1D9',
+    tabBarActive: '#7A8A6E',
+    tabBarInactive: '#7A7670',
 };
 
 // ===================
@@ -96,22 +96,22 @@ export const LightColors = {
 // ===================
 export const DarkColors = {
     // === PRIMARY ===
-    primary: '#D9E9CF',              // Primary in dark (lighter)
-    onPrimary: '#1a2a1a',            // Text on primary
-    primaryContainer: '#5a6a5a',     // Container
-    onPrimaryContainer: '#E8F0E6',   // Text on container
+    primary: '#B8CCAA',              // Light sage
+    onPrimary: '#2A3A24',
+    primaryContainer: '#4A5A44',
+    onPrimaryContainer: '#D4E4C8',
 
     // === SECONDARY ===
-    secondary: '#B6CEB4',
-    onSecondary: '#1a2a1a',
-    secondaryContainer: '#4a5a4a',
-    onSecondaryContainer: '#D9E9CF',
+    secondary: '#E0C8AC',
+    onSecondary: '#3D2E1E',
+    secondaryContainer: '#5A4A3A',
+    onSecondaryContainer: '#F5E6D3',
 
     // === TERTIARY ===
-    tertiary: '#C9D9C7',
-    onTertiary: '#1a2a1a',
-    tertiaryContainer: '#5a6a5a',
-    onTertiaryContainer: '#E8F0E6',
+    tertiary: '#A8C4F0',
+    onTertiary: '#1A2A4A',
+    tertiaryContainer: '#3A4A6A',
+    onTertiaryContainer: '#D6E3FF',
 
     // === ERROR ===
     error: '#FFB4AB',
@@ -119,54 +119,54 @@ export const DarkColors = {
     errorContainer: '#93000A',
     onErrorContainer: '#FFDAD6',
 
-    // === SURFACE (Backgrounds) ===
-    surface: '#1a2a1a',              // Dark sage background
-    onSurface: '#E8F0E6',            // Light text
-    surfaceVariant: '#3a4a3a',       // Variant for cards
-    onSurfaceVariant: '#C9D1C7',
-    surfaceDim: '#121a12',
-    surfaceBright: '#3a4a3a',
-    surfaceContainerLowest: '#0d150d',
-    surfaceContainerLow: '#1a2a1a',
-    surfaceContainer: '#2a3a2a',     // Default container
-    surfaceContainerHigh: '#3a4a3a',
-    surfaceContainerHighest: '#4a5a4a',
+    // === SURFACE (Dark warm tones, not pure black) ===
+    surface: '#141311',              // Very dark warm brown
+    onSurface: '#E7E2DC',
+    surfaceVariant: '#4A4640',
+    onSurfaceVariant: '#CCC5BD',
+    surfaceDim: '#141311',
+    surfaceBright: '#3A3936',
+    surfaceContainerLowest: '#0F0E0C',
+    surfaceContainerLow: '#1C1B1A',
+    surfaceContainer: '#201F1D',     // Warm dark
+    surfaceContainerHigh: '#2B2A27',
+    surfaceContainerHighest: '#363532',
 
     // === OUTLINE ===
-    outline: '#8a9a8a',
-    outlineVariant: '#4a5a4a',
+    outline: '#948F88',
+    outlineVariant: '#4A4640',
 
     // === INVERSE ===
-    inverseSurface: '#E8F0E6',
-    inverseOnSurface: '#1a2a1a',
-    inversePrimary: '#96A78D',
+    inverseSurface: '#E7E2DC',
+    inverseOnSurface: '#31302E',
+    inversePrimary: '#5A6A4E',
 
-    // === SCRIM & SHADOW ===
+    // === SCRIM ===
     scrim: '#000000',
     shadow: '#000000',
 
-    // === STATUS COLORS ===
-    success: '#4ade80',
-    warning: '#fbbf24',
-    info: '#60a5fa',
+    // === STATUS ===
+    success: '#8ABB7A',
+    warning: '#C4A45A',
+    info: '#7A9ABB',
 
     // === LEGACY MAPPINGS ===
-    background: '#1a2a1a',
-    backgroundAlt: '#2a3a2a',
-    card: '#2a3a2a',
-    cardAlt: '#3a4a3a',
-    border: '#4a5a4a',
-    borderMuted: '#3a4a3a',
-    text: '#E8F0E6',
-    textSecondary: '#C9D1C7',
-    textMuted: '#8a9a8a',
-    textInverted: '#1a2a1a',
+    background: '#141311',
+    backgroundAlt: '#201F1D',
+    card: '#201F1D',
+    cardAlt: '#2B2A27',
+    border: '#4A4640',
+    borderMuted: '#363532',
+    text: '#E7E2DC',
+    textSecondary: '#CCC5BD',
+    textMuted: '#948F88',
+    textInverted: '#1C1B1A',
 
     // === TAB BAR ===
-    tabBarBackground: '#1a2a1a',
-    tabBarBorder: '#3a4a3a',
-    tabBarActive: '#D9E9CF',
-    tabBarInactive: '#8a9a8a',
+    tabBarBackground: '#141311',
+    tabBarBorder: '#2B2A27',
+    tabBarActive: '#B8CCAA',
+    tabBarInactive: '#948F88',
 };
 
 // Type for theme colors
