@@ -6,8 +6,7 @@ import { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
-    const { colors, isDark } = useTheme();
-    const [role, setRole] = useState<'Parent' | 'Health Worker'>('Parent');
+    const { colors } = useTheme();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -51,30 +50,6 @@ export default function LoginScreen() {
                         <Text style={{ color: colors.onSurfaceVariant }} className="mt-2 text-base font-medium">
                             Monitor your child's growth journey.
                         </Text>
-                    </View>
-
-                    {/* Role Selector */}
-                    <View className="mb-6">
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-row h-12 w-full items-center justify-center rounded-full p-1 border">
-                            <TouchableOpacity
-                                onPress={() => setRole('Parent')}
-                                style={role === 'Parent' ? { backgroundColor: colors.primary } : {}}
-                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Parent' ? 'shadow-md' : ''}`}
-                            >
-                                <Text style={{ color: role === 'Parent' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
-                                    Parent
-                                </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => setRole('Health Worker')}
-                                style={role === 'Health Worker' ? { backgroundColor: colors.primary } : {}}
-                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Health Worker' ? 'shadow-md' : ''}`}
-                            >
-                                <Text style={{ color: role === 'Health Worker' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
-                                    Health Worker
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
 
                     {/* Login Form */}

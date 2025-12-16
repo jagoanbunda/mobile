@@ -28,14 +28,8 @@ export default function InputScreen() {
             >
                 {/* Header */}
                 <View style={{ backgroundColor: colors.surface }} className="flex-none pt-4 pb-2 px-6 z-20">
-                    <View className="flex justify-center mb-4 items-center">
-                        <View style={{ backgroundColor: colors.outlineVariant }} className="h-1.5 w-12 rounded-full opacity-50" />
-                    </View>
                     <View className="flex-row justify-between items-center mb-4">
                         <Text style={{ color: colors.onSurface }} className="tracking-tight text-[28px] font-bold leading-tight">Catat Makanan</Text>
-                        <TouchableOpacity>
-                            <Text style={{ color: colors.primary }} className="text-sm font-medium">Tutup</Text>
-                        </TouchableOpacity>
                     </View>
 
                     {/* Calendar Strip - Compact */}
