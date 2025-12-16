@@ -3,6 +3,14 @@
 ## v1.0.1 (2025-12-16)
 
 ## What's Changed
+- fix: add safe area insets to bottom tab bar to prevent overlap with Android navigation (7338002)
+- chore(release): update changelog [skip ci] (12bc25e)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
+## v1.0.1 (2025-12-16)
+
+## What's Changed
 - feat: switch to local build on GitHub Actions (7cf6d3a)
 - fix: use EAS cloud build instead of local build (e966c72)
 - fix: add android.package for EAS build compatibility (efca94f)
