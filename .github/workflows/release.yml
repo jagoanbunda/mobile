@@ -72,54 +72,16 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build APK with EAS (Cloud)
-        id: eas_build
-        run: |
-          BUILD_OUTPUT=$(eas build --platform android --profile preview --non-interactive --json)
-          echo "$BUILD_OUTPUT"
-          BUILD_URL=$(echo "$BUILD_OUTPUT" | jq -r '.[0].artifacts.buildUrl // empty')
-          if [ -z "$BUILD_URL" ]; then
-            # If artifacts not in output, get from build status
-            BUILD_ID=$(echo "$BUILD_OUTPUT" | jq -r '.[0].id')
-            echo "Build ID: $BUILD_ID"
-            echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
-          else
-            echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
-          fi
+      - name: Build APK with EAS (Local)
+        run: eas build --platform android --profile preview --non-interactive --local --output ./app-release.apk
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Wait for build and download APK
+      - name: List APK files
         run: |
-          echo "Waiting for EAS build to complete..."
-          # Get the latest build
-          BUILD_INFO=$(eas build:list --platform android --limit 1 --json --non-interactive)
-          BUILD_ID=$(echo "$BUILD_INFO" | jq -r '.[0].id')
-
-          # Wait for build completion
-          while true; do
-            STATUS=$(eas build:view $BUILD_ID --json | jq -r '.status')
-            echo "Build status: $STATUS"
-            if [ "$STATUS" = "FINISHED" ]; then
-              APK_URL=$(eas build:view $BUILD_ID --json | jq -r '.artifacts.buildUrl')
-              echo "Downloading APK from: $APK_URL"
-              curl -L -o app-release.apk "$APK_URL"
-              break
-            elif [ "$STATUS" = "ERRORED" ] || [ "$STATUS" = "CANCELED" ]; then
-              echo "Build failed with status: $STATUS"
-              exit 1
-            fi
-            sleep 30
-          done
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Find APK file
-        id: find_apk
-        run: |
-          APK_PATH=$(find . -name "*.apk" -type f | head -1)
-          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
-          echo "Found APK: $APK_PATH"
+          echo "Listing APK files..."
+          ls -la *.apk || echo "No APK in root"
+          find . -name "*.apk" -type f 2>/dev/null || true
 
       - name: Get version from package.json
         id: version
@@ -128,7 +90,6 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes
-        id: changelog
         run: |
           echo "## What's Changed" > RELEASE_NOTES.md
           git log --pretty=format:"- %s (%h)" $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~10")..HEAD >> RELEASE_NOTES.md || echo "- Initial release" >> RELEASE_NOTES.md
@@ -142,8 +103,7 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}-build.${{ github.run_number }}
           name: Release v${{ steps.version.outputs.version }} (Build ${{ github.run_number }})
           body_path: RELEASE_NOTES.md
-          files: |
-            ${{ steps.find_apk.outputs.apk_path }}
+          files: ./app-release.apk
           draft: false
           prerelease: false
         env:
