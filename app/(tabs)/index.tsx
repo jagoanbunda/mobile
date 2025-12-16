@@ -1,17 +1,19 @@
-import Colors from '@/constants/colors';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
+  const { colors, isDark } = useTheme();
+
   return (
-    <SafeAreaView className="flex-1 bg-background-dark pt-12">
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, paddingTop: 48 }}>
       <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView className="flex-1 pb-24" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="flex-row items-center justify-between px-4 pt-4 pb-2 bg-background-dark/95">
+        <View style={{ backgroundColor: colors.background }} className="flex-row items-center justify-between px-4 pt-4 pb-2">
           <View className="flex-row items-center gap-3">
             <TouchableOpacity onPress={() => router.push('/profile/edit-parent')} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 active:opacity-80">
               <Image
@@ -20,25 +22,25 @@ export default function HomeScreen() {
                 contentFit="cover"
               />
             </TouchableOpacity>
-            <Text className="text-sm font-bold tracking-wide opacity-80 text-white">KREANOVA</Text>
+            <Text style={{ color: colors.text }} className="text-sm font-bold tracking-wide opacity-80">KREANOVA</Text>
           </View>
-          <TouchableOpacity className="w-10 h-10 items-center justify-center rounded-full bg-white/10 active:bg-white/20">
-            <MaterialIcons name="notifications-none" size={24} color={Colors.primary} />
+          <TouchableOpacity style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} className="w-10 h-10 items-center justify-center rounded-full active:bg-white/20">
+            <MaterialIcons name="notifications-none" size={24} color={colors.primary} />
           </TouchableOpacity>
         </View>
 
         <View className="px-4 mt-2 mb-6">
-          <Text className="text-3xl font-bold tracking-tight text-white leading-tight">
+          <Text style={{ color: colors.text }} className="text-3xl font-bold tracking-tight leading-tight">
             Good Morning,{"\n"}Bunda Rahma 👋
           </Text>
         </View>
 
         {/* Child Profile Card */}
         <View className="px-4 mt-2">
-          <View className="w-full bg-[#3d2a2a] rounded-xl p-5 shadow-sm border border-[#5a4040] relative overflow-hidden">
+          <View style={{ backgroundColor: colors.card, borderColor: colors.border }} className="w-full rounded-xl p-5 shadow-sm border relative overflow-hidden">
             {/* Decorative Icon Background */}
             <View className="absolute top-0 right-0 p-5 opacity-10">
-              <MaterialIcons name="eco" size={60} color={Colors.primary} />
+              <MaterialIcons name="eco" size={60} color={colors.primary} />
             </View>
 
             <TouchableOpacity onPress={() => router.push('/profile/edit-child')} className="flex-row items-center gap-4 mb-5 relative z-10 active:opacity-80">
@@ -50,7 +52,7 @@ export default function HomeScreen() {
                 />
               </View>
               <View>
-                <Text className="text-xl font-bold text-white">Arjun</Text>
+                <Text style={{ color: colors.text }} className="text-xl font-bold">Arjun</Text>
                 <View className="mt-1 flex-row items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/20">
                   <MaterialIcons name="check-circle" size={14} color="#FBBF24" />
                   <Text className="text-xs font-bold uppercase tracking-wider text-yellow-400">Healthy Growth</Text>
@@ -59,13 +61,13 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
             <View className="flex-row gap-3 relative z-10">
-              <View className="flex-1 bg-background-dark p-3 rounded-lg">
-                <Text className="text-xs text-[#d4a0a0] mb-1">Height/Age</Text>
-                <Text className="text-sm font-bold font-mono text-white">-1.2 SD</Text>
+              <View style={{ backgroundColor: colors.backgroundAlt }} className="flex-1 p-3 rounded-lg">
+                <Text style={{ color: colors.textMuted }} className="text-xs mb-1">Height/Age</Text>
+                <Text style={{ color: colors.text }} className="text-sm font-bold font-mono">-1.2 SD</Text>
               </View>
-              <View className="flex-1 bg-background-dark p-3 rounded-lg">
-                <Text className="text-xs text-[#d4a0a0] mb-1">Weight/Age</Text>
-                <Text className="text-sm font-bold font-mono text-white">-0.5 SD</Text>
+              <View style={{ backgroundColor: colors.backgroundAlt }} className="flex-1 p-3 rounded-lg">
+                <Text style={{ color: colors.textMuted }} className="text-xs mb-1">Weight/Age</Text>
+                <Text style={{ color: colors.text }} className="text-sm font-bold font-mono">-0.5 SD</Text>
               </View>
             </View>
           </View>
@@ -74,50 +76,50 @@ export default function HomeScreen() {
         {/* Today's Focus */}
         <View className="px-4 mt-8">
           <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-lg font-bold text-white">Today's Focus</Text>
+            <Text style={{ color: colors.text }} className="text-lg font-bold">Today's Focus</Text>
             <Text className="text-xs font-medium text-primary">2 Pending</Text>
           </View>
 
           <View className="gap-3">
             {/* Task 1 */}
-            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm">
+            <View style={{ backgroundColor: colors.card, borderColor: colors.border }} className="flex-row items-center gap-4 p-4 rounded-xl border shadow-sm">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-orange-500/20">
                 <MaterialIcons name="restaurant-menu" size={20} color="#FB923C" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-white">Input Lunch Menu</Text>
-                <Text className="text-xs text-[#d4a0a0]">Arjun • 12:30 PM</Text>
+                <Text style={{ color: colors.text }} className="text-sm font-bold">Input Lunch Menu</Text>
+                <Text style={{ color: colors.textMuted }} className="text-xs">Arjun • 12:30 PM</Text>
               </View>
               <TouchableOpacity className="h-9 px-5 bg-primary items-center justify-center rounded-full active:opacity-90">
-                <Text className="text-background-dark text-sm font-bold">Log</Text>
+                <Text style={{ color: colors.textInverted }} className="text-sm font-bold">Log</Text>
               </TouchableOpacity>
             </View>
 
             {/* Task 2 (Completed) */}
-            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm opacity-60">
+            <View style={{ backgroundColor: colors.card, borderColor: colors.border }} className="flex-row items-center gap-4 p-4 rounded-xl border shadow-sm opacity-60">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-blue-500/20">
                 <MaterialIcons name="medication" size={20} color="#60A5FA" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-white line-through decoration-[#d4a0a0]">PMT Consumption</Text>
-                <Text className="text-xs text-[#d4a0a0]">Recorded at 9:00 AM</Text>
+                <Text style={{ color: colors.text }} className="text-sm font-bold line-through">PMT Consumption</Text>
+                <Text style={{ color: colors.textMuted }} className="text-xs">Recorded at 9:00 AM</Text>
               </View>
               <View className="w-9 h-9 items-center justify-center rounded-full bg-yellow-500/20">
-                <MaterialIcons name="check" size={20} color={Colors.primary} />
+                <MaterialIcons name="check" size={20} color={colors.primary} />
               </View>
             </View>
 
             {/* Task 3 */}
-            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm">
+            <View style={{ backgroundColor: colors.card, borderColor: colors.border }} className="flex-row items-center gap-4 p-4 rounded-xl border shadow-sm">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-purple-500/20">
                 <MaterialIcons name="monitor-weight" size={20} color="#C084FC" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-white">Monthly Weigh-in</Text>
-                <Text className="text-xs text-[#d4a0a0]">Due today</Text>
+                <Text style={{ color: colors.text }} className="text-sm font-bold">Monthly Weigh-in</Text>
+                <Text style={{ color: colors.textMuted }} className="text-xs">Due today</Text>
               </View>
               <TouchableOpacity className="h-9 px-5 bg-primary items-center justify-center rounded-full active:opacity-90">
-                <Text className="text-background-dark text-sm font-bold">Log</Text>
+                <Text style={{ color: colors.textInverted }} className="text-sm font-bold">Log</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -125,12 +127,12 @@ export default function HomeScreen() {
 
         {/* Nutrition This Week */}
         <View className="px-4 mt-8 pb-32">
-          <View className="bg-[#3d2a2a] rounded-xl p-5 border border-[#5a4040] shadow-md">
+          <View style={{ backgroundColor: colors.card, borderColor: colors.border }} className="rounded-xl p-5 border shadow-md">
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-lg font-bold text-white">Nutrition This Week</Text>
+              <Text style={{ color: colors.text }} className="text-lg font-bold">Nutrition This Week</Text>
               <TouchableOpacity className="flex-row items-center gap-1">
                 <Text className="text-xs text-primary font-bold uppercase tracking-wider">Details</Text>
-                <MaterialIcons name="chevron-right" size={16} color={Colors.primary} />
+                <MaterialIcons name="chevron-right" size={16} color={colors.primary} />
               </TouchableOpacity>
             </View>
 
@@ -140,11 +142,11 @@ export default function HomeScreen() {
                 <View className="flex-row justify-between items-end mb-2">
                   <View className="flex-row items-center gap-2">
                     <MaterialIcons name="bolt" size={16} color="#F59E0B" />
-                    <Text className="text-sm font-medium text-[#d4a0a0]">Energy</Text>
+                    <Text style={{ color: colors.textMuted }} className="text-sm font-medium">Energy</Text>
                   </View>
-                  <Text className="text-sm font-bold text-white">1200 <Text className="text-[#d4a0a0] text-xs font-normal">/ 1400 kcal</Text></Text>
+                  <Text style={{ color: colors.text }} className="text-sm font-bold">1200 <Text style={{ color: colors.textMuted }} className="text-xs font-normal">/ 1400 kcal</Text></Text>
                 </View>
-                <View className="h-3 w-full bg-[#5a4040]/50 rounded-full overflow-hidden">
+                <View style={{ backgroundColor: isDark ? 'rgba(90,64,64,0.5)' : 'rgba(0,0,0,0.1)' }} className="h-3 w-full rounded-full overflow-hidden">
                   <View className="h-full bg-primary rounded-full w-[85%]" />
                 </View>
               </View>
@@ -154,11 +156,11 @@ export default function HomeScreen() {
                 <View className="flex-row justify-between items-end mb-2">
                   <View className="flex-row items-center gap-2">
                     <MaterialIcons name="egg" size={16} color="#60A5FA" />
-                    <Text className="text-sm font-medium text-[#d4a0a0]">Protein</Text>
+                    <Text style={{ color: colors.textMuted }} className="text-sm font-medium">Protein</Text>
                   </View>
-                  <Text className="text-sm font-bold text-white">20 <Text className="text-[#d4a0a0] text-xs font-normal">/ 25 g</Text></Text>
+                  <Text style={{ color: colors.text }} className="text-sm font-bold">20 <Text style={{ color: colors.textMuted }} className="text-xs font-normal">/ 25 g</Text></Text>
                 </View>
-                <View className="h-3 w-full bg-[#5a4040]/50 rounded-full overflow-hidden">
+                <View style={{ backgroundColor: isDark ? 'rgba(90,64,64,0.5)' : 'rgba(0,0,0,0.1)' }} className="h-3 w-full rounded-full overflow-hidden">
                   <View className="h-full bg-blue-400 rounded-full w-[80%]" />
                 </View>
               </View>

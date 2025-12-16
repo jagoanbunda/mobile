@@ -12,25 +12,25 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 // ===================
 export const LightColors = {
     // Primary
-    primary: '#F5AFAF',
-    primaryMuted: '#e8a0a0',
+    primary: '#E88888',           // Slightly darker coral for better visibility
+    primaryMuted: '#F5AFAF',
 
     // Backgrounds
-    background: '#FCF8F8',
-    backgroundAlt: '#FBEFEF',
+    background: '#FFF9F9',        // Very soft pink-white
+    backgroundAlt: '#FFF5F5',
 
     // Cards/Surfaces
-    card: '#FFFFFF',
-    cardAlt: '#F9DFDF',
+    card: '#FFFFFF',              // White cards on soft pink background
+    cardAlt: '#FFF0F0',           // Very soft pink for alt cards
 
     // Borders
-    border: '#F5AFAF40',
-    borderMuted: '#00000010',
+    border: '#F5AFAF50',          // Soft pink border
+    borderMuted: '#E8888830',
 
     // Text
-    text: '#2d1f1f',
+    text: '#3d2a2a',              // Dark brown for good readability
     textSecondary: '#6b5555',
-    textMuted: '#9a8585',
+    textMuted: '#8a7070',
     textInverted: '#FFFFFF',
 
     // Status
@@ -41,9 +41,9 @@ export const LightColors = {
 
     // Tab bar specific
     tabBarBackground: '#FFFFFF',
-    tabBarBorder: '#F5AFAF40',
-    tabBarActive: '#F5AFAF',
-    tabBarInactive: '#9a8585',
+    tabBarBorder: '#F5AFAF50',
+    tabBarActive: '#E88888',
+    tabBarInactive: '#8a7070',
 };
 
 // ===================
