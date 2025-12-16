@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import { Stack, router } from 'expo-router';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 // import { MaterialIcons } from '@expo/vector-icons';
@@ -21,7 +22,7 @@ export default function ScreeningResultScreen() {
                 {/* Celebratory Header */}
                 <View className="items-center pt-6 pb-8 px-4">
                     <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-5 shadow-xl shadow-primary/20 bg-yellow-400">
-                        <MaterialIcons name="check-circle" size={48} color="#231e0f" />
+                        <MaterialIcons name="check-circle" size={48} color={Colors.backgroundDark} />
                     </View>
                     <Text className="text-slate-900 dark:text-white tracking-tight text-[28px] font-extrabold leading-tight text-center">Skrining Selesai!</Text>
                     <Text className="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal pt-2 text-center">Data tumbuh kembang anak berhasil disimpan.</Text>
@@ -189,7 +190,7 @@ export default function ScreeningResultScreen() {
             {/* Bottom Button */}
             <View className="absolute bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-card-dark/90 backdrop-blur-md border-t border-gray-100 dark:border-white/5 z-40">
                 <TouchableOpacity onPress={() => router.push('/(tabs)')} className="w-full bg-primary active:bg-yellow-500 items-center justify-center py-4 rounded-xl shadow-lg shadow-primary/20">
-                    <Text className="text-[#231e0f] font-extrabold text-base">KEMBALI KE HOME</Text>
+                    <Text className="text-[#2d1f1f] font-extrabold text-base">KEMBALI KE HOME</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

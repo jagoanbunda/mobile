@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
@@ -49,7 +50,7 @@ export default function EditChildScreen() {
                             <MaterialIcons name="child-care" size={56} color="rgba(250,198,56,0.8)" />
                         </View>
                         <View className="absolute bottom-1 right-1 bg-primary w-10 h-10 rounded-full items-center justify-center shadow-lg border-4 border-background-dark">
-                            <MaterialIcons name="camera-alt" size={20} color="#231e0f" />
+                            <MaterialIcons name="camera-alt" size={20} color={Colors.backgroundDark} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -98,7 +99,7 @@ export default function EditChildScreen() {
                                 onPress={() => setGender('male')}
                                 className={`flex-1 py-3 rounded-lg items-center justify-center flex-row gap-2 ${gender === 'male' ? 'bg-primary' : ''}`}
                             >
-                                <MaterialIcons name="male" size={18} color={gender === 'male' ? '#231e0f' : 'rgba(255,255,255,0.6)'} />
+                                <MaterialIcons name="male" size={18} color={gender === 'male' ? '#2d1f1f' : 'rgba(255,255,255,0.6)'} />
                                 <Text className={`text-sm font-bold ${gender === 'male' ? 'text-background-dark' : 'text-white/60'}`}>
                                     Male
                                 </Text>
@@ -107,7 +108,7 @@ export default function EditChildScreen() {
                                 onPress={() => setGender('female')}
                                 className={`flex-1 py-3 rounded-lg items-center justify-center flex-row gap-2 ${gender === 'female' ? 'bg-primary' : ''}`}
                             >
-                                <MaterialIcons name="female" size={18} color={gender === 'female' ? '#231e0f' : 'rgba(255,255,255,0.6)'} />
+                                <MaterialIcons name="female" size={18} color={gender === 'female' ? '#2d1f1f' : 'rgba(255,255,255,0.6)'} />
                                 <Text className={`text-sm font-bold ${gender === 'female' ? 'text-background-dark' : 'text-white/60'}`}>
                                     Female
                                 </Text>
@@ -117,7 +118,7 @@ export default function EditChildScreen() {
 
                     {/* Info Card */}
                     <View className="flex-row gap-3 p-4 bg-primary/10 rounded-xl border border-primary/20 mt-4">
-                        <MaterialIcons name="info" size={20} color="#FAC638" />
+                        <MaterialIcons name="info" size={20} color={Colors.primary} />
                         <Text className="flex-1 text-sm text-white/70 leading-relaxed">
                             Accurate information helps us provide better growth insights and personalized recommendations for{' '}
                             <Text className="font-bold text-primary">{childName.split(' ')[0]}</Text>.
@@ -133,7 +134,7 @@ export default function EditChildScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save Changes</Text>
-                    <MaterialIcons name="check" size={20} color="#231e0f" />
+                    <MaterialIcons name="check" size={20} color={Colors.backgroundDark} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

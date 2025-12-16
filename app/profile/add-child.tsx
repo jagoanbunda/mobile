@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
@@ -62,7 +63,7 @@ export default function AddChildScreen() {
                             <MaterialIcons name="face" size={48} color="rgba(255,255,255,0.2)" />
                         </View>
                         <View className="absolute bottom-0 right-0 bg-primary w-9 h-9 rounded-full items-center justify-center shadow-lg border-2 border-background-dark">
-                            <MaterialIcons name="add-a-photo" size={18} color="#231e0f" />
+                            <MaterialIcons name="add-a-photo" size={18} color={Colors.backgroundDark} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -102,7 +103,7 @@ export default function AddChildScreen() {
                                 onPress={() => setGender('boy')}
                                 className={`flex-1 py-3 rounded-lg items-center justify-center flex-row gap-2 ${gender === 'boy' ? 'bg-primary' : ''}`}
                             >
-                                <MaterialIcons name="male" size={18} color={gender === 'boy' ? '#231e0f' : 'rgba(255,255,255,0.6)'} />
+                                <MaterialIcons name="male" size={18} color={gender === 'boy' ? '#2d1f1f' : 'rgba(255,255,255,0.6)'} />
                                 <Text className={`text-sm font-bold ${gender === 'boy' ? 'text-background-dark' : 'text-white/60'}`}>
                                     Boy
                                 </Text>
@@ -111,7 +112,7 @@ export default function AddChildScreen() {
                                 onPress={() => setGender('girl')}
                                 className={`flex-1 py-3 rounded-lg items-center justify-center flex-row gap-2 ${gender === 'girl' ? 'bg-primary' : ''}`}
                             >
-                                <MaterialIcons name="female" size={18} color={gender === 'girl' ? '#231e0f' : 'rgba(255,255,255,0.6)'} />
+                                <MaterialIcons name="female" size={18} color={gender === 'girl' ? '#2d1f1f' : 'rgba(255,255,255,0.6)'} />
                                 <Text className={`text-sm font-bold ${gender === 'girl' ? 'text-background-dark' : 'text-white/60'}`}>
                                     Girl
                                 </Text>
@@ -167,7 +168,7 @@ export default function AddChildScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save & Continue</Text>
-                    <MaterialIcons name="arrow-forward" size={20} color="#231e0f" />
+                    <MaterialIcons name="arrow-forward" size={20} color={Colors.backgroundDark} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

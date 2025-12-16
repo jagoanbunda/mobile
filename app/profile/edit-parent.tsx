@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
@@ -53,7 +54,7 @@ export default function EditParentScreen() {
                             <MaterialIcons name="person" size={48} color="rgba(255,255,255,0.2)" />
                         </View>
                         <View className="absolute bottom-0 right-0 bg-primary w-9 h-9 rounded-full items-center justify-center shadow-lg border-2 border-background-dark">
-                            <MaterialIcons name="edit" size={18} color="#231e0f" />
+                            <MaterialIcons name="edit" size={18} color={Colors.backgroundDark} />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -157,7 +158,7 @@ export default function EditParentScreen() {
                         <View className="flex-row items-center justify-between p-4 bg-[#2d2616] rounded-xl border border-white/5">
                             <View>
                                 <View className="flex-row items-center gap-2">
-                                    <MaterialIcons name="notifications" size={18} color="#FAC638" />
+                                    <MaterialIcons name="notifications" size={18} color={Colors.primary} />
                                     <Text className="text-sm font-bold text-white">Push Notifications</Text>
                                 </View>
                                 <Text className="text-xs text-white/50 mt-0.5">Alerts for milestones & tips</Text>
@@ -165,7 +166,7 @@ export default function EditParentScreen() {
                             <Switch
                                 value={pushNotifications}
                                 onValueChange={setPushNotifications}
-                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#FAC638' }}
+                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#F5AFAF' }}
                                 thumbColor="#fff"
                             />
                         </View>
@@ -174,7 +175,7 @@ export default function EditParentScreen() {
                         <View className="flex-row items-center justify-between p-4 bg-[#2d2616] rounded-xl border border-white/5">
                             <View>
                                 <View className="flex-row items-center gap-2">
-                                    <MaterialIcons name="mark-email-unread" size={18} color="#FAC638" />
+                                    <MaterialIcons name="mark-email-unread" size={18} color={Colors.primary} />
                                     <Text className="text-sm font-bold text-white">Weekly Report</Text>
                                 </View>
                                 <Text className="text-xs text-white/50 mt-0.5">Receive growth summary via email</Text>
@@ -182,7 +183,7 @@ export default function EditParentScreen() {
                             <Switch
                                 value={weeklyReport}
                                 onValueChange={setWeeklyReport}
-                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#FAC638' }}
+                                trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#F5AFAF' }}
                                 thumbColor="#fff"
                             />
                         </View>
@@ -197,7 +198,7 @@ export default function EditParentScreen() {
                     className="w-full bg-primary py-4 rounded-xl shadow-lg flex-row items-center justify-center gap-2 active:scale-[0.98]"
                 >
                     <Text className="text-background-dark font-bold text-lg">Save Changes</Text>
-                    <MaterialIcons name="check" size={20} color="#231e0f" />
+                    <MaterialIcons name="check" size={20} color={Colors.backgroundDark} />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

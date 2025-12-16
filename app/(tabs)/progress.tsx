@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -81,7 +82,7 @@ export default function ProgressScreen() {
             <View className="flex-row items-center justify-between p-4 pb-2">
                 <Text className="text-2xl font-bold text-white tracking-tight">Progress</Text>
                 <TouchableOpacity className="w-10 h-10 rounded-full bg-white/10 items-center justify-center">
-                    <MaterialIcons name="notifications" size={24} color="#FAC638" />
+                    <MaterialIcons name="notifications" size={24} color={Colors.primary} />
                 </TouchableOpacity>
             </View>
 
@@ -91,7 +92,7 @@ export default function ProgressScreen() {
                 contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
             >
                 {/* Child Profile Card */}
-                <View className="bg-[#2c2616] p-4 rounded-2xl shadow-sm border border-[#6a5a2f] mb-6 flex-row items-center gap-4">
+                <View className="bg-[#3d2a2a] p-4 rounded-2xl shadow-sm border border-[#5a4040] mb-6 flex-row items-center gap-4">
                     <Image
                         source={{ uri: mockData.child.photo }}
                         className="w-12 h-12 rounded-full"
@@ -100,9 +101,9 @@ export default function ProgressScreen() {
                     <View className="flex-1">
                         <Text className="text-lg font-bold text-white leading-tight">{mockData.child.name}</Text>
                         <View className="flex-row items-center gap-2 mt-0.5">
-                            <Text className="text-xs font-medium text-[#ccbc8e]">{mockData.child.age}</Text>
+                            <Text className="text-xs font-medium text-[#d4a0a0]">{mockData.child.age}</Text>
                             <View className="w-1 h-1 rounded-full bg-gray-600" />
-                            <Text className="text-xs font-medium text-[#ccbc8e]">{mockData.child.gender}</Text>
+                            <Text className="text-xs font-medium text-[#d4a0a0]">{mockData.child.gender}</Text>
                         </View>
                     </View>
                     <View className="px-3 py-1.5 rounded-full bg-green-900/30 border border-green-800/50">
@@ -129,7 +130,7 @@ export default function ProgressScreen() {
                 <View className="mb-6">
                     <View className="flex-row items-center justify-between mb-3">
                         <View className="flex-row items-center gap-2">
-                            <MaterialIcons name="show-chart" size={20} color="#FAC638" />
+                            <MaterialIcons name="show-chart" size={20} color={Colors.primary} />
                             <Text className="text-base font-bold text-white">
                                 Grafik {selectedChart === 'BB/U' ? 'Berat / Umur' : selectedChart === 'TB/U' ? 'Tinggi / Umur' : 'Berat / Tinggi'}
                             </Text>
@@ -137,16 +138,16 @@ export default function ProgressScreen() {
                     </View>
 
                     {/* Chart Container */}
-                    <View className="bg-[#2c2616] rounded-2xl p-4 shadow-sm border border-[#6a5a2f]">
+                    <View className="bg-[#3d2a2a] rounded-2xl p-4 shadow-sm border border-[#5a4040]">
                         {/* Legend */}
                         <View className="flex-row items-center gap-3 justify-center mb-4">
                             <View className="flex-row items-center gap-1">
                                 <View className="w-2 h-2 rounded-full bg-green-500" />
-                                <Text className="text-[10px] text-[#ccbc8e]">Normal (-2 to +2 SD)</Text>
+                                <Text className="text-[10px] text-[#d4a0a0]">Normal (-2 to +2 SD)</Text>
                             </View>
                             <View className="flex-row items-center gap-1">
-                                <View className="w-3 h-3 rounded-full bg-primary border-2 border-[#2c2616]" />
-                                <Text className="text-[10px] text-[#ccbc8e]">{mockData.child.name}</Text>
+                                <View className="w-3 h-3 rounded-full bg-primary border-2 border-[#3d2a2a]" />
+                                <Text className="text-[10px] text-[#d4a0a0]">{mockData.child.name}</Text>
                             </View>
                         </View>
 
@@ -155,7 +156,7 @@ export default function ProgressScreen() {
                             {/* Y-Axis Labels */}
                             <View className="absolute left-0 top-0 bottom-6 w-8 justify-between pr-1">
                                 {yLabels.map((label, idx) => (
-                                    <Text key={idx} className="text-[8px] text-[#ccbc8e] font-medium text-right">{label}</Text>
+                                    <Text key={idx} className="text-[8px] text-[#d4a0a0] font-medium text-right">{label}</Text>
                                 ))}
                             </View>
 
@@ -164,7 +165,7 @@ export default function ProgressScreen() {
                                 <Svg height="100%" width="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
                                     {/* Grid Lines */}
                                     {[0, 25, 50, 75, 100].map((y) => (
-                                        <Line key={y} x1="0" y1={y} x2="100" y2={y} stroke="#6a5a2f" strokeWidth="0.5" strokeDasharray="4 2" />
+                                        <Line key={y} x1="0" y1={y} x2="100" y2={y} stroke="#5a4040" strokeWidth="0.5" strokeDasharray="4 2" />
                                     ))}
 
                                     {/* Normal Zone (green band between -2SD and +2SD) */}
@@ -172,14 +173,14 @@ export default function ProgressScreen() {
                                     <Path d="M0,30 L100,20" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0.6" />
 
                                     {/* Child Data Line */}
-                                    <Path d={pathData} fill="none" stroke="#fac638" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+                                    <Path d={pathData} fill="none" stroke="#F5AFAF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
                                 </Svg>
                             </View>
 
                             {/* X-Axis Labels */}
                             <View className="absolute left-8 right-0 bottom-0 h-6 flex-row justify-between pt-1 px-1">
                                 {mockData.measurements.map((m, idx) => (
-                                    <Text key={idx} className="text-[8px] text-[#ccbc8e] font-medium">{m.date.split(' ')[0]}</Text>
+                                    <Text key={idx} className="text-[8px] text-[#d4a0a0] font-medium">{m.date.split(' ')[0]}</Text>
                                 ))}
                             </View>
                         </View>
@@ -187,7 +188,7 @@ export default function ProgressScreen() {
                         {/* Latest Value Display */}
                         <View className="mt-3 pt-3 border-t border-white/10 flex-row justify-center gap-6">
                             <View className="items-center">
-                                <Text className="text-[10px] text-[#ccbc8e] uppercase">Terakhir</Text>
+                                <Text className="text-[10px] text-[#d4a0a0] uppercase">Terakhir</Text>
                                 <Text className="text-lg font-bold text-primary">
                                     {selectedChart === 'BB/U'
                                         ? `${mockData.measurements[mockData.measurements.length - 1].weight} kg`
@@ -197,7 +198,7 @@ export default function ProgressScreen() {
                                 </Text>
                             </View>
                             <View className="items-center">
-                                <Text className="text-[10px] text-[#ccbc8e] uppercase">Z-Score</Text>
+                                <Text className="text-[10px] text-[#d4a0a0] uppercase">Z-Score</Text>
                                 <Text className="text-lg font-bold text-green-400">
                                     {selectedChart === 'BB/U'
                                         ? mockData.currentStats.weight.zScore
@@ -214,20 +215,20 @@ export default function ProgressScreen() {
                 <View className="mb-6">
                     <Text className="text-base font-bold text-white mb-3">Statistik Terkini</Text>
                     <View className="flex-row gap-3">
-                        <View className="flex-1 bg-[#352d18] rounded-xl p-4 border border-[#6a5a2f]">
+                        <View className="flex-1 bg-[#4a3535] rounded-xl p-4 border border-[#5a4040]">
                             <View className="flex-row items-center gap-2 mb-2">
-                                <MaterialIcons name="monitor-weight" size={18} color="#FAC638" />
-                                <Text className="text-xs text-[#ccbc8e] font-medium">Berat Badan</Text>
+                                <MaterialIcons name="monitor-weight" size={18} color={Colors.primary} />
+                                <Text className="text-xs text-[#d4a0a0] font-medium">Berat Badan</Text>
                             </View>
-                            <Text className="text-2xl font-bold text-white">{mockData.currentStats.weight.value} <Text className="text-sm text-[#ccbc8e]">kg</Text></Text>
+                            <Text className="text-2xl font-bold text-white">{mockData.currentStats.weight.value} <Text className="text-sm text-[#d4a0a0]">kg</Text></Text>
                             <Text className="text-xs text-green-400 font-semibold mt-1">Z-Score: {mockData.currentStats.weight.zScore} SD</Text>
                         </View>
-                        <View className="flex-1 bg-[#352d18] rounded-xl p-4 border border-[#6a5a2f]">
+                        <View className="flex-1 bg-[#4a3535] rounded-xl p-4 border border-[#5a4040]">
                             <View className="flex-row items-center gap-2 mb-2">
-                                <MaterialIcons name="height" size={18} color="#FAC638" />
-                                <Text className="text-xs text-[#ccbc8e] font-medium">Tinggi Badan</Text>
+                                <MaterialIcons name="height" size={18} color={Colors.primary} />
+                                <Text className="text-xs text-[#d4a0a0] font-medium">Tinggi Badan</Text>
                             </View>
-                            <Text className="text-2xl font-bold text-white">{mockData.currentStats.height.value} <Text className="text-sm text-[#ccbc8e]">cm</Text></Text>
+                            <Text className="text-2xl font-bold text-white">{mockData.currentStats.height.value} <Text className="text-sm text-[#d4a0a0]">cm</Text></Text>
                             <Text className="text-xs text-green-400 font-semibold mt-1">Z-Score: {mockData.currentStats.height.zScore} SD</Text>
                         </View>
                     </View>
@@ -239,14 +240,14 @@ export default function ProgressScreen() {
                         onPress={() => router.push('/anthropometry/input')}
                         className="flex-1 bg-primary py-4 rounded-xl items-center justify-center flex-row gap-2"
                     >
-                        <MaterialIcons name="add" size={20} color="#231e0f" />
+                        <MaterialIcons name="add" size={20} color={Colors.backgroundDark} />
                         <Text className="text-background-dark font-bold">Input Data</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={() => router.push('/anthropometry/growth-chart')}
-                        className="flex-1 bg-[#352d18] py-4 rounded-xl items-center justify-center flex-row gap-2 border border-[#6a5a2f]"
+                        className="flex-1 bg-[#4a3535] py-4 rounded-xl items-center justify-center flex-row gap-2 border border-[#5a4040]"
                     >
-                        <MaterialIcons name="history" size={20} color="#FAC638" />
+                        <MaterialIcons name="history" size={20} color={Colors.primary} />
                         <Text className="text-white font-bold">Riwayat</Text>
                     </TouchableOpacity>
                 </View>

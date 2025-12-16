@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -22,22 +23,22 @@ export default function HomeScreen() {
             <Text className="text-sm font-bold tracking-wide opacity-80 text-white">KREANOVA</Text>
           </View>
           <TouchableOpacity className="w-10 h-10 items-center justify-center rounded-full bg-white/10 active:bg-white/20">
-            <MaterialIcons name="notifications-none" size={24} color="#FAC638" />
+            <MaterialIcons name="notifications-none" size={24} color={Colors.primary} />
           </TouchableOpacity>
         </View>
 
         <View className="px-4 mt-2 mb-6">
           <Text className="text-3xl font-bold tracking-tight text-white leading-tight">
-            Good Morning,{"\n"}Sarah 👋
+            Good Morning,{"\n"}Bunda Bilqis 👋
           </Text>
         </View>
 
         {/* Child Profile Card */}
         <View className="px-4 mt-2">
-          <View className="w-full bg-[#2c2616] rounded-xl p-5 shadow-sm border border-[#6a5a2f] relative overflow-hidden">
+          <View className="w-full bg-[#3d2a2a] rounded-xl p-5 shadow-sm border border-[#5a4040] relative overflow-hidden">
             {/* Decorative Icon Background */}
             <View className="absolute top-0 right-0 p-5 opacity-10">
-              <MaterialIcons name="eco" size={60} color="#FAC638" />
+              <MaterialIcons name="eco" size={60} color={Colors.primary} />
             </View>
 
             <TouchableOpacity onPress={() => router.push('/profile/edit-child')} className="flex-row items-center gap-4 mb-5 relative z-10 active:opacity-80">
@@ -59,11 +60,11 @@ export default function HomeScreen() {
 
             <View className="flex-row gap-3 relative z-10">
               <View className="flex-1 bg-background-dark p-3 rounded-lg">
-                <Text className="text-xs text-[#ccbc8e] mb-1">Height/Age</Text>
+                <Text className="text-xs text-[#d4a0a0] mb-1">Height/Age</Text>
                 <Text className="text-sm font-bold font-mono text-white">-1.2 SD</Text>
               </View>
               <View className="flex-1 bg-background-dark p-3 rounded-lg">
-                <Text className="text-xs text-[#ccbc8e] mb-1">Weight/Age</Text>
+                <Text className="text-xs text-[#d4a0a0] mb-1">Weight/Age</Text>
                 <Text className="text-sm font-bold font-mono text-white">-0.5 SD</Text>
               </View>
             </View>
@@ -79,13 +80,13 @@ export default function HomeScreen() {
 
           <View className="gap-3">
             {/* Task 1 */}
-            <View className="flex-row items-center gap-4 bg-[#2c2616] p-4 rounded-xl border border-[#6a5a2f] shadow-sm">
+            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-orange-500/20">
                 <MaterialIcons name="restaurant-menu" size={20} color="#FB923C" />
               </View>
               <View className="flex-1">
                 <Text className="text-sm font-bold text-white">Input Lunch Menu</Text>
-                <Text className="text-xs text-[#ccbc8e]">Arjun • 12:30 PM</Text>
+                <Text className="text-xs text-[#d4a0a0]">Arjun • 12:30 PM</Text>
               </View>
               <TouchableOpacity className="h-9 px-5 bg-primary items-center justify-center rounded-full active:opacity-90">
                 <Text className="text-background-dark text-sm font-bold">Log</Text>
@@ -93,27 +94,27 @@ export default function HomeScreen() {
             </View>
 
             {/* Task 2 (Completed) */}
-            <View className="flex-row items-center gap-4 bg-[#2c2616] p-4 rounded-xl border border-[#6a5a2f] shadow-sm opacity-60">
+            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm opacity-60">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-blue-500/20">
                 <MaterialIcons name="medication" size={20} color="#60A5FA" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-bold text-white line-through decoration-[#ccbc8e]">PMT Consumption</Text>
-                <Text className="text-xs text-[#ccbc8e]">Recorded at 9:00 AM</Text>
+                <Text className="text-sm font-bold text-white line-through decoration-[#d4a0a0]">PMT Consumption</Text>
+                <Text className="text-xs text-[#d4a0a0]">Recorded at 9:00 AM</Text>
               </View>
               <View className="w-9 h-9 items-center justify-center rounded-full bg-yellow-500/20">
-                <MaterialIcons name="check" size={20} color="#FAC638" />
+                <MaterialIcons name="check" size={20} color={Colors.primary} />
               </View>
             </View>
 
             {/* Task 3 */}
-            <View className="flex-row items-center gap-4 bg-[#2c2616] p-4 rounded-xl border border-[#6a5a2f] shadow-sm">
+            <View className="flex-row items-center gap-4 bg-[#3d2a2a] p-4 rounded-xl border border-[#5a4040] shadow-sm">
               <View className="w-10 h-10 items-center justify-center rounded-full bg-purple-500/20">
                 <MaterialIcons name="monitor-weight" size={20} color="#C084FC" />
               </View>
               <View className="flex-1">
                 <Text className="text-sm font-bold text-white">Monthly Weigh-in</Text>
-                <Text className="text-xs text-[#ccbc8e]">Due today</Text>
+                <Text className="text-xs text-[#d4a0a0]">Due today</Text>
               </View>
               <TouchableOpacity className="h-9 px-5 bg-primary items-center justify-center rounded-full active:opacity-90">
                 <Text className="text-background-dark text-sm font-bold">Log</Text>
@@ -124,12 +125,12 @@ export default function HomeScreen() {
 
         {/* Nutrition This Week */}
         <View className="px-4 mt-8 pb-32">
-          <View className="bg-[#2c2616] rounded-xl p-5 border border-[#6a5a2f] shadow-md">
+          <View className="bg-[#3d2a2a] rounded-xl p-5 border border-[#5a4040] shadow-md">
             <View className="flex-row items-center justify-between mb-6">
               <Text className="text-lg font-bold text-white">Nutrition This Week</Text>
               <TouchableOpacity className="flex-row items-center gap-1">
                 <Text className="text-xs text-primary font-bold uppercase tracking-wider">Details</Text>
-                <MaterialIcons name="chevron-right" size={16} color="#FAC638" />
+                <MaterialIcons name="chevron-right" size={16} color={Colors.primary} />
               </TouchableOpacity>
             </View>
 
@@ -139,11 +140,11 @@ export default function HomeScreen() {
                 <View className="flex-row justify-between items-end mb-2">
                   <View className="flex-row items-center gap-2">
                     <MaterialIcons name="bolt" size={16} color="#F59E0B" />
-                    <Text className="text-sm font-medium text-[#ccbc8e]">Energy</Text>
+                    <Text className="text-sm font-medium text-[#d4a0a0]">Energy</Text>
                   </View>
-                  <Text className="text-sm font-bold text-white">1200 <Text className="text-[#ccbc8e] text-xs font-normal">/ 1400 kcal</Text></Text>
+                  <Text className="text-sm font-bold text-white">1200 <Text className="text-[#d4a0a0] text-xs font-normal">/ 1400 kcal</Text></Text>
                 </View>
-                <View className="h-3 w-full bg-[#6a5a2f]/50 rounded-full overflow-hidden">
+                <View className="h-3 w-full bg-[#5a4040]/50 rounded-full overflow-hidden">
                   <View className="h-full bg-primary rounded-full w-[85%]" />
                 </View>
               </View>
@@ -153,11 +154,11 @@ export default function HomeScreen() {
                 <View className="flex-row justify-between items-end mb-2">
                   <View className="flex-row items-center gap-2">
                     <MaterialIcons name="egg" size={16} color="#60A5FA" />
-                    <Text className="text-sm font-medium text-[#ccbc8e]">Protein</Text>
+                    <Text className="text-sm font-medium text-[#d4a0a0]">Protein</Text>
                   </View>
-                  <Text className="text-sm font-bold text-white">20 <Text className="text-[#ccbc8e] text-xs font-normal">/ 25 g</Text></Text>
+                  <Text className="text-sm font-bold text-white">20 <Text className="text-[#d4a0a0] text-xs font-normal">/ 25 g</Text></Text>
                 </View>
-                <View className="h-3 w-full bg-[#6a5a2f]/50 rounded-full overflow-hidden">
+                <View className="h-3 w-full bg-[#5a4040]/50 rounded-full overflow-hidden">
                   <View className="h-full bg-blue-400 rounded-full w-[80%]" />
                 </View>
               </View>

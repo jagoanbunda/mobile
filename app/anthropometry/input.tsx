@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
@@ -44,13 +45,13 @@ export default function AnthropometryInputScreen() {
                     <Text className="text-sm font-medium mb-2 text-gray-300">Tanggal Pengukuran</Text>
                     <View className="relative">
                         <TextInput
-                            className="w-full h-14 rounded-xl border border-[#6a5a2f] bg-[#352d18] px-4 text-base font-semibold text-white"
+                            className="w-full h-14 rounded-xl border border-[#5a4040] bg-[#4a3535] px-4 text-base font-semibold text-white"
                             value={measurementDate}
                             onChangeText={setMeasurementDate}
                             editable={false}
                         />
                         <View className="absolute right-4 top-0 bottom-0 justify-center">
-                            <MaterialIcons name="calendar-today" size={20} color="#FAC638" />
+                            <MaterialIcons name="calendar-today" size={20} color={Colors.primary} />
                         </View>
                     </View>
                 </View>
@@ -60,17 +61,17 @@ export default function AnthropometryInputScreen() {
                     {/* Weight (BB) */}
                     <View>
                         <Text className="text-sm font-medium mb-2 text-gray-300">Berat Badan (BB)</Text>
-                        <View className="flex-row w-full items-stretch rounded-xl border border-[#6a5a2f] bg-[#352d18] overflow-hidden h-14">
+                        <View className="flex-row w-full items-stretch rounded-xl border border-[#5a4040] bg-[#4a3535] overflow-hidden h-14">
                             <TextInput
                                 className="flex-1 bg-transparent px-4 text-lg font-bold text-white"
                                 placeholder="0"
-                                placeholderTextColor="#ccbc8e"
+                                placeholderTextcolor={Colors.textMuted}
                                 keyboardType="decimal-pad"
                                 value={weight}
                                 onChangeText={setWeight}
                             />
-                            <View className="bg-[#2c2616] px-4 items-center justify-center border-l border-[#6a5a2f]">
-                                <Text className="text-sm font-bold text-[#ccbc8e]">kg</Text>
+                            <View className="bg-[#3d2a2a] px-4 items-center justify-center border-l border-[#5a4040]">
+                                <Text className="text-sm font-bold text-[#d4a0a0]">kg</Text>
                             </View>
                         </View>
                     </View>
@@ -78,17 +79,17 @@ export default function AnthropometryInputScreen() {
                     {/* Height (TB) */}
                     <View>
                         <Text className="text-sm font-medium mb-2 text-gray-300">Tinggi Badan (TB)</Text>
-                        <View className="flex-row w-full items-stretch rounded-xl border border-[#6a5a2f] bg-[#352d18] overflow-hidden h-14">
+                        <View className="flex-row w-full items-stretch rounded-xl border border-[#5a4040] bg-[#4a3535] overflow-hidden h-14">
                             <TextInput
                                 className="flex-1 bg-transparent px-4 text-lg font-bold text-white"
                                 placeholder="0"
-                                placeholderTextColor="#ccbc8e"
+                                placeholderTextcolor={Colors.textMuted}
                                 keyboardType="decimal-pad"
                                 value={height}
                                 onChangeText={setHeight}
                             />
-                            <View className="bg-[#2c2616] px-4 items-center justify-center border-l border-[#6a5a2f]">
-                                <Text className="text-sm font-bold text-[#ccbc8e]">cm</Text>
+                            <View className="bg-[#3d2a2a] px-4 items-center justify-center border-l border-[#5a4040]">
+                                <Text className="text-sm font-bold text-[#d4a0a0]">cm</Text>
                             </View>
                         </View>
                         {/* Checkbox for lying measurement */}
@@ -96,27 +97,27 @@ export default function AnthropometryInputScreen() {
                             onPress={() => setIsLying(!isLying)}
                             className="flex-row items-center gap-3 mt-3"
                         >
-                            <View className={`h-5 w-5 rounded-md border-2 items-center justify-center ${isLying ? 'bg-primary border-primary' : 'border-[#6a5a2f] bg-transparent'}`}>
-                                {isLying && <MaterialIcons name="check" size={14} color="#231e0f" />}
+                            <View className={`h-5 w-5 rounded-md border-2 items-center justify-center ${isLying ? 'bg-primary border-primary' : 'border-[#5a4040] bg-transparent'}`}>
+                                {isLying && <MaterialIcons name="check" size={14} color={Colors.backgroundDark} />}
                             </View>
-                            <Text className="text-sm text-[#ccbc8e]">Pengukuran Terlentang</Text>
+                            <Text className="text-sm text-[#d4a0a0]">Pengukuran Terlentang</Text>
                         </TouchableOpacity>
                     </View>
 
                     {/* Head Circumference (LK) */}
                     <View>
                         <Text className="text-sm font-medium mb-2 text-gray-300">Lingkar Kepala (LK)</Text>
-                        <View className="flex-row w-full items-stretch rounded-xl border border-[#6a5a2f] bg-[#352d18] overflow-hidden h-14">
+                        <View className="flex-row w-full items-stretch rounded-xl border border-[#5a4040] bg-[#4a3535] overflow-hidden h-14">
                             <TextInput
                                 className="flex-1 bg-transparent px-4 text-lg font-bold text-white"
                                 placeholder="0"
-                                placeholderTextColor="#ccbc8e"
+                                placeholderTextcolor={Colors.textMuted}
                                 keyboardType="decimal-pad"
                                 value={headCircumference}
                                 onChangeText={setHeadCircumference}
                             />
-                            <View className="bg-[#2c2616] px-4 items-center justify-center border-l border-[#6a5a2f]">
-                                <Text className="text-sm font-bold text-[#ccbc8e]">cm</Text>
+                            <View className="bg-[#3d2a2a] px-4 items-center justify-center border-l border-[#5a4040]">
+                                <Text className="text-sm font-bold text-[#d4a0a0]">cm</Text>
                             </View>
                         </View>
                     </View>
@@ -132,11 +133,11 @@ export default function AnthropometryInputScreen() {
                         {/* Posyandu */}
                         <TouchableOpacity
                             onPress={() => setLocation('posyandu')}
-                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#352d18] ${location === 'posyandu' ? 'border-primary' : 'border-[#6a5a2f]'}`}
+                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#4a3535] ${location === 'posyandu' ? 'border-primary' : 'border-[#5a4040]'}`}
                         >
                             <View className="flex-row items-center gap-3">
                                 <View className="bg-primary/10 p-2 rounded-lg">
-                                    <MaterialIcons name="people" size={24} color="#FAC638" />
+                                    <MaterialIcons name="people" size={24} color={Colors.primary} />
                                 </View>
                                 <Text className="font-medium text-gray-200">Posyandu</Text>
                             </View>
@@ -148,11 +149,11 @@ export default function AnthropometryInputScreen() {
                         {/* Home */}
                         <TouchableOpacity
                             onPress={() => setLocation('home')}
-                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#352d18] ${location === 'home' ? 'border-primary' : 'border-[#6a5a2f]'}`}
+                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#4a3535] ${location === 'home' ? 'border-primary' : 'border-[#5a4040]'}`}
                         >
                             <View className="flex-row items-center gap-3">
-                                <View className="bg-[#2c2616] p-2 rounded-lg">
-                                    <MaterialIcons name="home" size={24} color="#ccbc8e" />
+                                <View className="bg-[#3d2a2a] p-2 rounded-lg">
+                                    <MaterialIcons name="home" size={24} color={Colors.textMuted} />
                                 </View>
                                 <Text className="font-medium text-gray-200">Mandiri / Di Rumah</Text>
                             </View>
@@ -164,11 +165,11 @@ export default function AnthropometryInputScreen() {
                         {/* Clinic */}
                         <TouchableOpacity
                             onPress={() => setLocation('clinic')}
-                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#352d18] ${location === 'clinic' ? 'border-primary' : 'border-[#6a5a2f]'}`}
+                            className={`flex-row items-center justify-between p-4 rounded-xl border bg-[#4a3535] ${location === 'clinic' ? 'border-primary' : 'border-[#5a4040]'}`}
                         >
                             <View className="flex-row items-center gap-3">
-                                <View className="bg-[#2c2616] p-2 rounded-lg">
-                                    <MaterialIcons name="medical-services" size={24} color="#ccbc8e" />
+                                <View className="bg-[#3d2a2a] p-2 rounded-lg">
+                                    <MaterialIcons name="medical-services" size={24} color={Colors.textMuted} />
                                 </View>
                                 <Text className="font-medium text-gray-200">Klinik / Dokter</Text>
                             </View>
@@ -184,11 +185,11 @@ export default function AnthropometryInputScreen() {
                     <Text className="text-sm font-medium mb-2 text-gray-300">
                         Foto Bukti <Text className="text-gray-500 font-normal ml-1">(Opsional)</Text>
                     </Text>
-                    <TouchableOpacity className="border-2 border-dashed border-[#6a5a2f] rounded-xl p-6 items-center justify-center gap-2 bg-transparent">
+                    <TouchableOpacity className="border-2 border-dashed border-[#5a4040] rounded-xl p-6 items-center justify-center gap-2 bg-transparent">
                         <View className="w-12 h-12 rounded-full bg-primary/10 items-center justify-center">
-                            <MaterialIcons name="add-a-photo" size={24} color="#FAC638" />
+                            <MaterialIcons name="add-a-photo" size={24} color={Colors.primary} />
                         </View>
-                        <Text className="text-sm text-[#ccbc8e] text-center font-medium">
+                        <Text className="text-sm text-[#d4a0a0] text-center font-medium">
                             Ketuk untuk ambil foto atau upload
                         </Text>
                     </TouchableOpacity>
@@ -200,7 +201,7 @@ export default function AnthropometryInputScreen() {
                 <TouchableOpacity
                     onPress={handleSave}
                     className="w-full h-14 bg-primary rounded-xl items-center justify-center shadow-lg active:scale-[0.99]"
-                    style={{ shadowColor: '#FAC638', shadowOpacity: 0.2 }}
+                    style={{ shadowColor: '#F5AFAF', shadowOpacity: 0.2 }}
                 >
                     <Text className="text-background-dark font-bold text-base tracking-wide">SIMPAN DATA</Text>
                 </TouchableOpacity>

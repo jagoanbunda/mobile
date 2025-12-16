@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -48,7 +49,7 @@ export default function RegisterScreen() {
                     <Text className="text-white tracking-tight text-[32px] font-bold leading-tight">
                         Join KREANOVA
                     </Text>
-                    <Text className="text-[#ccbc8e] text-base font-normal leading-normal pt-2">
+                    <Text className="text-[#d4a0a0] text-base font-normal leading-normal pt-2">
                         Create a parent account to monitor your child's growth.
                     </Text>
                 </View>
@@ -60,14 +61,14 @@ export default function RegisterScreen() {
                         <Text className="text-white text-sm font-medium">Full Name</Text>
                         <View className="relative">
                             <TextInput
-                                className="w-full rounded-xl border border-[#6a5a2f] bg-[#352d18] h-14 px-4 pr-12 text-base text-white"
+                                className="w-full rounded-xl border border-[#5a4040] bg-[#4a3535] h-14 px-4 pr-12 text-base text-white"
                                 placeholder="Enter your full name"
-                                placeholderTextColor="#ccbc8e80"
+                                placeholderTextColor="#d4a0a080"
                                 value={fullName}
                                 onChangeText={setFullName}
                             />
                             <View className="absolute right-4 top-0 bottom-0 justify-center">
-                                <MaterialIcons name="person" size={20} color="#ccbc8e" />
+                                <MaterialIcons name="person" size={20} color={Colors.textMuted} />
                             </View>
                         </View>
                     </View>
@@ -77,16 +78,16 @@ export default function RegisterScreen() {
                         <Text className="text-white text-sm font-medium">Email Address</Text>
                         <View className="relative">
                             <TextInput
-                                className="w-full rounded-xl border border-[#6a5a2f] bg-[#352d18] h-14 px-4 pr-12 text-base text-white"
+                                className="w-full rounded-xl border border-[#5a4040] bg-[#4a3535] h-14 px-4 pr-12 text-base text-white"
                                 placeholder="Enter your email"
-                                placeholderTextColor="#ccbc8e80"
+                                placeholderTextColor="#d4a0a080"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
                                 onChangeText={setEmail}
                             />
                             <View className="absolute right-4 top-0 bottom-0 justify-center">
-                                <MaterialIcons name="mail" size={20} color="#ccbc8e" />
+                                <MaterialIcons name="mail" size={20} color={Colors.textMuted} />
                             </View>
                         </View>
                     </View>
@@ -96,9 +97,9 @@ export default function RegisterScreen() {
                         <Text className="text-white text-sm font-medium">Password</Text>
                         <View className="relative">
                             <TextInput
-                                className="w-full rounded-xl border border-[#6a5a2f] bg-[#352d18] h-14 px-4 pr-12 text-base text-white"
+                                className="w-full rounded-xl border border-[#5a4040] bg-[#4a3535] h-14 px-4 pr-12 text-base text-white"
                                 placeholder="Create a password"
-                                placeholderTextColor="#ccbc8e80"
+                                placeholderTextColor="#d4a0a080"
                                 secureTextEntry={!passwordVisible}
                                 value={password}
                                 onChangeText={setPassword}
@@ -110,7 +111,7 @@ export default function RegisterScreen() {
                                 <MaterialIcons
                                     name={passwordVisible ? "visibility" : "visibility-off"}
                                     size={20}
-                                    color="#ccbc8e"
+                                    color={Colors.textMuted}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -121,9 +122,9 @@ export default function RegisterScreen() {
                         <Text className="text-white text-sm font-medium">Confirm Password</Text>
                         <View className="relative">
                             <TextInput
-                                className="w-full rounded-xl border border-[#6a5a2f] bg-[#352d18] h-14 px-4 pr-12 text-base text-white"
+                                className="w-full rounded-xl border border-[#5a4040] bg-[#4a3535] h-14 px-4 pr-12 text-base text-white"
                                 placeholder="Confirm your password"
-                                placeholderTextColor="#ccbc8e80"
+                                placeholderTextColor="#d4a0a080"
                                 secureTextEntry={!confirmPasswordVisible}
                                 value={confirmPassword}
                                 onChangeText={setConfirmPassword}
@@ -135,7 +136,7 @@ export default function RegisterScreen() {
                                 <MaterialIcons
                                     name={confirmPasswordVisible ? "visibility" : "visibility-off"}
                                     size={20}
-                                    color="#ccbc8e"
+                                    color={Colors.textMuted}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -148,14 +149,14 @@ export default function RegisterScreen() {
                         onPress={() => setTermsAccepted(!termsAccepted)}
                         className="flex-row items-start gap-3"
                     >
-                        <View className={`w-5 h-5 border-2 rounded-md items-center justify-center ${termsAccepted ? 'bg-primary border-primary' : 'border-[#6a5a2f] bg-[#352d18]'}`}>
-                            {termsAccepted && <MaterialIcons name="check" size={14} color="#231e0f" />}
+                        <View className={`w-5 h-5 border-2 rounded-md items-center justify-center ${termsAccepted ? 'bg-primary border-primary' : 'border-[#5a4040] bg-[#4a3535]'}`}>
+                            {termsAccepted && <MaterialIcons name="check" size={14} color={Colors.backgroundDark} />}
                         </View>
                         <View className="flex-1">
                             <Text className="text-white text-sm font-medium">
                                 I agree to the Terms & Conditions
                             </Text>
-                            <Text className="text-[#ccbc8e] text-xs">
+                            <Text className="text-[#d4a0a0] text-xs">
                                 Your data is secure with us.
                             </Text>
                         </View>
@@ -176,14 +177,14 @@ export default function RegisterScreen() {
 
                 {/* Divider */}
                 <View className="px-4 py-2 flex-row items-center gap-4">
-                    <View className="flex-1 h-px bg-[#352d18]" />
-                    <Text className="text-[#ccbc8e] text-sm">Or sign up with</Text>
-                    <View className="flex-1 h-px bg-[#352d18]" />
+                    <View className="flex-1 h-px bg-[#4a3535]" />
+                    <Text className="text-[#d4a0a0] text-sm">Or sign up with</Text>
+                    <View className="flex-1 h-px bg-[#4a3535]" />
                 </View>
 
                 {/* Social Buttons */}
                 <View className="px-4 py-4 flex-row gap-4">
-                    <TouchableOpacity className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border border-[#352d18] bg-[#2b2515] p-3">
+                    <TouchableOpacity className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border border-[#4a3535] bg-[#2b2515] p-3">
                         <Image
                             source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCDTgev5KwxHCQIbyWTSUhNR_W6pnOWynZaIXnS5KLyOtnMc-Ti5M9Oe1WuXld-ZubbAYiuJIhndEoB2HAFkp-2bhgLU8VS8G6i0uOfwTN4Pv1BLKA9Z9VvFRJBjncIOP0v49x0NUvr0182arVQjLSceVHT051-zBWM_PiMGCCaqXoasvJJWhPvyOELo7Ho1OC_wHadoOGd93An3ZJQNk2wQsf_yOYGrTxJBtWjpFmOF5YCWNdpa4jCW0d_J_H_4TyOm3mE28GeXdM" }}
                             className="w-5 h-5"
@@ -191,7 +192,7 @@ export default function RegisterScreen() {
                         />
                         <Text className="text-sm font-medium text-white">Google</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border border-[#352d18] bg-[#2b2515] p-3">
+                    <TouchableOpacity className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border border-[#4a3535] bg-[#2b2515] p-3">
                         <MaterialIcons name="apple" size={20} color="#fff" />
                         <Text className="text-sm font-medium text-white">Apple</Text>
                     </TouchableOpacity>
@@ -202,7 +203,7 @@ export default function RegisterScreen() {
 
                 {/* Login Link */}
                 <View className="items-center px-4 py-6">
-                    <Text className="text-[#ccbc8e] text-sm font-normal">
+                    <Text className="text-[#d4a0a0] text-sm font-normal">
                         Already have an account?{' '}
                         <Text
                             onPress={() => router.push('/auth/login')}

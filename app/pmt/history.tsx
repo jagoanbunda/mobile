@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -83,7 +84,7 @@ export default function PMTHistoryScreen() {
                 contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
             >
                 {/* Hero Status Card */}
-                <View className="rounded-2xl bg-[#352d18] shadow-sm overflow-hidden mb-5">
+                <View className="rounded-2xl bg-[#4a3535] shadow-sm overflow-hidden mb-5">
                     {/* Card Header */}
                     <View className="flex-row p-4 gap-4">
                         <Image
@@ -99,8 +100,8 @@ export default function PMTHistoryScreen() {
                             </View>
                             <Text className="text-xl font-bold leading-tight text-white">Program PMT Balita</Text>
                             <View className="flex-row items-center gap-2">
-                                <MaterialIcons name="track-changes" size={18} color="#ccbc8e" />
-                                <Text className="text-[#ccbc8e] text-sm">Target: Kejar Tumbuh (BB)</Text>
+                                <MaterialIcons name="track-changes" size={18} color={Colors.textMuted} />
+                                <Text className="text-[#d4a0a0] text-sm">Target: Kejar Tumbuh (BB)</Text>
                             </View>
                         </View>
                     </View>
@@ -111,12 +112,12 @@ export default function PMTHistoryScreen() {
                     {/* Progress Section */}
                     <View className="p-4 pt-3 gap-2">
                         <View className="flex-row justify-between items-end">
-                            <Text className="text-[#ccbc8e] text-sm font-medium">Progress Harian</Text>
+                            <Text className="text-[#d4a0a0] text-sm font-medium">Progress Harian</Text>
                             <Text className="text-white text-sm font-bold">
                                 Hari 14 <Text className="text-white/40 font-normal">/ 30</Text>
                             </Text>
                         </View>
-                        <View className="relative h-3 w-full rounded-full bg-[#6a5a2f]/50 overflow-hidden">
+                        <View className="relative h-3 w-full rounded-full bg-[#5a4040]/50 overflow-hidden">
                             <View className="absolute top-0 left-0 h-full rounded-full bg-primary" style={{ width: '46%' }} />
                         </View>
                         <Text className="text-white/40 text-xs text-right mt-1">Sisa 16 hari lagi</Text>
@@ -124,14 +125,14 @@ export default function PMTHistoryScreen() {
                 </View>
 
                 {/* Action Panel */}
-                <TouchableOpacity className="flex-row items-center justify-between gap-4 rounded-xl border border-primary/30 bg-[#352d18] p-4 mb-5 active:scale-[0.98]">
+                <TouchableOpacity className="flex-row items-center justify-between gap-4 rounded-xl border border-primary/30 bg-[#4a3535] p-4 mb-5 active:scale-[0.98]">
                     <View className="flex-row items-center gap-4">
                         <View className="w-10 h-10 items-center justify-center rounded-full bg-primary/10">
-                            <MaterialIcons name="calendar-month" size={24} color="#FAC638" />
+                            <MaterialIcons name="calendar-month" size={24} color={Colors.primary} />
                         </View>
                         <View>
                             <Text className="text-white text-base font-bold leading-tight">Jadwal Menu</Text>
-                            <Text className="text-[#ccbc8e] text-sm font-normal">Lihat menu bulan depan</Text>
+                            <Text className="text-[#d4a0a0] text-sm font-normal">Lihat menu bulan depan</Text>
                         </View>
                     </View>
                     <MaterialIcons name="chevron-right" size={24} color="rgba(255,255,255,0.4)" />
@@ -151,7 +152,7 @@ export default function PMTHistoryScreen() {
                         {historyData.map((item, index) => (
                             <View
                                 key={index}
-                                className={`flex-col gap-3 rounded-xl bg-[#352d18] p-4 shadow-sm border border-white/5 ${item.status === 'none' ? 'opacity-80' : ''}`}
+                                className={`flex-col gap-3 rounded-xl bg-[#4a3535] p-4 shadow-sm border border-white/5 ${item.status === 'none' ? 'opacity-80' : ''}`}
                             >
                                 <View className="flex-row justify-between items-start">
                                     <View>
@@ -163,7 +164,7 @@ export default function PMTHistoryScreen() {
                                 <View className="h-px w-full bg-white/5" />
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="sticky-note-2" size={14} color="rgba(204,188,142,0.7)" style={{ marginRight: 4 }} />
-                                    <Text className={`text-sm italic ${item.note ? 'text-[#ccbc8e]' : 'text-white/30'}`}>
+                                    <Text className={`text-sm italic ${item.note ? 'text-[#d4a0a0]' : 'text-white/30'}`}>
                                         {item.note || 'Tidak ada catatan.'}
                                     </Text>
                                 </View>

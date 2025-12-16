@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
@@ -27,7 +28,7 @@ export default function PMTReportScreen() {
     }) => (
         <TouchableOpacity
             onPress={() => setPortion(value)}
-            className={`flex-1 items-center justify-center p-4 rounded-lg bg-[#352d18] border-2 ${portion === value ? 'border-primary bg-primary/5' : 'border-transparent'}`}
+            className={`flex-1 items-center justify-center p-4 rounded-lg bg-[#4a3535] border-2 ${portion === value ? 'border-primary bg-primary/5' : 'border-transparent'}`}
         >
             <MaterialIcons name={icon} size={24} color={iconColor} style={{ marginBottom: 8 }} />
             <Text className="text-sm font-bold text-white">{label}</Text>
@@ -58,17 +59,17 @@ export default function PMTReportScreen() {
             >
                 {/* Status Card */}
                 <View className="p-4">
-                    <View className="flex-row items-stretch justify-between gap-4 rounded-lg bg-[#352d18] p-4 shadow-sm">
+                    <View className="flex-row items-stretch justify-between gap-4 rounded-lg bg-[#4a3535] p-4 shadow-sm">
                         <View className="flex-1 gap-1">
                             <Text className="text-white text-base font-bold leading-tight">
                                 Senin, 24 Oktober 2023
                             </Text>
-                            <Text className="text-[#ccbc8e] text-sm font-normal">
+                            <Text className="text-[#d4a0a0] text-sm font-normal">
                                 Program Hari ke-14
                             </Text>
                         </View>
                         <View className="w-12 h-12 items-center justify-center bg-[#4a3f21] rounded-lg">
-                            <MaterialIcons name="calendar-month" size={24} color="#FAC638" />
+                            <MaterialIcons name="calendar-month" size={24} color={Colors.primary} />
                         </View>
                     </View>
                 </View>
@@ -76,11 +77,11 @@ export default function PMTReportScreen() {
                 {/* Menu Info */}
                 <View className="flex-row items-center gap-4 bg-background-dark px-4 py-2">
                     <View className="w-12 h-12 items-center justify-center rounded-lg bg-[#4a3f21]">
-                        <MaterialIcons name="restaurant-menu" size={24} color="#FAC638" />
+                        <MaterialIcons name="restaurant-menu" size={24} color={Colors.primary} />
                     </View>
                     <View className="flex-1">
                         <Text className="text-white text-base font-bold leading-normal">Menu Hari Ini</Text>
-                        <Text className="text-[#ccbc8e] text-sm font-normal leading-normal">
+                        <Text className="text-[#d4a0a0] text-sm font-normal leading-normal">
                             Bubur Kacang Hijau + Telur Rebus
                         </Text>
                     </View>
@@ -90,7 +91,7 @@ export default function PMTReportScreen() {
 
                 {/* Photo Upload */}
                 <View className="px-4">
-                    <TouchableOpacity className="items-center gap-6 rounded-lg border-2 border-dashed border-[#6a5a2f] bg-transparent px-6 py-10">
+                    <TouchableOpacity className="items-center gap-6 rounded-lg border-2 border-dashed border-[#5a4040] bg-transparent px-6 py-10">
                         <View className="items-center gap-2">
                             <View className="bg-[#4a3f21] p-3 rounded-full mb-2">
                                 <MaterialIcons name="photo-camera" size={30} color="#fff" />
@@ -119,7 +120,7 @@ export default function PMTReportScreen() {
                 <View className="px-4 flex-row flex-wrap gap-3">
                     <View className="flex-row gap-3 w-full">
                         <PortionOption value="habis" label="Habis" icon="check-circle" iconColor="#22C55E" />
-                        <PortionOption value="half" label="1/2 Porsi" icon="pie-chart" iconColor="#FAC638" />
+                        <PortionOption value="half" label="1/2 Porsi" icon="pie-chart" iconcolor={Colors.primary} />
                     </View>
                     <View className="flex-row gap-3 w-full">
                         <PortionOption value="less_half" label="< 1/2 Porsi" icon="timelapse" iconColor="#FB923C" />
@@ -133,9 +134,9 @@ export default function PMTReportScreen() {
                         Catatan Tambahan (Opsional)
                     </Text>
                     <TextInput
-                        className="w-full rounded-lg bg-[#352d18] p-4 text-white min-h-[100px]"
+                        className="w-full rounded-lg bg-[#4a3535] p-4 text-white min-h-[100px]"
                         placeholder="Ada keluhan atau catatan lain?"
-                        placeholderTextColor="#ccbc8e80"
+                        placeholderTextColor="#d4a0a080"
                         multiline
                         numberOfLines={4}
                         textAlignVertical="top"

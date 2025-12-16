@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import { Stack, router } from 'expo-router';
 import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 // import { MaterialIcons } from '@expo/vector-icons';
@@ -19,7 +20,7 @@ export default function ScreeningScreen() {
                 <Text className="text-lg font-bold leading-tight flex-1 text-center text-slate-900 dark:text-white">KPSP Screening</Text>
                 <TouchableOpacity className="flex-row items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 active:bg-black/5 dark:active:bg-white/10">
                     <Text className="text-sm font-bold text-primary">Cetak</Text>
-                    <MaterialIcons name="print" size={20} color="#FAC638" />
+                    <MaterialIcons name="print" size={20} color={Colors.primary} />
                 </TouchableOpacity>
             </View>
 
@@ -41,7 +42,7 @@ export default function ScreeningScreen() {
                                 <Text className="text-sm text-slate-500 dark:text-slate-400">35 Months</Text>
                             </View>
                             <View className="flex-row items-center gap-1">
-                                <MaterialIcons name="track-changes" size={16} color="#FAC638" />
+                                <MaterialIcons name="track-changes" size={16} color={Colors.primary} />
                                 <Text className="text-sm font-bold text-primary">Screening: 36 Months</Text>
                             </View>
                         </View>
@@ -126,7 +127,7 @@ export default function ScreeningScreen() {
 
             {/* Footer Navigation */}
             <View className="absolute bottom-0 left-0 w-full px-4 pb-6 pt-2 z-50">
-                <View className="flex-row items-center justify-between gap-4 rounded-lg bg-[#231e0f]/90 dark:bg-[#1c2b18]/90 backdrop-blur-xl p-2 border border-white/5 shadow-2xl">
+                <View className="flex-row items-center justify-between gap-4 rounded-lg bg-[#2d1f1f]/90 dark:bg-[#1c2b18]/90 backdrop-blur-xl p-2 border border-white/5 shadow-2xl">
                     <TouchableOpacity className="flex-row items-center justify-center gap-2 rounded-full px-5 py-3 active:bg-white/5">
                         <MaterialIcons name="chevron-left" size={20} color="white" />
                         <Text className="text-sm font-bold text-white">Prev</Text>

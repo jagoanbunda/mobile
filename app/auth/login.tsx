@@ -1,3 +1,4 @@
+import Colors from '@/constants/colors';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -38,7 +39,7 @@ export default function LoginScreen() {
                         {/* Logo */}
                         <View className="absolute bottom-4 left-4 z-10">
                             <View className="w-12 h-12 rounded-full bg-primary items-center justify-center shadow-lg">
-                                <MaterialIcons name="spa" size={28} color="#231e0f" />
+                                <MaterialIcons name="spa" size={28} color={Colors.backgroundDark} />
                             </View>
                         </View>
                     </View>
