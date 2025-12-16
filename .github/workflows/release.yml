@@ -72,8 +72,45 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build APK with EAS
-        run: eas build --platform android --profile preview --non-interactive --local
+      - name: Build APK with EAS (Cloud)
+        id: eas_build
+        run: |
+          BUILD_OUTPUT=$(eas build --platform android --profile preview --non-interactive --json)
+          echo "$BUILD_OUTPUT"
+          BUILD_URL=$(echo "$BUILD_OUTPUT" | jq -r '.[0].artifacts.buildUrl // empty')
+          if [ -z "$BUILD_URL" ]; then
+            # If artifacts not in output, get from build status
+            BUILD_ID=$(echo "$BUILD_OUTPUT" | jq -r '.[0].id')
+            echo "Build ID: $BUILD_ID"
+            echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
+          else
+            echo "build_url=$BUILD_URL" >> $GITHUB_OUTPUT
+          fi
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Wait for build and download APK
+        run: |
+          echo "Waiting for EAS build to complete..."
+          # Get the latest build
+          BUILD_INFO=$(eas build:list --platform android --limit 1 --json --non-interactive)
+          BUILD_ID=$(echo "$BUILD_INFO" | jq -r '.[0].id')
+
+          # Wait for build completion
+          while true; do
+            STATUS=$(eas build:view $BUILD_ID --json | jq -r '.status')
+            echo "Build status: $STATUS"
+            if [ "$STATUS" = "FINISHED" ]; then
+              APK_URL=$(eas build:view $BUILD_ID --json | jq -r '.artifacts.buildUrl')
+              echo "Downloading APK from: $APK_URL"
+              curl -L -o app-release.apk "$APK_URL"
+              break
+            elif [ "$STATUS" = "ERRORED" ] || [ "$STATUS" = "CANCELED" ]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 30
+          done
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
