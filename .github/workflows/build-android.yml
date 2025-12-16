@@ -1,0 +1,101 @@
+name: Build Android APK
+
+on:
+    push:
+        branches:
+            - main
+            - master
+        paths:
+            # Only trigger on app-related files
+            - "app/**"
+            - "components/**"
+            - "hooks/**"
+            - "constants/**"
+            - "assets/**"
+            - "package.json"
+            - "package-lock.json"
+            - "app.json"
+            - "babel.config.js"
+            - "metro.config.js"
+            - "tailwind.config.js"
+            - "tsconfig.json"
+            - "global.css"
+        paths-ignore:
+            - "**.md"
+            - "docs/**"
+            - "templates/**"
+            - ".github/workflows/release.yml"
+    workflow_dispatch: # Allow manual trigger
+
+jobs:
+    build:
+        name: Build APK
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "lts/*"
+                  cache: "npm"
+
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: "temurin"
+                  java-version: "17"
+
+            - name: Setup Android SDK
+              uses: android-actions/setup-android@v3
+
+            - name: Setup Expo CLI
+              run: npm install -g expo-cli eas-cli
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Setup EAS
+              uses: expo/expo-github-action@v8
+              with:
+                  eas-version: latest
+                  token: ${{ secrets.EXPO_TOKEN }}
+
+            - name: Build APK with EAS
+              run: eas build --platform android --profile preview --non-interactive --local
+              env:
+                  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+            - name: Upload APK Artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-release
+                  path: |
+                      *.apk
+                      build-*.tar.gz
+                  retention-days: 30
+
+            - name: Get current date
+              id: date
+              run: echo "date=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_OUTPUT
+
+            - name: Create Release with APK
+              uses: softprops/action-gh-release@v1
+              if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+              with:
+                  tag_name: build-${{ steps.date.outputs.date }}
+                  name: Android Build ${{ steps.date.outputs.date }}
+                  body: |
+                      🤖 Automated Android APK Build
+
+                      **Commit:** ${{ github.sha }}
+                      **Branch:** ${{ github.ref_name }}
+                      **Built at:** ${{ steps.date.outputs.date }}
+                  files: |
+                      *.apk
+                  draft: false
+                  prerelease: true
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
