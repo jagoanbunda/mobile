@@ -1,8 +1,11 @@
 /**
  * Centralized Color Theme Configuration
  * 
- * This file contains both light and dark theme variants.
- * The app automatically uses the appropriate theme based on user preference.
+ * Sage Green Palette from ColorHunt:
+ * - #96A78D (Sage Dark)
+ * - #B6CEB4 (Sage Medium)
+ * - #D9E9CF (Sage Light)
+ * - #F0F0F0 (Off-White)
  */
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -12,26 +15,26 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 // ===================
 export const LightColors = {
     // Primary
-    primary: '#E88888',           // Slightly darker coral for better visibility
-    primaryMuted: '#F5AFAF',
+    primary: '#96A78D',           // Sage dark as accent
+    primaryMuted: '#B6CEB4',      // Sage medium
 
     // Backgrounds
-    background: '#FFF9F9',        // Very soft pink-white
-    backgroundAlt: '#FFF5F5',
+    background: '#F0F0F0',        // Off-white
+    backgroundAlt: '#D9E9CF',     // Sage light
 
     // Cards/Surfaces
-    card: '#FFFFFF',              // White cards on soft pink background
-    cardAlt: '#FFF0F0',           // Very soft pink for alt cards
+    card: '#FFFFFF',              // White cards
+    cardAlt: '#D9E9CF',           // Sage light for alt cards
 
     // Borders
-    border: '#F5AFAF50',          // Soft pink border
-    borderMuted: '#E8888830',
+    border: '#B6CEB4',            // Sage medium
+    borderMuted: '#D9E9CF',       // Sage light
 
     // Text
-    text: '#3d2a2a',              // Dark brown for good readability
-    textSecondary: '#6b5555',
-    textMuted: '#8a7070',
-    textInverted: '#FFFFFF',
+    text: '#3a4a3a',              // Dark muted green for readability
+    textSecondary: '#5a6a5a',     // Medium green-gray
+    textMuted: '#7a8a7a',         // Light green-gray
+    textInverted: '#FFFFFF',      // White for dark backgrounds
 
     // Status
     success: '#22c55e',
@@ -41,9 +44,9 @@ export const LightColors = {
 
     // Tab bar specific
     tabBarBackground: '#FFFFFF',
-    tabBarBorder: '#F5AFAF50',
-    tabBarActive: '#E88888',
-    tabBarInactive: '#8a7070',
+    tabBarBorder: '#D9E9CF',
+    tabBarActive: '#96A78D',
+    tabBarInactive: '#7a8a7a',
 };
 
 // ===================
@@ -51,26 +54,26 @@ export const LightColors = {
 // ===================
 export const DarkColors = {
     // Primary
-    primary: '#F5AFAF',
-    primaryMuted: '#d4a0a0',
+    primary: '#D9E9CF',           // Sage light as accent (stands out on dark)
+    primaryMuted: '#B6CEB4',      // Sage medium
 
     // Backgrounds
-    background: '#2d1f1f',
-    backgroundAlt: '#3d2a2a',
+    background: '#5a6a5a',        // Darker sage (derived from #96A78D, darkened)
+    backgroundAlt: '#6a7a6a',     // Slightly lighter dark sage
 
     // Cards/Surfaces
-    card: '#3d2a2a',
-    cardAlt: '#4a3535',
+    card: '#7a8a7a',              // Medium-dark sage
+    cardAlt: '#8a9a8a',           // Slightly lighter card
 
     // Borders
-    border: '#5a4040',
-    borderMuted: '#ffffff10',
+    border: '#96A78D',            // Original sage dark
+    borderMuted: '#7a8a7a',       // Muted border
 
     // Text
-    text: '#FFFFFF',
-    textSecondary: '#d4a0a0',
-    textMuted: '#a08585',
-    textInverted: '#2d1f1f',
+    text: '#F0F0F0',              // Off-white for dark mode
+    textSecondary: '#D9E9CF',     // Sage light
+    textMuted: '#B6CEB4',         // Sage medium
+    textInverted: '#3a4a3a',      // Dark green for light backgrounds
 
     // Status
     success: '#22c55e',
@@ -79,10 +82,10 @@ export const DarkColors = {
     info: '#3b82f6',
 
     // Tab bar specific
-    tabBarBackground: '#2d1f1f',
-    tabBarBorder: '#5a4040',
-    tabBarActive: '#F5AFAF',
-    tabBarInactive: '#d4a0a0',
+    tabBarBackground: '#5a6a5a',  // Match dark background
+    tabBarBorder: '#7a8a7a',
+    tabBarActive: '#D9E9CF',      // Sage light
+    tabBarInactive: '#B6CEB4',    // Sage medium
 };
 
 // Type for theme colors
