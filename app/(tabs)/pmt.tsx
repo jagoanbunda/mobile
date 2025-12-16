@@ -9,7 +9,7 @@ export default function PMTTabScreen() {
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
-            <View className="flex-row items-center justify-between px-4 pt-4 pb-2">
+            <View className="flex-row items-center justify-between px-4 pt-4 pb-2 mb-4">
                 <Text className="text-2xl font-bold text-white tracking-tight">PMT</Text>
                 <TouchableOpacity className="w-10 h-10 rounded-full bg-white/10 items-center justify-center">
                     <MaterialIcons name="notifications" size={24} color="#FAC638" />
