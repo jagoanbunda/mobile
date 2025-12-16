@@ -66,6 +66,11 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Verify EAS Login
+        run: eas whoami
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
       - name: Build APK with EAS
         run: eas build --platform android --profile preview --non-interactive --local
         env:
