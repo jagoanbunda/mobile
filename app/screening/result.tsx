@@ -188,9 +188,13 @@ export default function ScreeningResultScreen() {
             </ScrollView>
 
             {/* Bottom Button */}
-            <View className="absolute bottom-0 left-0 w-full p-4 bg-white/90 dark:bg-card-dark/90 backdrop-blur-md border-t border-gray-100 dark:border-white/5 z-40">
-                <TouchableOpacity onPress={() => router.push('/(tabs)')} className="w-full bg-primary active:bg-yellow-500 items-center justify-center py-4 rounded-xl shadow-lg shadow-primary/20">
-                    <Text className="text-[#2d1f1f] font-extrabold text-base">KEMBALI KE HOME</Text>
+            <View style={{ backgroundColor: colors.surface }} className="absolute bottom-0 left-0 w-full p-4 pb-8">
+                <TouchableOpacity
+                    onPress={() => router.push('/(tabs)/screening')}
+                    style={{ backgroundColor: colors.primary }}
+                    className="w-full items-center justify-center py-4 rounded-xl"
+                >
+                    <Text style={{ color: colors.onPrimary }} className="font-extrabold text-base">KEMBALI KE TUMBUH KEMBANG</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
