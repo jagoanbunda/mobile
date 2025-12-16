@@ -3,7 +3,6 @@ name: Build Android APK
 on:
     push:
         branches:
-            - main
             - master
         paths:
             # Only trigger on app-related files
@@ -83,7 +82,7 @@ jobs:
 
             - name: Create Release with APK
               uses: softprops/action-gh-release@v1
-              if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+              if: github.ref == 'refs/heads/master'
               with:
                   tag_name: build-${{ steps.date.outputs.date }}
                   name: Android Build ${{ steps.date.outputs.date }}
