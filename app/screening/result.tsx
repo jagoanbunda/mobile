@@ -1,53 +1,86 @@
-import Colors from '@/constants/colors';
-import { Stack, router } from 'expo-router';
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-// import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Image } from 'expo-image';
+import { Stack, router } from 'expo-router';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+const resultData = {
+    child: {
+        name: 'Ananda Rizky',
+        age: '24 Bulan',
+        gender: 'Laki-laki',
+        photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDCneOqf5Hu70YeaSWtdsy33AkF1GLiIIdJYpXTzK8EVidyILR8jMcAxp035pJpAUf8fTivAR5jfUHJwAf_W-lX-64wsAwtGTf1KkUp6K5IGyvaZ4YjwZ298KW7RYZgkKWqWiy7AnR_G08Z8IFkOMjtUpOvMkNM5PD7qSVjps8WdSQfPmGjwMgeGJ0M18A2Z9WsAW_ey8qhaGNqqdoEBUo7Ro-GjgrcUh7lEzZ_9GBssn_Zj9RHCLZ9TZx6TqGEtK76Y5mO3KVqFRo',
+    },
+    overallStatus: 'Sesuai',
+    overallMessage: 'Perkembangan Sesuai Umur',
+    overallDescription: 'Secara umum perkembangan anak sangat baik. Tidak ditemukan indikasi keterlambatan yang signifikan.',
+    domains: [
+        { name: 'Komunikasi', icon: 'chat-bubble', color: '#2563EB', score: 55, cutoff: 25.17, status: 'Sesuai', percentage: 85 },
+        { name: 'Motorik Kasar', icon: 'directions-run', color: '#EA580C', score: 60, cutoff: 38.00, status: 'Sesuai', percentage: 90 },
+        { name: 'Motorik Halus', icon: 'edit', color: '#9333EA', score: 35, cutoff: 35.00, status: 'Pantau', percentage: 45, warning: 'Skor berada pada ambang batas. Disarankan untuk memberikan stimulasi tambahan pada aktivitas menggambar dan menyusun balok.' },
+        { name: 'Pemecahan Masalah', icon: 'extension', color: '#DC2626', score: 50, cutoff: 30.00, status: 'Sesuai', percentage: 75 },
+        { name: 'Personal Sosial', icon: 'people', color: '#059669', score: 45, cutoff: 25.00, status: 'Sesuai', percentage: 80 },
+    ],
+    recommendations: [
+        'Ajak anak berbicara saat melakukan aktivitas sehari-hari (mandi, makan) untuk melatih kosa kata.',
+        'Berikan kesempatan anak untuk memegang sendok dan makan sendiri untuk melatih motorik halus.',
+        'Sediakan kertas dan krayon besar, biarkan anak mencoret-coret bebas.',
+    ],
+};
 
 export default function ScreeningResultScreen() {
+    const { colors } = useTheme();
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'Sesuai': return { bg: colors.primaryContainer, text: colors.onPrimaryContainer, bar: colors.primary };
+            case 'Pantau': return { bg: colors.tertiaryContainer, text: colors.onTertiaryContainer, bar: colors.tertiary };
+            case 'Perlu Rujukan': return { bg: colors.errorContainer, text: colors.error, bar: colors.error };
+            default: return { bg: colors.surfaceContainerHigh, text: colors.onSurface, bar: colors.outline };
+        }
+    };
+
     return (
-        <SafeAreaView className="flex-1 bg-background-light dark:bg-background-dark">
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
             <Stack.Screen options={{ headerShown: false }} />
 
             {/* Header */}
-            <View className="flex-row items-center p-4 sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
-                <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2 rounded-full active:bg-black/5 dark:active:bg-white/10">
-                    <MaterialIcons name="arrow-back" size={24} className="text-slate-900 dark:text-white" color="#333" />
+            <View style={{ backgroundColor: colors.surface }} className="flex-row items-center p-4">
+                <TouchableOpacity
+                    onPress={() => router.back()}
+                    style={{ backgroundColor: colors.surfaceContainerHigh }}
+                    className="p-2 rounded-full"
+                >
+                    <MaterialIcons name="arrow-back" size={24} color={colors.onSurface} />
                 </TouchableOpacity>
-                <Text className="flex-1 text-center font-bold text-lg tracking-tight text-slate-900 dark:text-white">Hasil Screening</Text>
+                <Text style={{ color: colors.onSurface }} className="flex-1 text-center font-bold text-lg tracking-tight">Hasil Screening</Text>
                 <View className="w-10" />
             </View>
 
-            <ScrollView className="flex-1 pb-28" showsVerticalScrollIndicator={false}>
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
                 {/* Celebratory Header */}
-                <View className="items-center pt-6 pb-8 px-4">
-                    <View className="w-20 h-20 rounded-full bg-primary items-center justify-center mb-5 shadow-xl shadow-primary/20 bg-yellow-400">
-                        <MaterialIcons name="check-circle" size={48} color={Colors.textInverted} />
+                <View className="items-center pt-4 pb-6 px-4">
+                    <View style={{ backgroundColor: colors.primary }} className="w-20 h-20 rounded-full items-center justify-center mb-4">
+                        <MaterialIcons name="check-circle" size={48} color={colors.onPrimary} />
                     </View>
-                    <Text className="text-slate-900 dark:text-white tracking-tight text-[28px] font-extrabold leading-tight text-center">Skrining Selesai!</Text>
-                    <Text className="text-gray-500 dark:text-gray-400 text-base font-medium leading-normal pt-2 text-center">Data tumbuh kembang anak berhasil disimpan.</Text>
+                    <Text style={{ color: colors.onSurface }} className="text-[28px] font-extrabold leading-tight text-center tracking-tight">Skrining Selesai!</Text>
+                    <Text style={{ color: colors.onSurfaceVariant }} className="text-base font-medium leading-normal pt-2 text-center">Data tumbuh kembang anak berhasil disimpan.</Text>
                 </View>
 
                 <View className="gap-6 px-4">
                     {/* Patient Card */}
-                    <View className="bg-white dark:bg-card-dark p-5 rounded-xl shadow-sm border border-gray-100 dark:border-white/5 flex-row items-center gap-5">
-                        <View className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-700">
-                            <Image
-                                source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuDCneOqf5Hu70YeaSWtdsy33AkF1GLiIIdJYpXTzK8EVidyILR8jMcAxp035pJpAUf8fTivAR5jfUHJwAf_W-lX-64wsAwtGTf1KkUp6K5IGyvaZ4YjwZ298KW7RYZgkKWqWiy7AnR_G08Z8IFkOMjtUpOvMkNM5PD7qSVjps8WdSQfPmGjwMgeGJ0M18A2Z9WsAW_ey8qhaGNqqdoEBUo7Ro-GjgrcUh7lEzZ_9GBssn_Zj9RHCLZ9TZx6TqGEtK76Y5mO3KVqFRo" }}
-                                className="w-full h-full"
-                                contentFit="cover"
-                            />
-                        </View>
+                    <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="p-5 rounded-2xl flex-row items-center gap-4">
+                        <Image source={{ uri: resultData.child.photo }} className="w-16 h-16 rounded-full" contentFit="cover" />
                         <View className="justify-center">
-                            <Text className="text-slate-900 dark:text-white text-xl font-bold leading-tight">Ananda Rizky</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-xl font-bold leading-tight">{resultData.child.name}</Text>
                             <View className="flex-row items-center gap-3 mt-1.5">
-                                <View className="flex-row items-center gap-1 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">
-                                    <MaterialIcons name="calendar-today" size={14} className="text-gray-600 dark:text-gray-300" color="#666" />
-                                    <Text className="text-xs font-semibold text-gray-600 dark:text-gray-300">24 Bulan</Text>
+                                <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="flex-row items-center gap-1 px-2 py-0.5 rounded">
+                                    <MaterialIcons name="calendar-today" size={14} color={colors.onSurfaceVariant} />
+                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-semibold">{resultData.child.age}</Text>
                                 </View>
-                                <View className="flex-row items-center gap-1 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded">
-                                    <MaterialIcons name="face" size={14} className="text-gray-600 dark:text-gray-300" color="#666" />
-                                    <Text className="text-xs font-semibold text-gray-600 dark:text-gray-300">Laki-laki</Text>
+                                <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="flex-row items-center gap-1 px-2 py-0.5 rounded">
+                                    <MaterialIcons name="face" size={14} color={colors.onSurfaceVariant} />
+                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-semibold">{resultData.child.gender}</Text>
                                 </View>
                             </View>
                         </View>
