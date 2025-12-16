@@ -35,6 +35,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="input"
+        options={{
+          title: 'Meals',
+          tabBarIcon: ({ color }) => <MaterialIcons name="restaurant" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="progress"
         options={{
           title: 'Antropometri',
@@ -42,10 +49,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="input"
+        name="screening"
         options={{
-          title: 'Meals',
-          tabBarIcon: ({ color }) => <MaterialIcons name="restaurant" size={24} color={color} />,
+          title: 'ASQ-3',
+          tabBarIcon: ({ color }) => <MaterialIcons name="psychology" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
