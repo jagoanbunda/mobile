@@ -19,6 +19,7 @@ on:
       - "tailwind.config.js"
       - "tsconfig.json"
       - "global.css"
+      - ".github/workflows/**"
   workflow_dispatch:
 
 permissions:
