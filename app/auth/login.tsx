@@ -1,4 +1,4 @@
-import Colors from '@/constants/colors';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
+    const { colors, isDark } = useTheme();
     const [role, setRole] = useState<'Parent' | 'Health Worker'>('Parent');
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
@@ -18,7 +19,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-background-dark pt-12">
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
             <Stack.Screen options={{ headerShown: false }} />
 
             <ScrollView
@@ -34,42 +35,42 @@ export default function LoginScreen() {
                             className="w-full h-full"
                             contentFit="cover"
                         />
-                        {/* Gradient Overlay */}
-                        <View className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent" />
                         {/* Logo */}
                         <View className="absolute bottom-4 left-4 z-10">
-                            <View className="w-12 h-12 rounded-full bg-primary items-center justify-center shadow-lg">
-                                <MaterialIcons name="spa" size={28} color={Colors.textInverted} />
+                            <View style={{ backgroundColor: colors.primary }} className="w-12 h-12 rounded-full items-center justify-center shadow-lg">
+                                <MaterialIcons name="spa" size={28} color={colors.onPrimary} />
                             </View>
                         </View>
                     </View>
 
                     {/* Headline */}
                     <View className="mb-6">
-                        <Text className="text-white tracking-tight text-[32px] font-bold leading-tight">
-                            Welcome to <Text className="text-primary">KREANOVA</Text>
+                        <Text style={{ color: colors.onSurface }} className="tracking-tight text-[32px] font-bold leading-tight">
+                            Welcome to <Text style={{ color: colors.primary }}>KREANOVA</Text>
                         </Text>
-                        <Text className="text-[#a0c695] mt-2 text-base font-medium">
+                        <Text style={{ color: colors.onSurfaceVariant }} className="mt-2 text-base font-medium">
                             Monitor your child's growth journey.
                         </Text>
                     </View>
 
                     {/* Role Selector */}
                     <View className="mb-6">
-                        <View className="flex-row h-12 w-full items-center justify-center rounded-full bg-[#1f2b1b] p-1 border border-[#406336]">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-row h-12 w-full items-center justify-center rounded-full p-1 border">
                             <TouchableOpacity
                                 onPress={() => setRole('Parent')}
-                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Parent' ? 'bg-primary shadow-md' : ''}`}
+                                style={role === 'Parent' ? { backgroundColor: colors.primary } : {}}
+                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Parent' ? 'shadow-md' : ''}`}
                             >
-                                <Text className={`text-sm font-bold ${role === 'Parent' ? 'text-background-dark' : 'text-[#a0c695]'}`}>
+                                <Text style={{ color: role === 'Parent' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
                                     Parent
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => setRole('Health Worker')}
-                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Health Worker' ? 'bg-primary shadow-md' : ''}`}
+                                style={role === 'Health Worker' ? { backgroundColor: colors.primary } : {}}
+                                className={`flex-1 items-center justify-center rounded-full h-full ${role === 'Health Worker' ? 'shadow-md' : ''}`}
                             >
-                                <Text className={`text-sm font-bold ${role === 'Health Worker' ? 'text-background-dark' : 'text-[#a0c695]'}`}>
+                                <Text style={{ color: role === 'Health Worker' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
                                     Health Worker
                                 </Text>
                             </TouchableOpacity>
@@ -79,27 +80,29 @@ export default function LoginScreen() {
                     {/* Login Form */}
                     <View className="gap-4">
                         {/* Email Input */}
-                        <View className="flex-row w-full items-center rounded-xl border border-[#406336] bg-[#20321b] h-14">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-row w-full items-center rounded-xl border h-14">
                             <TextInput
-                                className="flex-1 text-base text-white px-4"
+                                style={{ color: colors.onSurface }}
+                                className="flex-1 text-base px-4"
                                 placeholder="Email or Username"
-                                placeholderTextColor="#a0c695"
+                                placeholderTextColor={colors.onSurfaceVariant}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
                                 onChangeText={setEmail}
                             />
                             <View className="pr-4">
-                                <MaterialIcons name="mail" size={20} color="#a0c695" />
+                                <MaterialIcons name="mail" size={20} color={colors.onSurfaceVariant} />
                             </View>
                         </View>
 
                         {/* Password Input */}
-                        <View className="flex-row w-full items-center rounded-xl border border-[#406336] bg-[#20321b] h-14">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-row w-full items-center rounded-xl border h-14">
                             <TextInput
-                                className="flex-1 text-base text-white px-4"
+                                style={{ color: colors.onSurface }}
+                                className="flex-1 text-base px-4"
                                 placeholder="Password"
-                                placeholderTextColor="#a0c695"
+                                placeholderTextColor={colors.onSurfaceVariant}
                                 secureTextEntry={!passwordVisible}
                                 value={password}
                                 onChangeText={setPassword}
@@ -111,7 +114,7 @@ export default function LoginScreen() {
                                 <MaterialIcons
                                     name={passwordVisible ? "visibility" : "visibility-off"}
                                     size={20}
-                                    color="#a0c695"
+                                    color={colors.onSurfaceVariant}
                                 />
                             </TouchableOpacity>
                         </View>
@@ -119,7 +122,7 @@ export default function LoginScreen() {
                         {/* Forgot Password */}
                         <View className="items-end">
                             <TouchableOpacity>
-                                <Text className="text-sm font-semibold text-primary">
+                                <Text style={{ color: colors.primary }} className="text-sm font-semibold">
                                     Forgot Password?
                                 </Text>
                             </TouchableOpacity>
@@ -128,31 +131,31 @@ export default function LoginScreen() {
                         {/* Login Button */}
                         <TouchableOpacity
                             onPress={handleLogin}
-                            className="mt-2 w-full h-14 rounded-full bg-primary items-center justify-center shadow-lg active:scale-[0.98]"
-                            style={{ shadowColor: '#4cdf20', shadowOpacity: 0.3, shadowRadius: 15 }}
+                            style={{ backgroundColor: colors.primary }}
+                            className="mt-2 w-full h-14 rounded-full items-center justify-center shadow-lg active:scale-[0.98]"
                         >
-                            <Text className="text-background-dark font-bold text-lg">Log In</Text>
+                            <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Log In</Text>
                         </TouchableOpacity>
                     </View>
 
                     {/* Social Login Divider */}
                     <View className="relative py-6 items-center justify-center">
-                        <View className="absolute w-full h-px bg-[#406336]" />
-                        <View className="bg-background-dark px-4">
-                            <Text className="text-sm text-[#a0c695]">Or continue with</Text>
+                        <View style={{ backgroundColor: colors.outlineVariant }} className="absolute w-full h-px" />
+                        <View style={{ backgroundColor: colors.surface }} className="px-4">
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">Or continue with</Text>
                         </View>
                     </View>
 
                     {/* Social Buttons */}
                     <View className="flex-row gap-4 justify-center">
-                        <TouchableOpacity className="h-12 w-12 rounded-full bg-[#1f2b1b] border border-[#406336] items-center justify-center">
+                        <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="h-12 w-12 rounded-full border items-center justify-center">
                             <Image
                                 source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuChm69aYpXCVx2UyNVqBYiLQ-HvKKqqXGCinCcmwRg5gc3bQl_61r_gNS-titySNbMwLulPRF5dBSZCIOwhw5maJWwoH0O80bYLQ9hM2jVZfoFkMBUx9KKGrJJxLvB5ytDYgK0-1wCfLb4Y61zQ7RJzgoU0wXFm0Nb6RYAVyg9HIDph77g1-bDcxIfJICqUN28clX0mhDuScyN6uqyfc6zXHqQ2doFmYvG1-tq8FdkLFqTIwypR1cZpFRS0TQRAgY-c7x2vbngCpf8" }}
                                 className="w-6 h-6"
                                 contentFit="contain"
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity className="h-12 w-12 rounded-full bg-[#1f2b1b] border border-[#406336] items-center justify-center">
+                        <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="h-12 w-12 rounded-full border items-center justify-center">
                             <Image
                                 source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCJ2CY01_TJ9EzXYNi9j46faU7CChXbTZQYiBrl7Pt__IWZ44KOSi3RepJsfNO8tAa9-rn2MgUcxPA8YOoVkTKaQuY5hk2h7pBYxafMxx9-GqXGxfeqZrrIJ5Ixvj-TzVk0GZqxolOa2gYAt75O3QijBK4UD7trQ0qRgOjDrE7-v8myDgpeaLtQuoZVkcIp9qitkNEvr6_Z7Jad68qNEUxDjSJxultROyy-UgEtMk-60SPpPNdDhAUA-10LfVRApa1tIcocFWZOF6I" }}
                                 className="w-6 h-6"
@@ -163,11 +166,12 @@ export default function LoginScreen() {
 
                     {/* Register Link */}
                     <View className="mt-auto pt-6 items-center">
-                        <Text className="text-[#a0c695] text-sm">
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">
                             Don't have an account?{' '}
                             <Text
                                 onPress={() => router.push('/auth/register')}
-                                className="font-bold text-primary"
+                                style={{ color: colors.primary }}
+                                className="font-bold"
                             >
                                 Sign Up
                             </Text>
@@ -177,8 +181,8 @@ export default function LoginScreen() {
             </ScrollView>
 
             {/* iOS Home Indicator Bar */}
-            <View className="w-full items-center pb-2 pt-2 bg-background-dark">
-                <View className="h-1.5 w-32 rounded-full bg-white/20" />
+            <View style={{ backgroundColor: colors.surface }} className="w-full items-center pb-2 pt-2">
+                <View style={{ backgroundColor: colors.outlineVariant }} className="h-1.5 w-32 rounded-full" />
             </View>
         </SafeAreaView>
     );
