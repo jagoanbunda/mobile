@@ -55,14 +55,14 @@ export default function ScreeningResultScreen() {
 
                     {/* Overall Result Banner */}
                     <View>
-                        <Text className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider px-1">Hasil Keseluruhan</Text>
-                        <View className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 p-5 rounded-xl flex-row items-start gap-4 shadow-sm">
-                            <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center flex-shrink-0 shadow-md shadow-green-500/20 mt-1">
-                                <MaterialIcons name="verified" size={24} color="white" />
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold mb-3 uppercase tracking-wider px-1">Hasil Keseluruhan</Text>
+                        <View style={{ backgroundColor: colors.primaryContainer }} className="p-5 rounded-2xl flex-row items-start gap-4">
+                            <View style={{ backgroundColor: colors.primary }} className="w-10 h-10 rounded-full items-center justify-center mt-1">
+                                <MaterialIcons name="verified" size={24} color={colors.onPrimary} />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-green-700 dark:text-green-400 font-bold text-lg leading-tight">Perkembangan Sesuai Umur</Text>
-                                <Text className="text-green-800 dark:text-green-300 text-sm mt-1.5 leading-relaxed">Secara umum perkembangan anak sangat baik. Tidak ditemukan indikasi keterlambatan yang signifikan.</Text>
+                                <Text style={{ color: colors.onPrimaryContainer }} className="font-bold text-lg leading-tight">{resultData.overallMessage}</Text>
+                                <Text style={{ color: colors.onPrimaryContainer }} className="text-sm mt-1.5 leading-relaxed opacity-80">{resultData.overallDescription}</Text>
                             </View>
                         </View>
                     </View>
@@ -70,116 +70,77 @@ export default function ScreeningResultScreen() {
                     {/* Domain Breakdown */}
                     <View>
                         <View className="flex-row justify-between items-end mb-4 px-1">
-                            <Text className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Detail Per Domain</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold uppercase tracking-wider">Detail Per Domain</Text>
                             <TouchableOpacity>
-                                <Text className="text-xs text-yellow-700 dark:text-primary font-bold">Lihat Grafik Lengkap</Text>
+                                <Text style={{ color: colors.primary }} className="text-xs font-bold">Lihat Grafik Lengkap</Text>
                             </TouchableOpacity>
                         </View>
                         <View className="gap-3">
-                            {/* Domain 1: Komunikasi */}
-                            <View className="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
-                                <View className="flex-row justify-between items-center mb-3">
-                                    <View className="flex-row items-center gap-2.5">
-                                        <View className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                            <MaterialIcons name="chat-bubble" size={20} className="text-blue-600 dark:text-blue-400" color="#2563EB" />
-                                        </View>
-                                        <Text className="font-bold text-slate-900 dark:text-white">Komunikasi</Text>
-                                    </View>
-                                    <View className="px-2.5 py-1 rounded-md bg-green-100 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30">
-                                        <Text className="text-green-700 dark:text-green-300 text-xs font-bold">Sesuai</Text>
-                                    </View>
-                                </View>
-                                <View className="relative h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full mb-2.5 overflow-hidden">
-                                    <View className="absolute top-0 bottom-0 w-0.5 bg-black/20 dark:bg-white/30 z-10 left-[45%]"></View>
-                                    <View className="absolute top-0 left-0 h-full bg-green-500 rounded-full w-[85%]"></View>
-                                </View>
-                                <View className="flex-row justify-between">
-                                    <Text className="text-xs font-semibold text-slate-900 dark:text-white">Skor: <Text className="text-base">55</Text></Text>
-                                    <Text className="text-xs font-medium text-gray-400">Cutoff: 25.17</Text>
-                                </View>
-                            </View>
+                            {resultData.domains.map((domain, idx) => {
+                                const statusColors = getStatusColor(domain.status);
 
-                            {/* Domain 2: Motorik Kasar */}
-                            <View className="bg-white dark:bg-card-dark p-4 rounded-xl border border-gray-100 dark:border-white/5 shadow-sm">
-                                <View className="flex-row justify-between items-center mb-3">
-                                    <View className="flex-row items-center gap-2.5">
-                                        <View className="p-1.5 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                                            <MaterialIcons name="directions-run" size={20} className="text-orange-600 dark:text-orange-400" color="#EA580C" />
+                                return (
+                                    <View
+                                        key={idx}
+                                        style={{
+                                            backgroundColor: colors.surfaceContainerHigh,
+                                            borderColor: domain.status === 'Pantau' ? colors.tertiary : 'transparent',
+                                            borderWidth: domain.status === 'Pantau' ? 1 : 0,
+                                        }}
+                                        className="p-4 rounded-xl"
+                                    >
+                                        <View className="flex-row justify-between items-center mb-3">
+                                            <View className="flex-row items-center gap-2.5">
+                                                <View style={{ backgroundColor: `${domain.color}20` }} className="p-1.5 rounded-lg">
+                                                    <MaterialIcons name={domain.icon as any} size={18} color={domain.color} />
+                                                </View>
+                                                <Text style={{ color: colors.onSurface }} className="font-bold">{domain.name}</Text>
+                                            </View>
+                                            <View style={{ backgroundColor: statusColors.bg }} className="px-2.5 py-1 rounded-full">
+                                                <Text style={{ color: statusColors.text }} className="text-xs font-bold">{domain.status}</Text>
+                                            </View>
                                         </View>
-                                        <Text className="font-bold text-slate-900 dark:text-white">Motorik Kasar</Text>
-                                    </View>
-                                    <View className="px-2.5 py-1 rounded-md bg-green-100 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30">
-                                        <Text className="text-green-700 dark:text-green-300 text-xs font-bold">Sesuai</Text>
-                                    </View>
-                                </View>
-                                <View className="relative h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full mb-2.5 overflow-hidden">
-                                    <View className="absolute top-0 bottom-0 w-0.5 bg-black/20 dark:bg-white/30 z-10 left-[60%]"></View>
-                                    <View className="absolute top-0 left-0 h-full bg-green-500 rounded-full w-[90%]"></View>
-                                </View>
-                                <View className="flex-row justify-between">
-                                    <Text className="text-xs font-semibold text-slate-900 dark:text-white">Skor: <Text className="text-base">60</Text></Text>
-                                    <Text className="text-xs font-medium text-gray-400">Cutoff: 38.00</Text>
-                                </View>
-                            </View>
-
-                            {/* Domain 3: Motorik Halus */}
-                            <View className="bg-white dark:bg-card-dark p-4 rounded-xl border border-primary/40 dark:border-primary/30 shadow-sm ring-1 ring-primary/20">
-                                <View className="flex-row justify-between items-center mb-3">
-                                    <View className="flex-row items-center gap-2.5">
-                                        <View className="p-1.5 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                            <MaterialIcons name="edit" size={20} className="text-purple-600 dark:text-purple-400" color="#9333EA" />
+                                        {/* Progress Bar */}
+                                        <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="relative h-2.5 w-full rounded-full mb-2.5 overflow-hidden">
+                                            <View style={{ left: `${(domain.cutoff / 60) * 100}%` }} className="absolute top-0 bottom-0 w-0.5 bg-black/20 z-10" />
+                                            <View style={{ backgroundColor: statusColors.bar, width: `${domain.percentage}%` }} className="absolute top-0 left-0 h-full rounded-full" />
                                         </View>
-                                        <Text className="font-bold text-slate-900 dark:text-white">Motorik Halus</Text>
+                                        <View className="flex-row justify-between">
+                                            <Text style={{ color: colors.onSurface }} className="text-xs font-semibold">Skor: <Text className="text-base">{domain.score}</Text></Text>
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Cutoff: {domain.cutoff}</Text>
+                                        </View>
+                                        {domain.warning && (
+                                            <View style={{ backgroundColor: colors.tertiaryContainer }} className="mt-3 p-2.5 rounded-lg flex-row gap-2 items-start">
+                                                <MaterialIcons name="info" size={16} color={colors.tertiary} />
+                                                <Text style={{ color: colors.onTertiaryContainer }} className="text-xs leading-tight flex-1">{domain.warning}</Text>
+                                            </View>
+                                        )}
                                     </View>
-                                    <View className="px-2.5 py-1 rounded-md bg-primary/20 border border-primary/30">
-                                        <Text className="text-yellow-800 dark:text-yellow-200 text-xs font-bold">Pantau</Text>
-                                    </View>
-                                </View>
-                                <View className="relative h-2.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full mb-2.5 overflow-hidden">
-                                    <View className="absolute top-0 bottom-0 w-0.5 bg-black/20 dark:bg-white/30 z-10 left-[45%]"></View>
-                                    <View className="absolute top-0 left-0 h-full bg-primary rounded-full w-[45%]"></View>
-                                </View>
-                                <View className="flex-row justify-between">
-                                    <Text className="text-xs font-semibold text-slate-900 dark:text-white">Skor: <Text className="text-base">35</Text></Text>
-                                    <Text className="text-xs font-medium text-gray-400">Cutoff: 35.00</Text>
-                                </View>
-                                <View className="mt-3 bg-background-light dark:bg-white/5 p-2.5 rounded-lg flex-row gap-2 items-start">
-                                    <MaterialIcons name="info" size={16} className="text-yellow-700 dark:text-yellow-500 mt-0.5" color="#B45309" />
-                                    <Text className="text-xs text-gray-700 dark:text-gray-300 leading-tight">
-                                        Skor berada pada ambang batas. Disarankan untuk memberikan stimulasi tambahan pada aktivitas menggambar dan menyusun balok.
-                                    </Text>
-                                </View>
-                            </View>
+                                );
+                            })}
                         </View>
                     </View>
 
                     {/* Recommendations */}
                     <View>
-                        <Text className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wider px-1">Rekomendasi Pengasuhan</Text>
-                        <View className="bg-white dark:bg-card-dark rounded-xl border border-gray-100 dark:border-white/5 shadow-sm overflow-hidden">
-                            <View className="p-4 border-b border-gray-100 dark:border-gray-700 bg-primary/10 flex-row items-center gap-3">
-                                <View className="p-1 bg-primary/20 rounded-full">
-                                    <MaterialIcons name="lightbulb" size={20} className="text-yellow-700 dark:text-primary" color="#B45309" />
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold mb-3 uppercase tracking-wider px-1">Rekomendasi Pengasuhan</Text>
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl overflow-hidden">
+                            <View style={{ backgroundColor: colors.primaryContainer }} className="p-4 flex-row items-center gap-3">
+                                <View style={{ backgroundColor: colors.primary }} className="p-1.5 rounded-full">
+                                    <MaterialIcons name="lightbulb" size={18} color={colors.onPrimary} />
                                 </View>
-                                <Text className="text-sm font-bold text-slate-900 dark:text-white">Tips Stimulasi Usia 24 Bulan</Text>
+                                <Text style={{ color: colors.onPrimaryContainer }} className="text-sm font-bold">Tips Stimulasi Usia {resultData.child.age}</Text>
                             </View>
                             <View className="p-4 pt-5 gap-4">
-                                <View className="flex-row gap-3 items-start">
-                                    <MaterialIcons name="check" size={18} className="text-green-500 mt-0.5" color="#22C55E" />
-                                    <Text className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex-1">Ajak anak berbicara saat melakukan aktivitas sehari-hari (mandi, makan) untuk melatih kosa kata.</Text>
-                                </View>
-                                <View className="flex-row gap-3 items-start">
-                                    <MaterialIcons name="check" size={18} className="text-green-500 mt-0.5" color="#22C55E" />
-                                    <Text className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex-1">Berikan kesempatan anak untuk memegang sendok dan makan sendiri untuk melatih motorik halus.</Text>
-                                </View>
-                                <View className="flex-row gap-3 items-start">
-                                    <MaterialIcons name="check" size={18} className="text-green-500 mt-0.5" color="#22C55E" />
-                                    <Text className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed flex-1">Sediakan kertas dan krayon besar, biarkan anak mencoret-coret bebas.</Text>
-                                </View>
-
-                                <TouchableOpacity className="w-full mt-2 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 active:bg-gray-50 dark:active:bg-white/5 flex-row justify-center items-center gap-2">
-                                    <Text className="text-sm font-bold text-slate-900 dark:text-primary">Lihat Semua Rekomendasi</Text>
-                                    <MaterialIcons name="arrow-forward" size={18} className="text-slate-900 dark:text-primary" color="#333" />
+                                {resultData.recommendations.map((rec, idx) => (
+                                    <View key={idx} className="flex-row gap-3 items-start">
+                                        <MaterialIcons name="check" size={18} color={colors.primary} />
+                                        <Text style={{ color: colors.onSurface }} className="text-sm leading-relaxed flex-1">{rec}</Text>
+                                    </View>
+                                ))}
+                                <TouchableOpacity style={{ borderColor: colors.outline }} className="w-full mt-2 py-2.5 rounded-xl border flex-row justify-center items-center gap-2">
+                                    <Text style={{ color: colors.primary }} className="text-sm font-bold">Lihat Semua Rekomendasi</Text>
+                                    <MaterialIcons name="arrow-forward" size={18} color={colors.primary} />
                                 </TouchableOpacity>
                             </View>
                         </View>
