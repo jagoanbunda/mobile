@@ -1,4 +1,19 @@
-## [1.0.1](https://github.com/jagoanbunda/mobile/compare/v1.0.0...v1.0.1) (2025-12-16)
+# Changelog
+
+## v1.0.1 (2025-12-16)
+
+## What's Changed
+- feat: switch to local build on GitHub Actions (7cf6d3a)
+- fix: use EAS cloud build instead of local build (e966c72)
+- fix: add android.package for EAS build compatibility (efca94f)
+- fix: update EAS project ID to correct value (ea0f2e1)
+- feat: configure EAS project as JagoanBunda (a67921d)
+- ci: include workflow files in CI/CD trigger paths (656f8c5)
+- fix: add EAS login verification step for EXPO_TOKEN (b6c583e)
+- style: add spacing between header and content in PMT screen (7c72cc7)
+- feat: merge release and build workflows into single workflow (7e0dd3c)
+## Downloads
+- 📱 **Android APK** - Download from assets below
 
 
 ### Bug Fixes
