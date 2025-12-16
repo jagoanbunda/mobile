@@ -3,6 +3,18 @@
 ## v1.0.1 (2025-12-16)
 
 ## What's Changed
+- feat: Implement result screen (616fc57)
+- feat: Add child development data (dd8931f)
+- fix: Update navigation (a1db23c)
+- feat: Add recommendations (6d4b7a1)
+- fix: Update styles and layout (3c1114b)
+- feat: Initial implementation (c132f0b)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
+## v1.0.1 (2025-12-16)
+
+## What's Changed
 - fix: add safe area insets to bottom tab bar to prevent overlap with Android navigation (7338002)
 - chore(release): update changelog [skip ci] (12bc25e)
 ## Downloads
