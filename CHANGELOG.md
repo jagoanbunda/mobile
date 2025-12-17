@@ -3,6 +3,14 @@
 ## v1.0.1 (2025-12-17)
 
 ## What's Changed
+- ci: rename APK with version and build number (709086a)
+- chore(release): update changelog [skip ci] (472c721)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
+## v1.0.1 (2025-12-17)
+
+## What's Changed
 - docs: add app screenshots and update README (9ac0204)
 - chore(release): update changelog [skip ci] (5f6a28b)
 ## Downloads
