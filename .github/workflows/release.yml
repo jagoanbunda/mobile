@@ -72,22 +72,26 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "apk_name=kreanova-v${VERSION}-build.${{ github.run_number }}.apk" >> $GITHUB_OUTPUT
+
       - name: Build APK with EAS (Local)
         run: eas build --platform android --profile preview --non-interactive --local --output ./app-release.apk
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Rename APK with version
+        run: mv ./app-release.apk ./${{ steps.version.outputs.apk_name }}
 
       - name: List APK files
         run: |
           echo "Listing APK files..."
           ls -la *.apk || echo "No APK in root"
           find . -name "*.apk" -type f 2>/dev/null || true
-
-      - name: Get version from package.json
-        id: version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Generate Release Notes
         run: |
@@ -103,7 +107,7 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}-build.${{ github.run_number }}
           name: Release v${{ steps.version.outputs.version }} (Build ${{ github.run_number }})
           body_path: RELEASE_NOTES.md
-          files: ./app-release.apk
+          files: ./${{ steps.version.outputs.apk_name }}
           draft: false
           prerelease: false
         env:
