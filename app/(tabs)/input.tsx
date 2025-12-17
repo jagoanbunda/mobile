@@ -1,12 +1,35 @@
 import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Stack } from 'expo-router';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+// Helper function to format date in Indonesian
+const formatDateIndonesian = (date: Date): string => {
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+    const dayName = days[date.getDay()];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${dayName}, ${day} ${month} ${year}`;
+};
 
 export default function InputScreen() {
     const { colors } = useTheme();
     const [selectedMeal, setSelectedMeal] = useState('Pagi');
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const onDateChange = (event: DateTimePickerEvent, date?: Date) => {
+        setShowDatePicker(Platform.OS === 'ios'); // Keep open on iOS, close on Android
+        if (date) {
+            setSelectedDate(date);
+        }
+    };
 
     const MealButton = ({ name, isSelected }: { name: string, isSelected: boolean }) => (
         <TouchableOpacity
@@ -20,7 +43,6 @@ export default function InputScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
-            <Stack.Screen options={{ headerShown: false }} />
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -32,35 +54,65 @@ export default function InputScreen() {
                         <Text style={{ color: colors.onSurface }} className="tracking-tight text-[28px] font-bold leading-tight">Catat Makanan</Text>
                     </View>
 
-                    {/* Calendar Strip - Compact */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center justify-between rounded-xl p-3 mb-2">
-                        <TouchableOpacity className="p-1">
-                            <MaterialIcons name="chevron-left" size={20} color={colors.textMuted} />
-                        </TouchableOpacity>
-                        <View className="flex-row items-center gap-1">
-                            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
-                                <TouchableOpacity
-                                    key={idx}
-                                    style={{ backgroundColor: idx === 2 ? colors.primary : 'transparent' }}
-                                    className={`items-center px-2 py-1 rounded-lg`}
-                                >
-                                    <Text style={{ color: idx === 2 ? colors.onPrimary : colors.onSurfaceVariant }} className="text-[10px] font-bold">{day}</Text>
-                                    <Text style={{ color: idx === 2 ? colors.onPrimary : colors.onSurface, opacity: idx !== 2 ? 0.5 : 1 }} className="text-sm font-bold">{22 + idx}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                        <TouchableOpacity className="p-1">
-                            <MaterialIcons name="chevron-right" size={20} color={colors.textMuted} />
-                        </TouchableOpacity>
-                    </View>
+                    {/* Date Display Bar - Tappable */}
+                    <Pressable
+                        onPress={() => setShowDatePicker(true)}
+                        style={{
+                            backgroundColor: colors.surfaceContainerHigh,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 12,
+                            height: 48,
+                            paddingHorizontal: 16,
+                            marginBottom: 8
+                        }}
+                    >
+                        <MaterialIcons name="event" size={20} color={colors.onSurfaceVariant} style={{ position: 'absolute', left: 16 }} />
+                        <Text style={{ color: colors.onSurface, fontSize: 14, fontWeight: '500' }}>
+                            {formatDateIndonesian(selectedDate)}
+                        </Text>
+                        <MaterialIcons name="arrow-drop-down" size={24} color={colors.onSurfaceVariant} style={{ position: 'absolute', right: 12 }} />
+                    </Pressable>
+
+                    {/* Date Picker Modal */}
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={selectedDate}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            onChange={onDateChange}
+                        />
+                    )}
                 </View>
 
                 {/* Content */}
                 <View className="flex-1 px-6 pt-2 pb-32">
-                    {/* Meal Time Selector */}
-                    <View className="flex-row gap-3 pb-4">
-                        {['Pagi', 'Siang', 'Sore', 'Malam'].map((meal) => (
-                            <MealButton key={meal} name={meal} isSelected={selectedMeal === meal} />
+                    {/* Meal Time Selector - Pill Style */}
+                    <View style={{ backgroundColor: colors.surfaceContainerHigh, flexDirection: 'row', padding: 6, borderRadius: 9999, marginBottom: 16 }}>
+                        {['Pagi', 'Siang', 'Malam'].map((meal) => (
+                            <Pressable
+                                key={meal}
+                                onPress={() => setSelectedMeal(meal)}
+                                style={{
+                                    flex: 1,
+                                    backgroundColor: selectedMeal === meal ? colors.primary : 'transparent',
+                                    paddingVertical: 8,
+                                    borderRadius: 9999,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: selectedMeal === meal ? colors.onPrimary : colors.onSurfaceVariant,
+                                        fontSize: 14,
+                                        fontWeight: '500',
+                                    }}
+                                >
+                                    {meal}
+                                </Text>
+                            </Pressable>
                         ))}
                     </View>
 
@@ -134,19 +186,48 @@ export default function InputScreen() {
                         <Text style={{ color: colors.onSurfaceVariant }} className="font-bold">Tambah Menu Lain</Text>
                     </TouchableOpacity>
 
-                    {/* Nutrition Summary Card */}
-                    <View style={{ backgroundColor: colors.secondaryContainer }} className="p-5 rounded-3xl relative overflow-hidden shadow-sm">
-                        <Text style={{ color: colors.onSecondaryContainer }} className="text-sm font-medium mb-3 relative z-10">Ringkasan Nutrisi (Estimasi)</Text>
-                        <View className="flex-row gap-6 relative z-10">
-                            <View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs mb-1">Total Kalori</Text>
-                                <Text style={{ color: colors.onSecondaryContainer }} className="text-2xl font-bold"><Text style={{ color: colors.primary }}>286</Text> <Text style={{ color: colors.onSurfaceVariant }} className="text-base font-medium">kkal</Text></Text>
-                            </View>
-                            <View style={{ backgroundColor: colors.outline }} className="w-px h-10" />
-                            <View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs mb-1">Total Protein</Text>
-                                <Text style={{ color: colors.onSecondaryContainer }} className="text-2xl font-bold"><Text style={{ color: colors.primary }}>14.5</Text> <Text style={{ color: colors.onSurfaceVariant }} className="text-base font-medium">gram</Text></Text>
-                            </View>
+                    {/* Nutrition Summary Card - Table Layout */}
+                    <View style={{ backgroundColor: colors.secondaryContainer }} className="p-4 rounded-3xl relative overflow-hidden shadow-sm">
+                        <Text style={{ color: colors.onSecondaryContainer }} className="text-sm font-bold mb-3">Ringkasan Nutrisi</Text>
+
+                        {/* Table Header */}
+                        <View className="flex-row pb-2 border-b" style={{ borderBottomColor: colors.outlineVariant }}>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-[2] text-[10px] font-medium">Nama Makanan</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-[10px] font-medium text-center">Berat{"\n"}(gr)</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-[10px] font-medium text-center">Energi{"\n"}(kkal)</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-[10px] font-medium text-center">Protein{"\n"}(gr)</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-[10px] font-medium text-center">Lemak{"\n"}(gr)</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-[10px] font-medium text-center">Karbo{"\n"}(gr)</Text>
+                        </View>
+
+                        {/* Table Row 1 */}
+                        <View className="flex-row py-2 border-b" style={{ borderBottomColor: colors.outlineVariant + '50' }}>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-[2] text-xs font-medium">Nasi</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">50</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">50</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">2</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">5</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">97</Text>
+                        </View>
+
+                        {/* Table Row 2 */}
+                        <View className="flex-row py-2 border-b" style={{ borderBottomColor: colors.outlineVariant }}>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-[2] text-xs font-medium">Ayam</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">45</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">60</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">4</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">4</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs text-center">0</Text>
+                        </View>
+
+                        {/* Total Row */}
+                        <View className="flex-row pt-3 border-t" style={{ borderTopColor: colors.outline }}>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-[2] text-xs font-bold">Total</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="flex-1 text-xs text-center">-</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs font-bold text-center">125</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs font-bold text-center">6</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs font-bold text-center">12</Text>
+                            <Text style={{ color: colors.onSecondaryContainer }} className="flex-1 text-xs font-bold text-center">98</Text>
                         </View>
                     </View>
 

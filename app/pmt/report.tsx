@@ -6,6 +6,14 @@ import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } fro
 
 type PortionType = 'habis' | 'half' | 'less_half' | 'none';
 
+// Semantic colors for portion options
+const PORTION_COLORS = {
+    habis: '#34D399',      // Green (success)
+    half: '#FBBF24',       // Yellow (warning)
+    less_half: '#F97316',  // Orange
+    none: '#EF4444',       // Red (error)
+};
+
 export default function PMTReportScreen() {
     const { colors } = useTheme();
     const [portion, setPortion] = useState<PortionType>('habis');
@@ -25,23 +33,40 @@ export default function PMTReportScreen() {
         label: string;
         icon: keyof typeof MaterialIcons.glyphMap;
         isSelected: boolean;
-    }) => (
-        <TouchableOpacity
-            onPress={() => setPortion(value)}
-            style={{
-                backgroundColor: isSelected ? colors.primaryContainer : colors.surfaceContainerHigh
-            }}
-            className="flex-1 items-center justify-center p-4 rounded-lg"
-        >
-            <MaterialIcons
-                name={icon}
-                size={24}
-                color={isSelected ? colors.primary : colors.onSurfaceVariant}
-                style={{ marginBottom: 8 }}
-            />
-            <Text style={{ color: isSelected ? colors.onPrimaryContainer : colors.onSurface }} className="text-sm font-bold">{label}</Text>
-        </TouchableOpacity>
-    );
+    }) => {
+        const portionColor = PORTION_COLORS[value];
+
+        return (
+            <TouchableOpacity
+                onPress={() => setPortion(value)}
+                style={{
+                    backgroundColor: isSelected ? colors.primaryContainer : colors.surfaceContainerHigh,
+                    borderWidth: isSelected ? 2 : 0,
+                    borderColor: isSelected ? portionColor : 'transparent',
+                }}
+                className="flex-1 items-center justify-center p-4 rounded-xl"
+            >
+                <View
+                    style={{
+                        backgroundColor: portionColor,
+                        width: 32,
+                        height: 32,
+                        borderRadius: 16,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 8,
+                    }}
+                >
+                    <MaterialIcons
+                        name={icon}
+                        size={20}
+                        color="#FFFFFF"
+                    />
+                </View>
+                <Text style={{ color: isSelected ? colors.onPrimaryContainer : colors.onSurface }} className="text-sm font-bold">{label}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -132,8 +157,8 @@ export default function PMTReportScreen() {
                         <PortionOption value="half" label="1/2 Porsi" icon="pie-chart" isSelected={portion === 'half'} />
                     </View>
                     <View className="flex-row gap-3 w-full">
-                        <PortionOption value="less_half" label="< 1/2 Porsi" icon="timelapse" isSelected={portion === 'less_half'} />
-                        <PortionOption value="none" label="Gk Mau" icon="cancel" isSelected={portion === 'none'} />
+                        <PortionOption value="less_half" label="Kurang dari 1/2 Porsi" icon="timelapse" isSelected={portion === 'less_half'} />
+                        <PortionOption value="none" label="Tidak Mau" icon="cancel" isSelected={portion === 'none'} />
                     </View>
                 </View>
 

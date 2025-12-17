@@ -1,7 +1,7 @@
 import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Stack, router } from 'expo-router';
+import { router } from 'expo-router';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
@@ -9,7 +9,6 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, paddingTop: 48 }}>
-      <Stack.Screen options={{ headerShown: false }} />
 
       <ScrollView className="flex-1 pb-24" showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -18,8 +17,10 @@ export default function HomeScreen() {
             <TouchableOpacity onPress={() => router.push('/profile/edit-parent')} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 active:opacity-80">
               <Image
                 source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuA9fYvg7mNYN_HuqLrd17upuQW5WDUAgUnh6E2QM8dviMZDS0tlw4jPLOtXlu69BnN2PZoNQJweQVcHH918BF2ie7w17op7UeEU9X5s38gWB2-p5FOHJ1cG-Sa3iAzaihsowKY3L5k5KfDpqFF9DxxG_WZau2OOFVgi-NxNy_0zyjPUT7g2sqhdq0_VfZWZHzlGkogQE0TGCd5kAPjJgQCKbE3-BZKHdLZdZacS3lZhWQuaVfKA4is74Z3pPNuflZjymxMWmuPmqas" }}
-                className="w-full h-full"
+                style={{ width: 40, height: 40 }}
                 contentFit="cover"
+                placeholder={colors.surfaceContainerHigh}
+                transition={200}
               />
             </TouchableOpacity>
             <Text style={{ color: colors.text }} className="text-sm font-bold tracking-wide opacity-80">KREANOVA</Text>
@@ -47,8 +48,10 @@ export default function HomeScreen() {
               <View className="w-16 h-16 rounded-full overflow-hidden">
                 <Image
                   source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuDPlXkKuOleVcp5VB4_fVYszN3GzM6CVhI9mq_Ufqa5cxnLAKEjZAqIzQFylNRxFXRyrDZ3KZ9fcDf6L6AzDNQhXhRo1JkCVA8Vwz-7Fp_jRQQtl4_dNuDJr_T7Pw8LHDtKp0rRNMkOvbvoeQ1pCm4T-7YC3ADQ7sUElKwMbtTszEW2JL3cdBHbwbtbFHB0hBfvo6L4mM1SUTrWv2sQxhWM_guoxTVs5huv4_M_FWRR9sIJut12TWxKgYFT2C_RLBuWAhByiZGKPRg" }}
-                  className="w-full h-full"
+                  style={{ width: 64, height: 64 }}
                   contentFit="cover"
+                  placeholder={colors.surfaceContainerHigh}
+                  transition={200}
                 />
               </View>
               <View>
