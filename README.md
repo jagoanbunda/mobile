@@ -1,8 +1,50 @@
-# Welcome to your Expo app 👋
+# KREANOVA Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile application built with Expo for tracking child nutrition, growth, developmental screening (ASQ-3), and PMT (Pemberian Makanan Tambahan) program management.
 
-## Get started
+## Features
+
+- **📊 Dashboard** - Overview of child's health status and pending tasks
+- **🍽️ Food Input** - Log daily meals with Indonesian date picker and nutrition summary table
+- **📈 Growth Tracking** - Record and monitor anthropometric measurements (height/weight)
+- **🧠 ASQ-3 Screening** - Developmental screening questionnaire for children
+- **🥗 PMT Tracking** - Track supplementary food program consumption
+
+## Screenshots
+
+### Main Screens
+
+| Home | Food Input | Progress |
+|:---:|:---:|:---:|
+| ![Home](assets/screenshots/home.png) | ![Food Input](assets/screenshots/food_input.png) | ![Progress](assets/screenshots/progress.png) |
+
+### Anthropometry
+
+| Input | History |
+|:---:|:---:|
+| ![Anthropometry Input](assets/screenshots/anthropometry_input.png) | ![Anthropometry History](assets/screenshots/anthropometry_history.png) |
+
+### ASQ-3 Screening
+
+| Index | Questionnaire | Result |
+|:---:|:---:|:---:|
+| ![Screening Index](assets/screenshots/screening_index.png) | ![Screening Questionnaire](assets/screenshots/screening_questionnaire.png) | ![Screening Result](assets/screenshots/screening_result.png) |
+
+### PMT (Pemberian Makanan Tambahan)
+
+| Index | Report | History |
+|:---:|:---:|:---:|
+| ![PMT Index](assets/screenshots/pmt_index.png) | ![PMT Report](assets/screenshots/pmt_report.png) | ![PMT History](assets/screenshots/pmt_history.png) |
+
+## Tech Stack
+
+- **Framework**: React Native with Expo SDK 54
+- **Styling**: NativeWind (TailwindCSS for React Native)
+- **Navigation**: Expo Router (file-based routing)
+- **UI Components**: Custom components with Material Icons
+- **Date Picker**: @react-native-community/datetimepicker
+
+## Get Started
 
 1. Install dependencies
 
@@ -16,35 +58,30 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. Open in development:
+   - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+   - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+   - [Expo Go](https://expo.dev/go)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+app/
+├── (tabs)/            # Tab-based navigation screens
+│   ├── index.tsx      # Dashboard/Home
+│   ├── input.tsx      # Food input
+│   ├── progress.tsx   # Growth progress
+│   ├── screening.tsx  # ASQ-3 screening
+│   └── pmt.tsx        # PMT tracking
+├── anthropometry/     # Anthropometry screens
+├── screening/         # ASQ-3 questionnaire & results
+├── pmt/               # PMT report screens
+├── profile/           # Parent/child profile management
+└── auth/              # Authentication screens
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Learn More
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo Documentation](https://docs.expo.dev/)
+- [React Native](https://reactnative.dev/)
+- [NativeWind](https://www.nativewind.dev/)
