@@ -3,6 +3,14 @@
 ## v1.0.1 (2025-12-17)
 
 ## What's Changed
+- docs: add app screenshots and update README (9ac0204)
+- chore(release): update changelog [skip ci] (5f6a28b)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
+## v1.0.1 (2025-12-17)
+
+## What's Changed
 - feat(ui): update input screen with date picker and nutrition table (0138d7f)
 - chore(release): update changelog [skip ci] (750da2d)
 ## Downloads
