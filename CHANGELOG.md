@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.1 (2025-12-17)
+
+## What's Changed
+- feat(ui): update input screen with date picker and nutrition table (0138d7f)
+- chore(release): update changelog [skip ci] (750da2d)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
 ## v1.0.1 (2025-12-16)
 
 ## What's Changed
