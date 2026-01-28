@@ -1,20 +1,57 @@
 import { useTheme } from '@/context/ThemeContext';
+import { useLogin } from '@/services/hooks/use-auth';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
     const { colors } = useTheme();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    
+    const loginMutation = useLogin();
 
-    const handleLogin = () => {
-        // Logic for authentication would go here
-        // For prototype, navigate to tabs (dashboard)
-        router.replace('/(tabs)');
+    const handleLogin = async () => {
+        setError(null);
+        
+        // Validation
+        if (!email.trim()) {
+            setError('Email is required');
+            return;
+        }
+        
+        // Basic email format check
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
+        
+        if (!password) {
+            setError('Password is required');
+            return;
+        }
+        
+        try {
+            await loginMutation.mutateAsync({ email, password });
+            // authService.login already stores token via tokenStorage
+            // Navigate to dashboard
+            router.replace('/(tabs)');
+        } catch (err: unknown) {
+            const apiError = err as { status?: number; getFirstError?: () => string | null; message?: string };
+            if (apiError?.status === 422) {
+                // Validation error from API
+                setError(apiError.getFirstError?.() || 'Invalid credentials');
+            } else if (apiError?.status === 401) {
+                setError('Invalid email or password');
+            } else {
+                setError(apiError?.message || 'Login failed. Please try again.');
+            }
+        }
     };
 
     return (
@@ -103,13 +140,28 @@ export default function LoginScreen() {
                             </TouchableOpacity>
                         </View>
 
+                        {/* Error Display */}
+                        {error && (
+                            <View style={{ backgroundColor: colors.errorContainer }} className="p-3 rounded-xl">
+                                <Text style={{ color: colors.onErrorContainer }} className="text-sm text-center">{error}</Text>
+                            </View>
+                        )}
+
                         {/* Login Button */}
                         <TouchableOpacity
                             onPress={handleLogin}
-                            style={{ backgroundColor: colors.primary }}
+                            disabled={loginMutation.isPending}
+                            style={{ 
+                                backgroundColor: loginMutation.isPending ? colors.surfaceContainerHigh : colors.primary,
+                                opacity: loginMutation.isPending ? 0.7 : 1 
+                            }}
                             className="mt-2 w-full h-14 rounded-full items-center justify-center shadow-lg active:scale-[0.98]"
                         >
-                            <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Log In</Text>
+                            {loginMutation.isPending ? (
+                                <ActivityIndicator color={colors.onSurface} />
+                            ) : (
+                                <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Log In</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
 
