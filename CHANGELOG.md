@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.1 (2026-01-28)
+
+## What's Changed
+- feat: add authentication context (3373500)
+- feat: add supporting infrastructure for services, types, and utilities (e6b4110)
+- feat: add UI components for food logging and authentication (0d8a0b5)
+- docs: add project documentation (b42c1cc)
+- chore: update .gitignore with env and tooling ignores (7723795)
+- feat: add food logs, anthropometry history, and notifications screens (26056e1)
+- fix(input): add history nav button and fix VirtualizedList nesting (efe60cb)
+- feat: add auth guard, photo upload, and date picker for child profiles (5c6f785)
+- chore: add /docs to gitignore (a624ea3)
+- chore(release): update changelog [skip ci] (d66038e)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
 ## v1.0.1 (2025-12-17)
 
 ## What's Changed
