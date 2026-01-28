@@ -56,6 +56,10 @@ function RootLayoutContent() {
         <Stack.Screen name="pmt/history" />
         <Stack.Screen name="anthropometry/history" />
         <Stack.Screen name="notifications/index" />
+        <Stack.Screen name="food-logs/index" />
+        <Stack.Screen name="food-logs/[id]" />
+        <Stack.Screen name="food-logs/edit/[id]" />
+        <Stack.Screen name="nutrition/index" />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </NavigationThemeProvider>
