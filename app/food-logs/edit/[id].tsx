@@ -165,9 +165,21 @@ export default function EditFoodLogScreen() {
       setSelectedDate(new Date(foodLogDetail.log_date + 'T00:00:00'));
       setSelectedMeal(mealTimeToDisplay[foodLogDetail.meal_time] || 'Pagi');
       setNotes(foodLogDetail.notes || '');
+      // Reconstruct full Food objects from FoodLogItem
+      // FoodLogItem has: food (simplified), nutrition (at root), serving_size (at root)
+      // We need: Food with nutrition inside
       setSelectedItems(
         foodLogDetail.items.map((item) => ({
-          food: item.food,
+          food: {
+            id: item.food.id,
+            name: item.food.name,
+            category: item.food.category,
+            icon: item.food.icon,
+            serving_size: item.serving_size,
+            nutrition: item.nutrition,
+            is_system: true, // Default - not critical for editing
+            is_active: true, // Default - not critical for editing
+          },
           quantity: item.quantity,
         }))
       );
