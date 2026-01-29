@@ -1,5 +1,6 @@
 import { useTheme } from '@/context/ThemeContext';
-import { useActiveChild, useUpdateChild, useDeleteChild } from '@/services/hooks/use-children';
+import { useActiveChild, useDeleteChild } from '@/services/hooks/use-children';
+import { childService } from '@/services/api/children';
 import { ApiError } from '@/services/api/errors';
 import { UpdateChildRequest, Gender } from '@/types';
 import { getAvatarUrl } from '@/config/env';
@@ -9,6 +10,8 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { Stack, router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { ActivityIndicator, Alert, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
+import { childKeys } from '@/services/hooks/use-children';
 
 // Parse YYYY-MM-DD or DD/MM/YYYY string to Date object
 const parseDateString = (dateStr: string): Date | null => {
@@ -47,8 +50,9 @@ const formatDateForDisplay = (date: Date): string => {
 export default function EditChildScreen() {
     const { colors } = useTheme();
     const { data: child, isLoading: isLoadingChild } = useActiveChild();
-    const { mutate: updateChild, isPending: isUpdating } = useUpdateChild(child?.id ?? 0);
     const { mutate: deleteChild, isPending: isDeleting } = useDeleteChild();
+    const queryClient = useQueryClient();
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const [childName, setChildName] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
@@ -102,7 +106,7 @@ export default function EditChildScreen() {
         return defaultDate;
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!child || !validateForm()) return;
 
         // Convert display format (DD/MM/YYYY) to API format (YYYY-MM-DD)
@@ -115,31 +119,29 @@ export default function EditChildScreen() {
             gender: gender as Gender,
         };
 
-        if (avatarUri) {
-            data.avatar_url = avatarUri;
-        }
-
-        updateChild(data, {
-            onSuccess: () => {
-                router.back();
-            },
-            onError: (error) => {
-                if (error instanceof ApiError) {
-                    const validationErrors = error.validationErrors;
-                    if (validationErrors) {
-                        const apiErrors: Record<string, string> = {};
-                        Object.entries(validationErrors).forEach(([field, messages]) => {
-                            apiErrors[field] = messages[0];
-                        });
-                        setErrors(apiErrors);
-                    } else {
-                        Alert.alert('Error', error.message || 'Gagal memperbarui data anak');
-                    }
+        setIsUpdating(true);
+        try {
+            await childService.updateWithAvatar(child.id, data, avatarUri);
+            queryClient.invalidateQueries({ queryKey: childKeys.all });
+            router.back();
+        } catch (error) {
+            if (error instanceof ApiError) {
+                const validationErrors = error.validationErrors;
+                if (validationErrors) {
+                    const apiErrors: Record<string, string> = {};
+                    Object.entries(validationErrors).forEach(([field, messages]) => {
+                        apiErrors[field] = messages[0];
+                    });
+                    setErrors(apiErrors);
                 } else {
-                    Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+                    Alert.alert('Error', error.message || 'Gagal memperbarui data anak');
                 }
-            },
-        });
+            } else {
+                Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+            }
+        } finally {
+            setIsUpdating(false);
+        }
     };
 
     const handleDelete = () => {

@@ -1,5 +1,5 @@
 import { useTheme } from '@/context/ThemeContext';
-import { useCreateChild } from '@/services/hooks/use-children';
+import { childService } from '@/services/api/children';
 import { ApiError } from '@/services/api/errors';
 import { CreateChildRequest, Gender } from '@/types';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
@@ -8,6 +8,8 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
+import { childKeys } from '@/services/hooks/use-children';
 
 // Parse DD/MM/YYYY string to Date object
 const parseDateString = (dateStr: string): Date | null => {
@@ -35,7 +37,8 @@ const formatDateForDisplay = (date: Date): string => {
 
 export default function AddChildScreen() {
     const { colors } = useTheme();
-    const { mutate: createChild, isPending } = useCreateChild();
+    const queryClient = useQueryClient();
+    const [isPending, setIsPending] = useState(false);
 
     const [babyName, setBabyName] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
@@ -94,7 +97,7 @@ export default function AddChildScreen() {
         return defaultDate;
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!validateForm()) return;
 
         const data: CreateChildRequest = {
@@ -110,32 +113,30 @@ export default function AddChildScreen() {
         if (birthHeight) {
             data.birth_height = parseFloat(birthHeight);
         }
-        if (avatarUri) {
-            data.avatar_url = avatarUri;
-        }
-
-        createChild(data, {
-            onSuccess: () => {
-                router.replace('/(tabs)');
-            },
-            onError: (error) => {
-                if (error instanceof ApiError) {
-                    const validationErrors = error.validationErrors;
-                    if (validationErrors) {
-                        // Map API validation errors to form fields
-                        const apiErrors: Record<string, string> = {};
-                        Object.entries(validationErrors).forEach(([field, messages]) => {
-                            apiErrors[field] = messages[0];
-                        });
-                        setErrors(apiErrors);
-                    } else {
-                        Alert.alert('Error', error.message || 'Gagal menambahkan anak');
-                    }
+        setIsPending(true);
+        try {
+            await childService.createWithAvatar(data, avatarUri);
+            queryClient.invalidateQueries({ queryKey: childKeys.all });
+            router.replace('/(tabs)');
+        } catch (error) {
+            if (error instanceof ApiError) {
+                const validationErrors = error.validationErrors;
+                if (validationErrors) {
+                    // Map API validation errors to form fields
+                    const apiErrors: Record<string, string> = {};
+                    Object.entries(validationErrors).forEach(([field, messages]) => {
+                        apiErrors[field] = messages[0];
+                    });
+                    setErrors(apiErrors);
                 } else {
-                    Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+                    Alert.alert('Error', error.message || 'Gagal menambahkan anak');
                 }
-            },
-        });
+            } else {
+                Alert.alert('Error', 'Terjadi kesalahan. Silakan coba lagi.');
+            }
+        } finally {
+            setIsPending(false);
+        }
     };
 
     return (
