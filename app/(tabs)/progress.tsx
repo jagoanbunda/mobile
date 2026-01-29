@@ -1,6 +1,7 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
 import { useGrowthChart } from '@/services/hooks/use-anthropometry';
+import { getAvatarUrl } from '@/config/env';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -157,9 +158,9 @@ export default function ProgressScreen() {
             >
                 {/* Child Profile Card */}
                 <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="p-4 rounded-2xl mb-6 flex-row items-center gap-4">
-                    {activeChild?.avatar_url ? (
+                    {getAvatarUrl(activeChild?.avatar_url) ? (
                         <Image
-                            source={{ uri: activeChild.avatar_url }}
+                            source={{ uri: getAvatarUrl(activeChild?.avatar_url)! }}
                             className="w-12 h-12 rounded-full"
                             contentFit="cover"
                         />

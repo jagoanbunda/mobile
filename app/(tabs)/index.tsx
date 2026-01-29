@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useActiveChild, useChildSummary } from '@/services/hooks/use-children';
 import { useNutritionSummary } from '@/services/hooks/use-foods';
 import { useGrowthChart } from '@/services/hooks/use-anthropometry';
+import { getAvatarUrl } from '@/config/env';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -54,9 +55,9 @@ export default function HomeScreen() {
         <View style={{ backgroundColor: colors.background }} className="flex-row items-center justify-between px-4 pt-4 pb-2">
           <View className="flex-row items-center gap-3">
             <TouchableOpacity onPress={() => router.push('/profile/edit-parent')} className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 active:opacity-80">
-              {user?.avatar_url ? (
+              {getAvatarUrl(user?.avatar_url) ? (
                 <Image
-                  source={{ uri: user.avatar_url }}
+                  source={{ uri: getAvatarUrl(user?.avatar_url)! }}
                   style={{ width: 40, height: 40 }}
                   contentFit="cover"
                   placeholder={colors.surfaceContainerHigh}
@@ -91,9 +92,9 @@ export default function HomeScreen() {
 
             <TouchableOpacity onPress={() => router.push('/profile/edit-child')} className="flex-row items-center gap-4 mb-5 relative z-10 active:opacity-80">
               <View className="w-16 h-16 rounded-full overflow-hidden">
-                {activeChild?.avatar_url ? (
+                {getAvatarUrl(activeChild?.avatar_url) ? (
                   <Image
-                    source={{ uri: activeChild.avatar_url }}
+                    source={{ uri: getAvatarUrl(activeChild?.avatar_url)! }}
                     style={{ width: 64, height: 64 }}
                     contentFit="cover"
                     placeholder={colors.surfaceContainerHigh}

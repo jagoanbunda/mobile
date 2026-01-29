@@ -1,6 +1,7 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useUpdateProfileWithAvatar } from '@/services/hooks/use-auth';
+import { getAvatarUrl } from '@/config/env';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
@@ -12,12 +13,15 @@ export default function EditParentScreen() {
     const { user, refreshUser } = useAuth();
     const { mutate: updateProfile, isPending: isSaving } = useUpdateProfileWithAvatar();
 
-    // Initialize form with user data
+    // Initialize form with user data (convert avatar_url to full URL for display)
     const [fullName, setFullName] = useState(user?.name || '');
     const [email] = useState(user?.email || ''); // Email is read-only
-    const [avatarUri, setAvatarUri] = useState<string | null>(user?.avatar_url || null);
+    const [avatarUri, setAvatarUri] = useState<string | null>(getAvatarUrl(user?.avatar_url));
     const [pushNotifications, setPushNotifications] = useState(user?.push_notifications ?? true);
     const [weeklyReport, setWeeklyReport] = useState(user?.weekly_report ?? false);
+
+    // Track the original avatar URL to detect changes
+    const originalAvatarUrl = getAvatarUrl(user?.avatar_url);
 
     const handleSave = () => {
         updateProfile({
@@ -26,7 +30,7 @@ export default function EditParentScreen() {
                 push_notifications: pushNotifications,
                 weekly_report: weeklyReport,
             },
-            avatarUri: avatarUri !== user?.avatar_url ? avatarUri : undefined,
+            avatarUri: avatarUri !== originalAvatarUrl ? avatarUri : undefined,
         }, {
             onSuccess: () => {
                 refreshUser();

@@ -2,6 +2,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild, useUpdateChild, useDeleteChild } from '@/services/hooks/use-children';
 import { ApiError } from '@/services/api/errors';
 import { UpdateChildRequest, Gender } from '@/types';
+import { getAvatarUrl } from '@/config/env';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
@@ -64,7 +65,7 @@ export default function EditChildScreen() {
             const parsed = parseDateString(child.birthday);
             setDateOfBirth(parsed ? formatDateForDisplay(parsed) : child.birthday);
             setGender(child.gender as 'male' | 'female');
-            setAvatarUri(child.avatar_url || null);
+            setAvatarUri(getAvatarUrl(child.avatar_url));
         }
     }, [child]);
 
