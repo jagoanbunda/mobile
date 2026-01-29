@@ -1,21 +1,41 @@
 import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
+import { useUpdateProfileWithAvatar } from '@/services/hooks/use-auth';
+import { ImagePickerButton } from '@/components/ImagePickerButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function EditParentScreen() {
     const { colors } = useTheme();
-    const [fullName, setFullName] = useState('Sarah Anderson');
-    const [email, setEmail] = useState('sarah@example.com');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordVisible, setPasswordVisible] = useState(false);
-    const [pushNotifications, setPushNotifications] = useState(true);
-    const [weeklyReport, setWeeklyReport] = useState(false);
+    const { user, refreshUser } = useAuth();
+    const { mutate: updateProfile, isPending: isSaving } = useUpdateProfileWithAvatar();
+
+    // Initialize form with user data
+    const [fullName, setFullName] = useState(user?.name || '');
+    const [email] = useState(user?.email || ''); // Email is read-only
+    const [avatarUri, setAvatarUri] = useState<string | null>(user?.avatar_url || null);
+    const [pushNotifications, setPushNotifications] = useState(user?.push_notifications ?? true);
+    const [weeklyReport, setWeeklyReport] = useState(user?.weekly_report ?? false);
 
     const handleSave = () => {
-        router.back();
+        updateProfile({
+            data: {
+                name: fullName,
+                push_notifications: pushNotifications,
+                weekly_report: weeklyReport,
+            },
+            avatarUri: avatarUri !== user?.avatar_url ? avatarUri : undefined,
+        }, {
+            onSuccess: () => {
+                refreshUser();
+                router.back();
+            },
+            onError: () => {
+                Alert.alert('Error', 'Failed to update profile. Please try again.');
+            }
+        });
     };
 
     return (
@@ -48,14 +68,14 @@ export default function EditParentScreen() {
 
                 {/* Avatar */}
                 <View className="items-center mb-8">
-                    <TouchableOpacity className="relative">
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outlineVariant }} className="w-24 h-24 rounded-full border-2 border-dashed items-center justify-center overflow-hidden">
-                            <MaterialIcons name="person" size={40} color={colors.outline} />
-                        </View>
-                        <View style={{ backgroundColor: colors.primary }} className="absolute bottom-0 right-0 w-8 h-8 rounded-full items-center justify-center">
-                            <MaterialIcons name="edit" size={16} color={colors.onPrimary} />
-                        </View>
-                    </TouchableOpacity>
+                    <ImagePickerButton
+                        value={avatarUri}
+                        onSelect={setAvatarUri}
+                        onRemove={() => setAvatarUri(null)}
+                        shape="circle"
+                        size={96}
+                        placeholderIcon="person"
+                    />
                 </View>
 
                 {/* Account Form */}
@@ -76,10 +96,10 @@ export default function EditParentScreen() {
                         </View>
                     </View>
 
-                    {/* Email */}
+                    {/* Email (Read-only) */}
                     <View className="gap-1.5">
                         <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-medium ml-1">Email Address</Text>
-                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center rounded-xl px-4 py-3">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh, opacity: 0.6 }} className="flex-row items-center rounded-xl px-4 py-3">
                             <MaterialIcons name="mail" size={20} color={colors.outline} />
                             <TextInput
                                 style={{ color: colors.onSurface }}
@@ -89,55 +109,8 @@ export default function EditParentScreen() {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
-                                onChangeText={setEmail}
+                                editable={false}
                             />
-                        </View>
-                    </View>
-                </View>
-
-                {/* Security Section */}
-                <View className="mt-8">
-                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold uppercase tracking-wider mb-3 ml-1">Security</Text>
-                    <View className="gap-4">
-                        {/* New Password */}
-                        <View className="gap-1.5">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-medium ml-1">New Password</Text>
-                            <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center rounded-xl px-4 py-3">
-                                <MaterialIcons name="lock" size={20} color={colors.outline} />
-                                <TextInput
-                                    style={{ color: colors.onSurface }}
-                                    className="flex-1 ml-3 text-base"
-                                    placeholder="••••••••"
-                                    placeholderTextColor={colors.outline}
-                                    secureTextEntry={!passwordVisible}
-                                    value={newPassword}
-                                    onChangeText={setNewPassword}
-                                />
-                                <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-                                    <MaterialIcons
-                                        name={passwordVisible ? "visibility" : "visibility-off"}
-                                        size={20}
-                                        color={colors.outline}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        {/* Confirm Password */}
-                        <View className="gap-1.5">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-medium ml-1">Confirm Password</Text>
-                            <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center rounded-xl px-4 py-3">
-                                <MaterialIcons name="lock-reset" size={20} color={colors.outline} />
-                                <TextInput
-                                    style={{ color: colors.onSurface }}
-                                    className="flex-1 ml-3 text-base"
-                                    placeholder="••••••••"
-                                    placeholderTextColor={colors.outline}
-                                    secureTextEntry={!passwordVisible}
-                                    value={confirmPassword}
-                                    onChangeText={setConfirmPassword}
-                                />
-                            </View>
                         </View>
                     </View>
                 </View>
@@ -191,11 +164,18 @@ export default function EditParentScreen() {
             <View style={{ backgroundColor: colors.surface }} className="absolute bottom-0 left-0 right-0 p-4 pb-8">
                 <TouchableOpacity
                     onPress={handleSave}
-                    style={{ backgroundColor: colors.primary }}
+                    disabled={isSaving}
+                    style={{ backgroundColor: isSaving ? colors.surfaceContainerHigh : colors.primary }}
                     className="w-full py-4 rounded-xl flex-row items-center justify-center gap-2"
                 >
-                    <Text style={{ color: colors.onPrimary }} className="font-bold text-base">Save Changes</Text>
-                    <MaterialIcons name="check" size={20} color={colors.onPrimary} />
+                    {isSaving ? (
+                        <ActivityIndicator size="small" color={colors.primary} />
+                    ) : (
+                        <>
+                            <Text style={{ color: colors.onPrimary }} className="font-bold text-base">Save Changes</Text>
+                            <MaterialIcons name="check" size={20} color={colors.onPrimary} />
+                        </>
+                    )}
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

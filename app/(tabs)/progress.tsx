@@ -1,46 +1,54 @@
 import { useTheme } from '@/context/ThemeContext';
+import { useActiveChild } from '@/services/hooks/use-children';
+import { useGrowthChart } from '@/services/hooks/use-anthropometry';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Line, Path } from 'react-native-svg';
+import { GrowthChartMeasurement } from '@/types';
 
 type ChartType = 'BB/U' | 'TB/U' | 'BB/TB';
 
-// Mock Data untuk anak usia 0-27 bulan (Ananda Rizky)
-const mockData = {
-    child: {
-        name: 'Ananda Rizky',
-        age: '2 Tahun 3 Bulan',
-        gender: 'Laki-laki',
-        photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCMlymQ-A11UJdpVD6FzTQKd6nqjXVju5ztuJFHzyarGVtjPyz0BQXEK-RCGbMRVbN-LzFpO-PE0BISafrXDinVM2kXNB5QOjjV0j8oQQ6AXgtqmmgO_FHkyOO5ISfqh2zu46eaG7fKp2PF994MC3RwsNgQL583wBshfBBABlXuy8z5ARrCKAcSFUnY6Dwsd7wuRWnjja58_-BodVGsqKhcHunPFYjkiXK6JgWZ7a65cGGnCXDXHv5RjXQq9dpcI_nm-DwUUfjQUgo',
-    },
-    measurements: [
-        { ageMonths: 21, weight: 10.2, height: 82.5, date: 'Jul 2023' },
-        { ageMonths: 22, weight: 10.8, height: 84.0, date: 'Aug 2023' },
-        { ageMonths: 23, weight: 11.4, height: 85.5, date: 'Sep 2023' },
-        { ageMonths: 24, weight: 11.9, height: 87.0, date: 'Oct 2023' },
-        { ageMonths: 25, weight: 12.3, height: 88.0, date: 'Nov 2023' },
-        { ageMonths: 26, weight: 12.5, height: 89.0, date: 'Dec 2023' },
-    ],
-    whoStandards: {
-        weight: { median: 12.2, minus2SD: 10.0, plus2SD: 14.5 },
-        height: { median: 87.1, minus2SD: 82.5, plus2SD: 92.0 },
-    },
-    currentStats: {
-        weight: { value: 12.5, zScore: -0.2, status: 'Normal' },
-        height: { value: 89.0, zScore: 0.3, status: 'Normal' },
-        headCircumference: { value: 48.5, zScore: -0.1, status: 'Normal' },
-    }
+// Helper function to format age
+const formatAge = (months: number): string => {
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    if (years > 0 && remainingMonths > 0) return `${years} Tahun ${remainingMonths} Bulan`;
+    if (years > 0) return `${years} Tahun`;
+    return `${remainingMonths} Bulan`;
 };
 
-const getChartCoordinates = (measurements: typeof mockData.measurements, type: ChartType) => {
-    const minWeight = 8, maxWeight = 16;
-    const minHeight = 78, maxHeight = 96;
+// Helper function to format gender
+const formatGender = (gender: string | undefined): string => {
+    if (!gender) return '';
+    if (gender === 'male') return 'Laki-laki';
+    if (gender === 'female') return 'Perempuan';
+    return gender;
+};
+
+// Helper function to format date for X-axis labels
+const formatDateLabel = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return months[date.getMonth()];
+};
+
+const getChartCoordinates = (measurements: GrowthChartMeasurement[], type: ChartType) => {
+    if (!measurements || measurements.length === 0) return [];
+    
+    // Calculate min/max values from actual data
+    const weights = measurements.map(m => m.weight);
+    const heights = measurements.map(m => m.height);
+    
+    const minWeight = Math.min(...weights) - 2;
+    const maxWeight = Math.max(...weights) + 2;
+    const minHeight = Math.min(...heights) - 4;
+    const maxHeight = Math.max(...heights) + 4;
 
     return measurements.map((m, idx) => {
-        const x = 10 + (idx * 18);
+        const x = 10 + (idx * (80 / Math.max(measurements.length - 1, 1)));
         let y: number;
 
         if (type === 'BB/U') {
@@ -59,15 +67,76 @@ const getChartCoordinates = (measurements: typeof mockData.measurements, type: C
 export default function ProgressScreen() {
     const { colors } = useTheme();
     const [selectedChart, setSelectedChart] = useState<ChartType>('BB/U');
+    
+    const { data: activeChild, isLoading: isLoadingChild } = useActiveChild();
+    const childId = activeChild?.id || 0;
+    const { data: growthData, isLoading: isLoadingGrowth } = useGrowthChart(childId);
 
-    const chartPoints = getChartCoordinates(mockData.measurements, selectedChart);
-    const pathData = chartPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+    const isLoading = isLoadingChild || isLoadingGrowth;
 
+    // Get latest measurement
+    const latestMeasurement = growthData?.measurements?.length 
+        ? growthData.measurements[growthData.measurements.length - 1] 
+        : null;
+
+    // Generate chart path
+    const chartPoints = getChartCoordinates(growthData?.measurements || [], selectedChart);
+    const pathData = chartPoints.length > 0 
+        ? chartPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ')
+        : '';
+
+    // Y-axis labels based on chart type
     const yLabels = selectedChart === 'BB/U'
         ? ['16', '14', '12', '10', '8']
         : selectedChart === 'TB/U'
             ? ['96', '92', '88', '84', '80']
             : ['120', '110', '100', '90', '80'];
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Empty state - no measurements
+    if (!growthData || growthData.measurements.length === 0) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                {/* Header */}
+                <View className="flex-row items-center justify-between p-4 pb-2">
+                    <Text style={{ color: colors.onSurface }} className="text-2xl font-bold tracking-tight">Progress</Text>
+                    <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerHigh }} className="w-10 h-10 rounded-full items-center justify-center">
+                        <MaterialIcons name="notifications" size={24} color={colors.primary} />
+                    </TouchableOpacity>
+                </View>
+                <View className="flex-1 items-center justify-center p-6">
+                    <MaterialIcons name="straighten" size={64} color={colors.outline} />
+                    <Text style={{ color: colors.onSurface }} className="text-lg font-semibold mt-4">
+                        Belum ada data pengukuran
+                    </Text>
+                    <Text style={{ color: colors.onSurfaceVariant }} className="text-center mt-2">
+                        Mulai catat perkembangan anak dengan menginput data pertama
+                    </Text>
+                    <TouchableOpacity
+                        onPress={() => router.push('/anthropometry/input')}
+                        style={{ backgroundColor: colors.primary }}
+                        className="px-6 py-3 rounded-xl mt-6"
+                    >
+                        <Text style={{ color: colors.onPrimary }} className="font-semibold">
+                            Input Data Pertama
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -88,17 +157,25 @@ export default function ProgressScreen() {
             >
                 {/* Child Profile Card */}
                 <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="p-4 rounded-2xl mb-6 flex-row items-center gap-4">
-                    <Image
-                        source={{ uri: mockData.child.photo }}
-                        className="w-12 h-12 rounded-full"
-                        contentFit="cover"
-                    />
+                    {activeChild?.avatar_url ? (
+                        <Image
+                            source={{ uri: activeChild.avatar_url }}
+                            className="w-12 h-12 rounded-full"
+                            contentFit="cover"
+                        />
+                    ) : (
+                        <View style={{ width: 48, height: 48, backgroundColor: colors.surfaceContainerHighest }} className="rounded-full items-center justify-center">
+                            <MaterialIcons name="child-care" size={24} color={colors.onSurfaceVariant} />
+                        </View>
+                    )}
                     <View className="flex-1">
-                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">{mockData.child.name}</Text>
+                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">{growthData.child.name}</Text>
                         <View className="flex-row items-center gap-2 mt-0.5">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">{mockData.child.age}</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">
+                                {activeChild?.age?.label || formatAge(activeChild?.age?.months || 0)}
+                            </Text>
                             <View style={{ backgroundColor: colors.outline }} className="w-1 h-1 rounded-full" />
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">{mockData.child.gender}</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">{formatGender(activeChild?.gender)}</Text>
                         </View>
                     </View>
                     <View style={{ backgroundColor: colors.primaryContainer }} className="px-3 py-1.5 rounded-full">
@@ -185,14 +262,16 @@ export default function ProgressScreen() {
                                     <Path d="M0,70 C10,68 30,63 50,56 C70,49 90,43 100,38" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="4 2" />
 
                                     {/* Child Data Line */}
-                                    <Path d={pathData} fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                                    {pathData && (
+                                        <Path d={pathData} fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                                    )}
                                 </Svg>
                             </View>
 
                             {/* X-Axis Labels */}
                             <View className="absolute left-7 right-7 bottom-0 h-8 flex-row justify-between items-start pt-1">
-                                {mockData.measurements.map((m, idx) => (
-                                    <Text key={idx} style={{ color: colors.onSurface }} className="text-xs font-semibold">{m.date.split(' ')[0]}</Text>
+                                {growthData.measurements.slice(-6).map((m, idx) => (
+                                    <Text key={idx} style={{ color: colors.onSurface }} className="text-xs font-semibold">{formatDateLabel(m.date)}</Text>
                                 ))}
                             </View>
                         </View>
@@ -203,9 +282,9 @@ export default function ProgressScreen() {
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase">Terakhir</Text>
                                 <Text style={{ color: colors.primary }} className="text-lg font-bold">
                                     {selectedChart === 'BB/U'
-                                        ? `${mockData.measurements[mockData.measurements.length - 1].weight} kg`
+                                        ? `${latestMeasurement?.weight || 0} kg`
                                         : selectedChart === 'TB/U'
-                                            ? `${mockData.measurements[mockData.measurements.length - 1].height} cm`
+                                            ? `${latestMeasurement?.height || 0} cm`
                                             : '102%'}
                                 </Text>
                             </View>
@@ -213,10 +292,10 @@ export default function ProgressScreen() {
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase">Z-Score</Text>
                                 <Text style={{ color: colors.primary }} className="text-lg font-bold">
                                     {selectedChart === 'BB/U'
-                                        ? mockData.currentStats.weight.zScore
+                                        ? `${latestMeasurement?.weight_for_age_zscore?.toFixed(1) || '0.0'}`
                                         : selectedChart === 'TB/U'
-                                            ? mockData.currentStats.height.zScore
-                                            : '+0.2'} SD
+                                            ? `${latestMeasurement?.height_for_age_zscore?.toFixed(1) || '0.0'}`
+                                            : `${latestMeasurement?.weight_for_height_zscore?.toFixed(1) || '0.0'}`} SD
                                 </Text>
                             </View>
                         </View>
@@ -232,16 +311,16 @@ export default function ProgressScreen() {
                                 <MaterialIcons name="monitor-weight" size={18} color={colors.primary} />
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Berat Badan</Text>
                             </View>
-                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{mockData.currentStats.weight.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">kg</Text></Text>
-                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {mockData.currentStats.weight.zScore} SD</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{latestMeasurement?.weight || 0} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">kg</Text></Text>
+                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {latestMeasurement?.weight_for_age_zscore?.toFixed(1) || '0.0'} SD</Text>
                         </View>
                         <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-1 rounded-xl p-4">
                             <View className="flex-row items-center gap-2 mb-2">
                                 <MaterialIcons name="height" size={18} color={colors.primary} />
                                 <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Tinggi Badan</Text>
                             </View>
-                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{mockData.currentStats.height.value} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">cm</Text></Text>
-                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {mockData.currentStats.height.zScore} SD</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-2xl font-bold">{latestMeasurement?.height || 0} <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">cm</Text></Text>
+                            <Text style={{ color: colors.primary }} className="text-xs font-semibold mt-1">Z-Score: {latestMeasurement?.height_for_age_zscore?.toFixed(1) || '0.0'} SD</Text>
                         </View>
                     </View>
                 </View>
