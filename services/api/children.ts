@@ -59,4 +59,104 @@ export const childService = {
   async getSummary(childId: number): Promise<ChildSummaryResponse> {
     return api.get<ChildSummaryResponse>(`/children/${childId}/summary`);
   },
+
+  /**
+   * Create a new child with avatar file upload
+   * Uses multipart/form-data for file upload
+   */
+  async createWithAvatar(
+    data: CreateChildRequest,
+    avatarUri?: string | null
+  ): Promise<Child> {
+    const formData = new FormData();
+
+    // Add required text fields
+    formData.append('name', data.name);
+    formData.append('birthday', data.birthday);
+    formData.append('gender', data.gender);
+
+    // Add optional fields if provided
+    if (data.birth_weight !== undefined) {
+      formData.append('birth_weight', String(data.birth_weight));
+    }
+    if (data.birth_height !== undefined) {
+      formData.append('birth_height', String(data.birth_height));
+    }
+    if (data.head_circumference !== undefined) {
+      formData.append('head_circumference', String(data.head_circumference));
+    }
+    if (data.is_active !== undefined) {
+      formData.append('is_active', data.is_active ? '1' : '0');
+    }
+
+    // Add avatar file if provided (local URI)
+    if (avatarUri && avatarUri.startsWith('file://')) {
+      const filename = avatarUri.split('/').pop() || 'avatar.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+      formData.append('avatar', {
+        uri: avatarUri,
+        name: filename,
+        type,
+      } as unknown as Blob);
+    }
+
+    const response = await api.postMultipart<CreateChildResponse>('/children', formData);
+    return response.child;
+  },
+
+  /**
+   * Update a child with avatar file upload
+   * Uses multipart/form-data for file upload
+   */
+  async updateWithAvatar(
+    childId: number,
+    data: UpdateChildRequest,
+    avatarUri?: string | null
+  ): Promise<Child> {
+    const formData = new FormData();
+
+    // Add optional text fields if provided
+    if (data.name !== undefined) {
+      formData.append('name', data.name);
+    }
+    if (data.birthday !== undefined) {
+      formData.append('birthday', data.birthday);
+    }
+    if (data.gender !== undefined) {
+      formData.append('gender', data.gender);
+    }
+    if (data.birth_weight !== undefined) {
+      formData.append('birth_weight', String(data.birth_weight));
+    }
+    if (data.birth_height !== undefined) {
+      formData.append('birth_height', String(data.birth_height));
+    }
+    if (data.head_circumference !== undefined) {
+      formData.append('head_circumference', String(data.head_circumference));
+    }
+    if (data.is_active !== undefined) {
+      formData.append('is_active', data.is_active ? '1' : '0');
+    }
+
+    // Add avatar file if provided (local URI)
+    if (avatarUri && avatarUri.startsWith('file://')) {
+      const filename = avatarUri.split('/').pop() || 'avatar.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+      formData.append('avatar', {
+        uri: avatarUri,
+        name: filename,
+        type,
+      } as unknown as Blob);
+    }
+
+    const response = await api.putMultipart<UpdateChildResponse>(
+      `/children/${childId}`,
+      formData
+    );
+    return response.child;
+  },
 };
