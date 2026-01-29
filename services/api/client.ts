@@ -112,6 +112,37 @@ class ApiClient {
   }
 
   /**
+   * POST request with multipart/form-data (for file uploads)
+   */
+  async postMultipart<T>(endpoint: string, formData: FormData): Promise<T> {
+    const token = await tokenStorage.getToken();
+    const url = `${this.baseUrl}${endpoint}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        // Note: Do NOT set Content-Type header - fetch will set it automatically with boundary
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({
+        message: 'An unexpected error occurred',
+      }));
+      throw new ApiError(response.status, errorData);
+    }
+
+    if (response.status === 204) {
+      return {} as T;
+    }
+
+    return response.json();
+  }
+
+  /**
    * Build query string from params object
    */
   private buildQueryString(params: Record<string, unknown>): string {
