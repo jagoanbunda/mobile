@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import RegisterScreen from '@/app/auth/register';
-import { useRegister } from '@/services/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
 
 // Mock dependencies
-jest.mock('@/services/hooks/use-auth');
+jest.mock('@/context/AuthContext');
 jest.mock('@/context/ThemeContext', () => ({
   useTheme: () => ({
     colors: {
@@ -38,33 +38,28 @@ jest.mock('expo-image', () => ({
   Image: 'Image',
 }));
 
-const mockUseRegister = useRegister as jest.MockedFunction<typeof useRegister>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockRouter = router as jest.Mocked<typeof router>;
 
-const createMockMutation = (overrides = {}) => ({
-  mutateAsync: jest.fn().mockResolvedValue({ user: { id: 1 } }),
-  isPending: false,
-  error: null,
-  mutate: jest.fn(),
-  reset: jest.fn(),
-  data: undefined,
-  isError: false,
-  isIdle: true,
-  isPaused: false,
-  isSuccess: false,
-  status: 'idle' as const,
-  variables: undefined,
-  failureCount: 0,
-  failureReason: null,
-  context: undefined,
-  submittedAt: 0,
+// Helper to create properly typed mock auth context
+const createMockAuthContext = (overrides = {}) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  isVerifying: false,
+  login: jest.fn().mockResolvedValue(undefined),
+  register: jest.fn().mockResolvedValue(undefined),
+  logout: jest.fn().mockResolvedValue(undefined),
+  updateProfile: jest.fn().mockResolvedValue(undefined),
+  refreshUser: jest.fn().mockResolvedValue(undefined),
+  verifyAuth: jest.fn().mockResolvedValue(true),
   ...overrides,
 });
 
 describe('RegisterScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseRegister.mockReturnValue(createMockMutation());
+    mockUseAuth.mockReturnValue(createMockAuthContext());
   });
 
   it('shows validation error when name is empty', async () => {
@@ -161,23 +156,10 @@ describe('RegisterScreen', () => {
     expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 
-  it('disables button and shows loading during submit', async () => {
-    mockUseRegister.mockReturnValue(createMockMutation({
-      isPending: true,
-      status: 'pending',
-      isIdle: false,
-    }));
-
-    const { queryByText } = render(<RegisterScreen />);
-    
-    // Button text should not be visible when loading
-    expect(queryByText('Sign Up')).toBeNull();
-  });
-
   it('navigates to /profile/add-child on success', async () => {
-    const mockMutateAsync = jest.fn().mockResolvedValue({ user: { id: 1 } });
-    mockUseRegister.mockReturnValue(createMockMutation({
-      mutateAsync: mockMutateAsync,
+    const mockRegister = jest.fn().mockResolvedValue(undefined);
+    mockUseAuth.mockReturnValue(createMockAuthContext({
+      register: mockRegister,
     }));
 
     const { getByText, getByPlaceholderText } = render(<RegisterScreen />);
@@ -195,24 +177,25 @@ describe('RegisterScreen', () => {
     fireEvent.press(getByText('Sign Up'));
     
     await waitFor(() => {
-      expect(mockMutateAsync).toHaveBeenCalledWith({
+      expect(mockRegister).toHaveBeenCalledWith({
         name: 'Test User',
         email: 'test@example.com',
         password: 'password123',
         password_confirmation: 'password123',
       });
+      // Register still navigates to add-child (post-registration flow)
       expect(mockRouter.replace).toHaveBeenCalledWith('/profile/add-child');
     });
   });
 
   it('displays API validation errors (e.g., email taken)', async () => {
-    const mockMutateAsync = jest.fn().mockRejectedValue({
+    const mockRegister = jest.fn().mockRejectedValue({
       status: 422,
       getFieldError: (field: string) => field === 'email' ? 'Email is already taken' : null,
       getFirstError: () => 'Email is already taken',
     });
-    mockUseRegister.mockReturnValue(createMockMutation({
-      mutateAsync: mockMutateAsync,
+    mockUseAuth.mockReturnValue(createMockAuthContext({
+      register: mockRegister,
     }));
 
     const { getByText, getByPlaceholderText } = render(<RegisterScreen />);

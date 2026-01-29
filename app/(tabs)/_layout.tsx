@@ -1,5 +1,4 @@
 import { useTheme } from '@/context/ThemeContext';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
@@ -91,23 +90,21 @@ export default function TabLayout() {
   const { colors } = useTheme();
 
   return (
-    <ProtectedRoute>
-      <Tabs
-        tabBar={(props) => <FloatingTabBar {...props} />}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        {tabs.map((tab) => (
-          <Tabs.Screen
-            key={tab.name}
-            name={tab.name}
-            options={{
-              title: tab.title,
-            }}
-          />
-        ))}
-      </Tabs>
-    </ProtectedRoute>
+    <Tabs
+      tabBar={(props) => <FloatingTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      {tabs.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+          }}
+        />
+      ))}
+    </Tabs>
   );
 }

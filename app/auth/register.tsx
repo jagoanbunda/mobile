@@ -1,5 +1,5 @@
 import { useTheme } from '@/context/ThemeContext';
-import { useRegister } from '@/services/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -17,8 +17,9 @@ export default function RegisterScreen() {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
     
-    const registerMutation = useRegister();
+    const { register } = useAuth();
 
     const handleRegister = async () => {
         setError(null);
@@ -55,14 +56,15 @@ export default function RegisterScreen() {
             return;
         }
         
+        setIsLoading(true);
         try {
-            await registerMutation.mutateAsync({
+            await register({
                 name: fullName,
                 email,
                 password,
                 password_confirmation: confirmPassword,
             });
-            // Navigate to add child profile
+            // Navigate to add child profile (post-registration flow)
             router.replace('/profile/add-child');
         } catch (err: unknown) {
             const apiError = err as { status?: number; getFieldError?: (field: string) => string | null; getFirstError?: () => string | null; message?: string };
@@ -81,6 +83,8 @@ export default function RegisterScreen() {
             } else {
                 setError(apiError?.message || 'Registration failed. Please try again.');
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -262,14 +266,14 @@ export default function RegisterScreen() {
                     )}
                     <TouchableOpacity
                         onPress={handleRegister}
-                        disabled={registerMutation.isPending}
+                        disabled={isLoading}
                         style={{ 
-                            backgroundColor: registerMutation.isPending ? colors.surfaceContainerHigh : colors.primary,
-                            opacity: registerMutation.isPending ? 0.7 : 1 
+                            backgroundColor: isLoading ? colors.surfaceContainerHigh : colors.primary,
+                            opacity: isLoading ? 0.7 : 1 
                         }}
                         className="w-full h-12 rounded-xl items-center justify-center shadow-md active:scale-[0.98]"
                     >
-                        {registerMutation.isPending ? (
+                        {isLoading ? (
                             <ActivityIndicator color={colors.onSurface} />
                         ) : (
                             <Text style={{ color: colors.onPrimary }} className="text-base font-bold tracking-tight">

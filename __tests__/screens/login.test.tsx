@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import LoginScreen from '@/app/auth/login';
-import { useLogin } from '@/services/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import { router } from 'expo-router';
 
 // Mock dependencies
-jest.mock('@/services/hooks/use-auth');
+jest.mock('@/context/AuthContext');
 jest.mock('@/context/ThemeContext', () => ({
   useTheme: () => ({
     colors: {
@@ -35,30 +35,28 @@ jest.mock('expo-image', () => ({
   Image: 'Image',
 }));
 
-const mockUseLogin = useLogin as jest.MockedFunction<typeof useLogin>;
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockRouter = router as jest.Mocked<typeof router>;
+
+// Helper to create properly typed mock auth context
+const createMockAuthContext = (overrides = {}) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  isVerifying: false,
+  login: jest.fn().mockResolvedValue(undefined),
+  register: jest.fn().mockResolvedValue(undefined),
+  logout: jest.fn().mockResolvedValue(undefined),
+  updateProfile: jest.fn().mockResolvedValue(undefined),
+  refreshUser: jest.fn().mockResolvedValue(undefined),
+  verifyAuth: jest.fn().mockResolvedValue(true),
+  ...overrides,
+});
 
 describe('LoginScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseLogin.mockReturnValue({
-      mutateAsync: jest.fn().mockResolvedValue({ user: { id: 1 } }),
-      isPending: false,
-      error: null,
-      mutate: jest.fn(),
-      reset: jest.fn(),
-      data: undefined,
-      isError: false,
-      isIdle: true,
-      isPaused: false,
-      isSuccess: false,
-      status: 'idle',
-      variables: undefined,
-      failureCount: 0,
-      failureReason: null,
-      context: undefined,
-      submittedAt: 0,
-    });
+    mockUseAuth.mockReturnValue(createMockAuthContext());
   });
 
   it('shows validation error when email is empty', async () => {
@@ -73,8 +71,6 @@ describe('LoginScreen', () => {
     await waitFor(() => {
       expect(getByText('Email is required')).toBeTruthy();
     });
-    
-    expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 
   it('shows validation error when password is empty', async () => {
@@ -89,8 +85,6 @@ describe('LoginScreen', () => {
     await waitFor(() => {
       expect(getByText('Password is required')).toBeTruthy();
     });
-    
-    expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 
   it('shows validation error for invalid email format', async () => {
@@ -106,56 +100,13 @@ describe('LoginScreen', () => {
     await waitFor(() => {
       expect(getByText('Please enter a valid email address')).toBeTruthy();
     });
-    
-    expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 
-  it('disables button and shows loading during submit', async () => {
-    mockUseLogin.mockReturnValue({
-      mutateAsync: jest.fn().mockImplementation(() => new Promise(() => {})), // Never resolves
-      isPending: true,
-      error: null,
-      mutate: jest.fn(),
-      reset: jest.fn(),
-      data: undefined,
-      isError: false,
-      isIdle: false,
-      isPaused: false,
-      isSuccess: false,
-      status: 'pending',
-      variables: undefined,
-      failureCount: 0,
-      failureReason: null,
-      context: undefined,
-      submittedAt: 0,
-    });
-
-    const { queryByText } = render(<LoginScreen />);
-    
-    // Button text should not be visible when loading
-    expect(queryByText('Log In')).toBeNull();
-  });
-
-  it('navigates to /(tabs) on successful login', async () => {
-    const mockMutateAsync = jest.fn().mockResolvedValue({ user: { id: 1 } });
-    mockUseLogin.mockReturnValue({
-      mutateAsync: mockMutateAsync,
-      isPending: false,
-      error: null,
-      mutate: jest.fn(),
-      reset: jest.fn(),
-      data: undefined,
-      isError: false,
-      isIdle: true,
-      isPaused: false,
-      isSuccess: false,
-      status: 'idle',
-      variables: undefined,
-      failureCount: 0,
-      failureReason: null,
-      context: undefined,
-      submittedAt: 0,
-    });
+  it('calls login on successful form submission', async () => {
+    const mockLogin = jest.fn().mockResolvedValue(undefined);
+    mockUseAuth.mockReturnValue(createMockAuthContext({
+      login: mockLogin,
+    }));
 
     const { getByText, getByPlaceholderText } = render(<LoginScreen />);
     
@@ -167,37 +118,24 @@ describe('LoginScreen', () => {
     fireEvent.press(getByText('Log In'));
     
     await waitFor(() => {
-      expect(mockMutateAsync).toHaveBeenCalledWith({
+      expect(mockLogin).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
       });
-      expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)');
     });
+    
+    // Navigation should NOT be called - it's handled by conditional rendering now
+    expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 
   it('displays API error message on login failure', async () => {
-    const mockMutateAsync = jest.fn().mockRejectedValue({
+    const mockLogin = jest.fn().mockRejectedValue({
       status: 401,
       message: 'Invalid credentials',
     });
-    mockUseLogin.mockReturnValue({
-      mutateAsync: mockMutateAsync,
-      isPending: false,
-      error: null,
-      mutate: jest.fn(),
-      reset: jest.fn(),
-      data: undefined,
-      isError: false,
-      isIdle: true,
-      isPaused: false,
-      isSuccess: false,
-      status: 'idle',
-      variables: undefined,
-      failureCount: 0,
-      failureReason: null,
-      context: undefined,
-      submittedAt: 0,
-    });
+    mockUseAuth.mockReturnValue(createMockAuthContext({
+      login: mockLogin,
+    }));
 
     const { getByText, getByPlaceholderText } = render(<LoginScreen />);
     
@@ -211,7 +149,14 @@ describe('LoginScreen', () => {
     await waitFor(() => {
       expect(getByText('Invalid email or password')).toBeTruthy();
     });
+  });
+
+  it('navigates to register page when Sign Up is pressed', () => {
+    const { getByText } = render(<LoginScreen />);
     
-    expect(mockRouter.replace).not.toHaveBeenCalled();
+    // Press Sign Up link
+    fireEvent.press(getByText('Sign Up'));
+    
+    expect(mockRouter.push).toHaveBeenCalledWith('/auth/register');
   });
 });

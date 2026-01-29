@@ -1,5 +1,5 @@
 import { useTheme } from '@/context/ThemeContext';
-import { useLogin } from '@/services/hooks/use-auth';
+import { useAuth } from '@/context/AuthContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -8,12 +8,12 @@ import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, Touchable
 
 export default function LoginScreen() {
     const { colors } = useTheme();
+    const { login } = useAuth();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
-    
-    const loginMutation = useLogin();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
         setError(null);
@@ -36,11 +36,10 @@ export default function LoginScreen() {
             return;
         }
         
+        setIsLoading(true);
         try {
-            await loginMutation.mutateAsync({ email, password });
-            // authService.login already stores token via tokenStorage
-            // Navigate to dashboard
-            router.replace('/(tabs)');
+            await login({ email, password });
+            // Navigation is automatic via conditional rendering in root layout
         } catch (err: unknown) {
             const apiError = err as { status?: number; getFirstError?: () => string | null; message?: string };
             if (apiError?.status === 422) {
@@ -51,6 +50,8 @@ export default function LoginScreen() {
             } else {
                 setError(apiError?.message || 'Login failed. Please try again.');
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -150,14 +151,14 @@ export default function LoginScreen() {
                         {/* Login Button */}
                         <TouchableOpacity
                             onPress={handleLogin}
-                            disabled={loginMutation.isPending}
+                            disabled={isLoading}
                             style={{ 
-                                backgroundColor: loginMutation.isPending ? colors.surfaceContainerHigh : colors.primary,
-                                opacity: loginMutation.isPending ? 0.7 : 1 
+                                backgroundColor: isLoading ? colors.surfaceContainerHigh : colors.primary,
+                                opacity: isLoading ? 0.7 : 1 
                             }}
                             className="mt-2 w-full h-14 rounded-full items-center justify-center shadow-lg active:scale-[0.98]"
                         >
-                            {loginMutation.isPending ? (
+                            {isLoading ? (
                                 <ActivityIndicator color={colors.onSurface} />
                             ) : (
                                 <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Log In</Text>

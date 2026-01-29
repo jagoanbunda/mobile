@@ -25,7 +25,7 @@ export const unstable_settings = {
 
 function RootLayoutContent() {
   const { isDark } = useTheme();
-  const { isLoading } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
 
   // Hide splash screen when auth state is determined
   useEffect(() => {
@@ -34,32 +34,46 @@ function RootLayoutContent() {
     }
   }, [isLoading]);
 
+  // Keep showing splash screen while loading auth state
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <NavigationThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="index" />
-        <Stack.Screen
-          name="modal"
-          options={{ presentation: 'modal', title: 'Modal' }}
-        />
-        <Stack.Screen name="auth/login" />
-        <Stack.Screen name="auth/register" />
-        <Stack.Screen name="profile/add-child" />
-        <Stack.Screen name="profile/edit-child" />
-        <Stack.Screen name="profile/edit-parent" />
-        <Stack.Screen name="anthropometry/input" />
-        <Stack.Screen name="anthropometry/growth-chart" />
-        <Stack.Screen name="screening/questionnaire" />
-        <Stack.Screen name="screening/result" />
-        <Stack.Screen name="pmt/report" />
-        <Stack.Screen name="pmt/history" />
-        <Stack.Screen name="anthropometry/history" />
-        <Stack.Screen name="notifications/index" />
-        <Stack.Screen name="food-logs/index" />
-        <Stack.Screen name="food-logs/[id]" />
-        <Stack.Screen name="food-logs/edit/[id]" />
-        <Stack.Screen name="nutrition/index" />
+        {isAuthenticated ? (
+          // Protected screens - only available when authenticated
+          <>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="index" />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: 'modal', title: 'Modal' }}
+            />
+            <Stack.Screen name="profile/add-child" />
+            <Stack.Screen name="profile/edit-child" />
+            <Stack.Screen name="profile/edit-parent" />
+            <Stack.Screen name="anthropometry/input" />
+            <Stack.Screen name="anthropometry/growth-chart" />
+            <Stack.Screen name="screening/questionnaire" />
+            <Stack.Screen name="screening/result" />
+            <Stack.Screen name="pmt/report" />
+            <Stack.Screen name="pmt/history" />
+            <Stack.Screen name="anthropometry/history" />
+            <Stack.Screen name="notifications/index" />
+            <Stack.Screen name="food-logs/index" />
+            <Stack.Screen name="food-logs/[id]" />
+            <Stack.Screen name="food-logs/edit/[id]" />
+            <Stack.Screen name="nutrition/index" />
+          </>
+        ) : (
+          // Auth screens - only available when NOT authenticated
+          <>
+            <Stack.Screen name="auth/login" />
+            <Stack.Screen name="auth/register" />
+          </>
+        )}
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </NavigationThemeProvider>
