@@ -1,11 +1,99 @@
 import { useTheme } from '@/context/ThemeContext';
+import { useActiveChild } from '@/services/hooks/use-children';
+import { useGrowthChart, useAnthropometryInfinite } from '@/services/hooks/use-anthropometry';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { ActivityIndicator, RefreshControl, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
+
+// Format date for display
+const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
+};
+
+// Format gender
+const formatGender = (gender: string | undefined): string => {
+    if (!gender) return '';
+    if (gender === 'male') return 'Laki-laki';
+    if (gender === 'female') return 'Perempuan';
+    return gender;
+};
+
+// Get status color based on nutritional status
+const getStatusColor = (status: string, colors: ReturnType<typeof useTheme>['colors']) => {
+    const normalized = status.toLowerCase();
+    if (normalized.includes('baik') || normalized === 'normal') {
+        return { bg: colors.primaryContainer, text: colors.onPrimaryContainer };
+    }
+    if (normalized.includes('kurang') || normalized.includes('stunted') || normalized.includes('wasting')) {
+        return { bg: colors.errorContainer, text: colors.onErrorContainer };
+    }
+    if (normalized.includes('lebih') || normalized.includes('obesitas')) {
+        return { bg: colors.tertiaryContainer, text: colors.onTertiaryContainer };
+    }
+    return { bg: colors.surfaceContainerHighest, text: colors.onSurfaceVariant };
+};
 
 export default function GrowthChartScreen() {
     const { colors } = useTheme();
+    const { data: child, isLoading: isLoadingChild } = useActiveChild();
+    const childId = child?.id ?? 0;
+
+    const { data: growthData, isLoading: isLoadingGrowth, refetch, isRefetching } = useGrowthChart(childId);
+    const {
+        data: measurementsData,
+        isLoading: isLoadingMeasurements,
+    } = useAnthropometryInfinite(childId, { per_page: 10 });
+
+    const isLoading = isLoadingChild || isLoadingGrowth || isLoadingMeasurements;
+
+    // Flatten paginated measurements
+    const measurements = useMemo(() => {
+        if (!measurementsData?.pages) return [];
+        return measurementsData.pages.flatMap((page) => page.data);
+    }, [measurementsData]);
+
+    // Calculate chart coordinates from real measurements
+    const chartPoints = useMemo(() => {
+        if (!growthData?.measurements || growthData.measurements.length === 0) return [];
+
+        const gMeasurements = growthData.measurements;
+        const weights = gMeasurements.map(m => m.weight);
+        const minWeight = Math.min(...weights) - 1;
+        const maxWeight = Math.max(...weights) + 1;
+
+        return gMeasurements.map((m, idx) => {
+            const x = (idx / Math.max(gMeasurements.length - 1, 1)) * 100;
+            const y = 100 - ((m.weight - minWeight) / (maxWeight - minWeight)) * 80 - 10;
+            return { x, y: Math.max(5, Math.min(95, y)) };
+        });
+    }, [growthData]);
+
+    const chartPath = useMemo(() => {
+        if (chartPoints.length === 0) return '';
+        return chartPoints.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+    }, [chartPoints]);
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
+                        Memuat data...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -27,6 +115,14 @@ export default function GrowthChartScreen() {
                 className="flex-1 px-5 pt-4"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: 120 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefetching}
+                        onRefresh={() => refetch()}
+                        colors={[colors.primary]}
+                        tintColor={colors.primary}
+                    />
+                }
             >
                 {/* Child Profile */}
                 <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="p-4 rounded-2xl mb-6 flex-row items-center gap-4">
@@ -34,11 +130,17 @@ export default function GrowthChartScreen() {
                         <MaterialIcons name="child-care" size={24} color={colors.primary} />
                     </View>
                     <View>
-                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">Ananda Rizky</Text>
+                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">
+                            {growthData?.child.name ?? child?.name ?? 'Anak'}
+                        </Text>
                         <View className="flex-row items-center gap-2 mt-0.5">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">2 Tahun 3 Bulan</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">
+                                {child?.age?.label ?? 'Usia tidak diketahui'}
+                            </Text>
                             <View style={{ backgroundColor: colors.outline }} className="w-1 h-1 rounded-full" />
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">Laki-laki</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium">
+                                {formatGender(growthData?.child.gender ?? child?.gender)}
+                            </Text>
                         </View>
                     </View>
                 </View>
@@ -109,12 +211,23 @@ export default function GrowthChartScreen() {
                                     {/* Median Line (0 SD) - Dashed */}
                                     <Path d="M0,70 C10,68 30,63 50,56 C70,49 90,43 100,38" fill="none" stroke="#4CAF50" strokeWidth="1.5" strokeDasharray="4 2" />
 
-                                    {/* Child Data Line */}
-                                    <Path d="M0,88 C20,75 40,62 60,52 Q70,47 80,45" fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                                    {/* Child Data Line - Dynamic */}
+                                    {chartPath && (
+                                        <Path d={chartPath} fill="none" stroke={colors.primary} strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+                                    )}
 
-                                    {/* Data Points - Smaller */}
-                                    <Circle cx="0" cy="88" r="2.5" fill={colors.primary} stroke="#F8FAF0" strokeWidth="1" />
-                                    <Circle cx="80" cy="45" r="3.5" fill={colors.primary} stroke="#F8FAF0" strokeWidth="1.5" />
+                                    {/* Data Points - Dynamic */}
+                                    {chartPoints.map((point, idx) => (
+                                        <Circle
+                                            key={idx}
+                                            cx={point.x}
+                                            cy={point.y}
+                                            r={idx === chartPoints.length - 1 ? 3.5 : 2.5}
+                                            fill={colors.primary}
+                                            stroke="#F8FAF0"
+                                            strokeWidth={idx === chartPoints.length - 1 ? 1.5 : 1}
+                                        />
+                                    ))}
                                 </Svg>
                             </View>
 
@@ -141,91 +254,69 @@ export default function GrowthChartScreen() {
                 </View>
 
                 <View className="gap-4">
-                    {/* Item 1 */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl p-5">
-                        <View className="flex-row justify-between items-start mb-4">
-                            <View>
-                                <View className="flex-row items-center gap-2 mb-1">
-                                    <MaterialIcons name="calendar-today" size={16} color={colors.outline} />
-                                    <Text style={{ color: colors.onSurface }} className="font-bold">12 Oktober 2023</Text>
+                    {measurements.length > 0 ? (
+                        measurements.slice(0, 4).map((measurement) => {
+                            const statusColor = getStatusColor(measurement.status.nutritional, colors);
+                            return (
+                                <View key={measurement.id} style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl p-5">
+                                    <View className="flex-row justify-between items-start mb-4">
+                                        <View>
+                                            <View className="flex-row items-center gap-2 mb-1">
+                                                <MaterialIcons name="calendar-today" size={16} color={colors.outline} />
+                                                <Text style={{ color: colors.onSurface }} className="font-bold">
+                                                    {formatDate(measurement.measurement_date)}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ backgroundColor: statusColor.bg }} className="px-2.5 py-1 rounded-full">
+                                            <Text style={{ color: statusColor.text }} className="text-xs font-bold">
+                                                {measurement.status.nutritional}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    {/* Metrics Grid */}
+                                    <View className="flex-row">
+                                        <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Berat (BB)</Text>
+                                            <View className="flex-row items-baseline gap-0.5">
+                                                <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">{measurement.weight.toFixed(1)}</Text>
+                                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">kg</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Tinggi (TB)</Text>
+                                            <View className="flex-row items-baseline gap-0.5">
+                                                <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">{measurement.height.toFixed(1)}</Text>
+                                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
+                                            </View>
+                                        </View>
+                                        <View className="flex-1 items-center px-1">
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Kepala (LK)</Text>
+                                            <View className="flex-row items-baseline gap-0.5">
+                                                <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">
+                                                    {measurement.head_circumference?.toFixed(1) ?? '-'}
+                                                </Text>
+                                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
+                                            </View>
+                                        </View>
+                                    </View>
                                 </View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium ml-6">Usia: 2 Thn 3 Bln</Text>
-                            </View>
-                            <View style={{ backgroundColor: colors.primaryContainer }} className="px-2.5 py-1 rounded-full">
-                                <Text style={{ color: colors.onPrimaryContainer }} className="text-xs font-bold">Gizi Baik</Text>
-                            </View>
+                            );
+                        })
+                    ) : (
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl p-6 items-center">
+                            <MaterialIcons name="straighten" size={48} color={colors.onSurfaceVariant} />
+                            <Text style={{ color: colors.onSurface }} className="font-bold mt-3">Belum Ada Data</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm text-center mt-1">
+                                Mulai catat pengukuran antropometri anak Anda.
+                            </Text>
                         </View>
-                        {/* Metrics Grid */}
-                        <View className="flex-row">
-                            <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Berat (BB)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">12.5</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">kg</Text>
-                                </View>
-                                <Text style={{ color: colors.primary }} className="text-[10px] font-bold mt-1">Normal</Text>
-                            </View>
-                            <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Tinggi (TB)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">88.0</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
-                                </View>
-                                <Text style={{ color: colors.primary }} className="text-[10px] font-bold mt-1">Normal</Text>
-                            </View>
-                            <View className="flex-1 items-center px-1">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Kepala (LK)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">48.2</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
-                                </View>
-                                <Text style={{ color: colors.primary }} className="text-[10px] font-bold mt-1">Normal</Text>
-                            </View>
-                        </View>
-                    </View>
-
-                    {/* Item 2 (Risk) */}
-                    <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl p-5">
-                        <View className="flex-row justify-between items-start mb-4">
-                            <View>
-                                <View className="flex-row items-center gap-2 mb-1">
-                                    <MaterialIcons name="calendar-today" size={16} color={colors.outline} />
-                                    <Text style={{ color: colors.onSurface }} className="font-bold">12 Agustus 2023</Text>
-                                </View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-medium ml-6">Usia: 2 Thn 1 Bln</Text>
-                            </View>
-                            <View style={{ backgroundColor: colors.tertiaryContainer }} className="px-2.5 py-1 rounded-full">
-                                <Text style={{ color: colors.onTertiaryContainer }} className="text-xs font-bold">Risiko Kurang</Text>
-                            </View>
-                        </View>
-                        <View className="flex-row">
-                            <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Berat (BB)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">11.0</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">kg</Text>
-                                </View>
-                                <Text style={{ color: colors.warning }} className="text-[10px] font-bold mt-1">Kurang</Text>
-                            </View>
-                            <View style={{ borderColor: colors.outlineVariant }} className="flex-1 items-center px-1 border-r">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Tinggi (TB)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">86.0</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
-                                </View>
-                            </View>
-                            <View className="flex-1 items-center px-1">
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-[10px] uppercase font-bold mb-0.5 tracking-wider">Kepala (LK)</Text>
-                                <View className="flex-row items-baseline gap-0.5">
-                                    <Text style={{ color: colors.onSurface }} className="text-lg font-extrabold">47.0</Text>
-                                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-bold">cm</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                    )}
                 </View>
                 <View className="items-center justify-center pt-4 mb-8">
-                    <Text style={{ color: colors.outline }} className="text-xs font-medium">Menampilkan 4 data terakhir</Text>
+                    <Text style={{ color: colors.outline }} className="text-xs font-medium">
+                        Menampilkan {Math.min(measurements.length, 4)} dari {measurements.length} data
+                    </Text>
                 </View>
             </ScrollView>
 
