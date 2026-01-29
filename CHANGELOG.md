@@ -1,5 +1,29 @@
 # Changelog
 
+## v1.0.1 (2026-01-29)
+
+## What's Changed
+- test(children): add unit tests for avatar upload methods (6d3b015)
+- feat(edit-child): use updateWithAvatar for file upload (f977912)
+- feat(children): add createWithAvatar and updateWithAvatar for file uploads (985881e)
+- feat(api): add postMultipart method for file uploads (3f67031)
+- feat(anthropometry): integrate growth-chart with real API data (ebab568)
+- feat(anthropometry): add edit mode support to input form (b3df527)
+- feat: add getAvatarUrl helper for constructing full avatar URLs (a47ec39)
+- feat: replace mock data with real API data in dashboard, progress, and parent edit screens (93522c5)
+- fix(auth): resolve infinite loading loop after login (81f451a)
+- chore(deps): add @types/jest for TypeScript support in tests (e68dd4b)
+- feat(auth): connect register screen to API with validation (c6fb045)
+- feat(auth): connect login screen to API with validation (289a846)
+- feat(auth): add ProtectedRoute component with focus verification (eb8b214)
+- feat(auth): add token refresh and verifyAuth to AuthContext (23f3fd0)
+- chore(test): setup Jest test infrastructure (d0958d5)
+- fix(food-logs): properly reconstruct Food objects when initializing edit form (756f0f7)
+- feat(routes): add edit food log and nutrition dashboard screens (5ccc569)
+- chore(release): update changelog [skip ci] (1dd0699)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
 ## v1.0.1 (2026-01-28)
 
 ## What's Changed
