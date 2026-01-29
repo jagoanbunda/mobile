@@ -1,13 +1,13 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
-import { useCreateAnthropometry } from '@/services/hooks/use-anthropometry';
+import { useCreateAnthropometry, useAnthropometryDetail, useUpdateAnthropometry } from '@/services/hooks/use-anthropometry';
 import { ApiError } from '@/services/api/errors';
 import { MeasurementLocation } from '@/types';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Stack, router } from 'expo-router';
-import React, { useState } from 'react';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Alert, Platform, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function AnthropometryInputScreen() {
@@ -15,7 +15,24 @@ export default function AnthropometryInputScreen() {
     const { data: child, isLoading: isLoadingChild } = useActiveChild();
     const childId = child?.id ?? 0;
     
-    const { mutate: createAnthropometry, isPending } = useCreateAnthropometry(childId);
+    // Parse URL params for edit mode
+    const { id } = useLocalSearchParams<{ id?: string }>();
+    const measurementId = id ? parseInt(id, 10) : null;
+    const isEditMode = measurementId !== null && !isNaN(measurementId);
+    
+    // Fetch existing measurement for edit mode
+    const { data: existingMeasurement, isLoading: isLoadingMeasurement } = useAnthropometryDetail(
+        childId,
+        measurementId ?? 0
+    );
+    
+    // Mutations for create and update
+    const { mutate: createAnthropometry, isPending: isCreating } = useCreateAnthropometry(childId);
+    const { mutate: updateAnthropometry, isPending: isUpdating } = useUpdateAnthropometry(
+        childId,
+        measurementId ?? 0
+    );
+    const isPending = isCreating || isUpdating;
 
     const [measurementDate, setMeasurementDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -25,7 +42,20 @@ export default function AnthropometryInputScreen() {
     const [isLying, setIsLying] = useState(false);
     const [location, setLocation] = useState<MeasurementLocation>('posyandu');
     const [notes, setNotes] = useState('');
-    const [photoUri, setPhotoUri] = useState<string | null>(null);
+const [photoUri, setPhotoUri] = useState<string | null>(null);
+
+    // Pre-fill form when editing
+    useEffect(() => {
+        if (isEditMode && existingMeasurement) {
+            setMeasurementDate(new Date(existingMeasurement.measurement_date));
+            setWeight(existingMeasurement.weight.toString());
+            setHeight(existingMeasurement.height.toString());
+            setHeadCircumference(existingMeasurement.head_circumference?.toString() ?? '');
+            setIsLying(existingMeasurement.is_lying);
+            setLocation(existingMeasurement.measurement_location ?? 'posyandu');
+            setNotes(existingMeasurement.notes ?? '');
+        }
+    }, [isEditMode, existingMeasurement]);
 
     const formatDate = (date: Date): string => {
         return date.toLocaleDateString('id-ID', {
@@ -62,7 +92,7 @@ export default function AnthropometryInputScreen() {
             return;
         }
 
-        const data = {
+const data = {
             measurement_date: measurementDate.toISOString().split('T')[0],
             weight: weightNum,
             height: heightNum,
@@ -70,29 +100,34 @@ export default function AnthropometryInputScreen() {
             is_lying: isLying,
             measurement_location: location,
             notes: notes || undefined,
-            photo_url: photoUri || undefined,
         };
 
-        createAnthropometry(data, {
-            onSuccess: (measurement) => {
+        const mutationOptions = {
+            onSuccess: () => {
                 Alert.alert(
                     'Berhasil',
-                    'Data antropometri berhasil disimpan.',
+                    isEditMode ? 'Data antropometri berhasil diperbarui.' : 'Data antropometri berhasil disimpan.',
                     [{ text: 'OK', onPress: () => router.back() }]
                 );
             },
-            onError: (error) => {
+            onError: (error: unknown) => {
                 if (error instanceof ApiError) {
                     Alert.alert('Error', error.message);
                 } else {
                     Alert.alert('Error', 'Gagal menyimpan data. Silakan coba lagi.');
                 }
             },
-        });
+        };
+
+        if (isEditMode) {
+            updateAnthropometry(data, mutationOptions);
+        } else {
+            createAnthropometry(data, mutationOptions);
+        }
     };
 
-    // Loading state
-    if (isLoadingChild) {
+// Loading state
+    if (isLoadingChild || (isEditMode && isLoadingMeasurement)) {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
                 <Stack.Screen options={{ headerShown: false }} />
@@ -138,8 +173,8 @@ export default function AnthropometryInputScreen() {
                 >
                     <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.onSurface} />
                 </TouchableOpacity>
-                <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
-                    Input Antropometri
+<Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
+                    {isEditMode ? 'Edit Antropometri' : 'Input Antropometri'}
                 </Text>
             </View>
 
@@ -415,7 +450,7 @@ export default function AnthropometryInputScreen() {
                         <MaterialIcons name="check" size={24} color={colors.onPrimary} />
                     )}
                     <Text style={{ color: colors.onPrimary }} className="font-bold text-base tracking-wide">
-                        {isPending ? 'MENYIMPAN...' : 'SIMPAN DATA'}
+                        {isPending ? 'MENYIMPAN...' : isEditMode ? 'PERBARUI DATA' : 'SIMPAN DATA'}
                     </Text>
                 </TouchableOpacity>
             </View>
