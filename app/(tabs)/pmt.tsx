@@ -1,11 +1,70 @@
 import { useTheme } from '@/context/ThemeContext';
+import { useActiveChild } from '@/services/hooks/use-children';
+import { useCurrentMonthPmtProgress, useTodayPmtSchedule, usePmtSchedules } from '@/services/hooks/use-pmt';
+import { NetworkErrorView, EmptyStateView } from '@/components/NetworkErrorView';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 
 export default function PMTTabScreen() {
     const { colors } = useTheme();
+
+    const { data: child, isLoading: isLoadingChild } = useActiveChild();
+    const childId = child?.id ?? 0;
+
+    const { data: progress, isLoading: isLoadingProgress, isError: isProgressError, error: progressError, refetch: refetchProgress } = useCurrentMonthPmtProgress(childId);
+    const { data: todaySchedule, isLoading: isLoadingToday } = useTodayPmtSchedule(childId);
+    const { data: schedules, isLoading: isLoadingSchedules } = usePmtSchedules(childId);
+
+    const isLoading = isLoadingChild || isLoadingProgress || isLoadingToday || isLoadingSchedules;
+    const isError = isProgressError;
+
+    // Get last 3 logged schedules for history
+    const recentHistory = schedules?.filter(s => s.is_logged).slice(0, 3) ?? [];
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View testID="loading-indicator" className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
+                        Memuat data...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Error state
+    if (isError) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 p-4">
+                    <NetworkErrorView error={progressError} onRetry={refetchProgress} />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Empty state
+    if (!progress) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center p-4">
+                    <EmptyStateView 
+                        icon="event-busy"
+                        title="Tidak Ada Program PMT"
+                        message="Belum ada program PMT yang aktif untuk anak ini."
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -32,7 +91,7 @@ export default function PMTTabScreen() {
                         </View>
                         <View>
                             <Text style={{ color: colors.onSurface }} className="text-lg font-bold">Program PMT Aktif</Text>
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">Hari ke-14 dari 30 hari</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">Hari ke-{progress.summary.total_logged} dari {progress.summary.total_scheduled} hari</Text>
                         </View>
                     </View>
 
@@ -40,13 +99,13 @@ export default function PMTTabScreen() {
                     <View className="mb-2">
                         <View className="flex-row justify-between mb-1">
                             <Text style={{ color: colors.onSurfaceVariant }} className="text-xs">Progress</Text>
-                            <Text style={{ color: colors.onSurface }} className="text-xs font-bold">46%</Text>
+                            <Text style={{ color: colors.onSurface }} className="text-xs font-bold">{Math.floor(progress.summary.compliance_rate)}%</Text>
                         </View>
                         <View style={{ backgroundColor: colors.outlineVariant }} className="h-3 w-full rounded-full overflow-hidden">
-                            <View style={{ backgroundColor: colors.primary, width: '46%' }} className="h-full rounded-full" />
+                            <View style={{ backgroundColor: colors.primary, width: `${Math.floor(progress.summary.compliance_rate)}%` }} className="h-full rounded-full" />
                         </View>
                     </View>
-                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs">16 hari lagi</Text>
+                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs">{progress.summary.pending} hari lagi</Text>
                 </View>
 
                 {/* Quick Actions */}
@@ -78,8 +137,12 @@ export default function PMTTabScreen() {
                             <MaterialIcons name="restaurant-menu" size={24} color={colors.primary} />
                         </View>
                         <View className="flex-1">
-                            <Text style={{ color: colors.onSurface }} className="font-bold">Bubur Kacang Hijau + Telur Rebus</Text>
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">Disiapkan oleh Kader Posyandu</Text>
+                            <Text style={{ color: colors.onSurface }} className="font-bold">
+                                {todaySchedule ? todaySchedule.menu.name : 'Tidak ada jadwal hari ini'}
+                            </Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">
+                                {todaySchedule ? 'Disiapkan oleh Kader Posyandu' : 'Silakan cek kembali besok'}
+                            </Text>
                         </View>
                     </View>
                 </View>
@@ -93,33 +156,54 @@ export default function PMTTabScreen() {
                 </View>
 
                 <View className="gap-3">
-                    {/* History Item 1 */}
-                    <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
-                        <View className="flex-row justify-between items-start">
-                            <View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">Kemarin</Text>
-                                <Text style={{ color: colors.onSurface }} className="font-bold mt-1">Sup Ayam Jagung</Text>
-                            </View>
-                            <View className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-green-100">
-                                <MaterialIcons name="check-circle" size={14} color="#16A34A" />
-                                <Text className="text-xs font-bold text-green-700">Habis</Text>
-                            </View>
-                        </View>
-                    </View>
+                    {recentHistory.map((schedule, index) => {
+                        const portionColors: Record<string, { bg: string; text: string; icon: string }> = {
+                            habis: { bg: 'bg-green-100', text: 'text-green-700', icon: '#16A34A' },
+                            half: { bg: 'bg-orange-100', text: 'text-orange-700', icon: '#EA580C' },
+                            quarter: { bg: 'bg-yellow-100', text: 'text-yellow-700', icon: '#CA8A04' },
+                            none: { bg: 'bg-red-100', text: 'text-red-700', icon: '#DC2626' },
+                        };
+                        const portionLabels: Record<string, string> = {
+                            habis: 'Habis',
+                            half: '1/2 Porsi',
+                            quarter: '1/4 Porsi',
+                            none: 'Tidak Makan',
+                        };
+                        const portionIcons: Record<string, string> = {
+                            habis: 'check-circle',
+                            half: 'timelapse',
+                            quarter: 'timelapse',
+                            none: 'cancel',
+                        };
+                        const portion = schedule.log?.portion ?? 'none';
+                        const color = portionColors[portion] ?? portionColors.none;
+                        const label = portionLabels[portion] ?? portionLabels.none;
+                        const iconName = portionIcons[portion] ?? portionIcons.none;
 
-                    {/* History Item 2 */}
-                    <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
-                        <View className="flex-row justify-between items-start">
-                            <View>
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">2 hari lalu</Text>
-                                <Text style={{ color: colors.onSurface }} className="font-bold mt-1">Puding Buah Naga</Text>
+                        return (
+                            <View key={schedule.id} style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
+                                <View className="flex-row justify-between items-start">
+                                    <View>
+                                        <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">
+                                            {schedule.scheduled_date}
+                                        </Text>
+                                        <Text style={{ color: colors.onSurface }} className="font-bold mt-1">{schedule.menu.name}</Text>
+                                    </View>
+                                    <View className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${color.bg}`}>
+                                        <MaterialIcons name={iconName as keyof typeof MaterialIcons.glyphMap} size={14} color={color.icon} />
+                                        <Text className={`text-xs font-bold ${color.text}`}>{label}</Text>
+                                    </View>
+                                </View>
                             </View>
-                            <View className="flex-row items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100">
-                                <MaterialIcons name="timelapse" size={14} color="#EA580C" />
-                                <Text className="text-xs font-bold text-orange-700">1/2 Porsi</Text>
-                            </View>
+                        );
+                    })}
+                    {recentHistory.length === 0 && (
+                        <View style={{ backgroundColor: colors.card }} className="rounded-xl p-4 shadow-sm">
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-center">
+                                Belum ada riwayat konsumsi
+                            </Text>
                         </View>
-                    </View>
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>

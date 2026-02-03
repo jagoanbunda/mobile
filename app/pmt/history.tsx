@@ -1,44 +1,48 @@
+import { NetworkErrorView, EmptyStateView } from '@/components/NetworkErrorView';
 import { useTheme } from '@/context/ThemeContext';
+import { useActiveChild } from '@/services/hooks/use-children';
+import { useCurrentMonthPmtProgress, useCurrentMonthPmtSchedules } from '@/services/hooks/use-pmt';
+import { PmtPortion } from '@/types';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-type HistoryItemStatus = 'habis' | 'half' | 'none';
-
-interface HistoryItem {
-    date: string;
-    menu: string;
-    status: HistoryItemStatus;
-    note?: string;
+function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    });
 }
-
-const historyData: HistoryItem[] = [
-    {
-        date: 'Senin, 14 Okt 2023',
-        menu: 'Sup Ayam Jagung + Telur',
-        status: 'habis',
-        note: '"Anak sangat suka, makan lahap sekali."'
-    },
-    {
-        date: 'Minggu, 13 Okt 2023',
-        menu: 'Puding Buah Naga',
-        status: 'half',
-        note: '"Sedang tumbuh gigi, agak rewel."'
-    },
-    {
-        date: 'Sabtu, 12 Okt 2023',
-        menu: 'Bola-bola Tahu Kukus',
-        status: 'none',
-    }
-];
 
 export default function PMTHistoryScreen() {
     const { colors } = useTheme();
 
-    const getStatusBadge = (status: HistoryItemStatus) => {
-        switch (status) {
+    const { data: child, isLoading: isLoadingChild } = useActiveChild();
+    const childId = child?.id ?? 0;
+
+    const { data: progress, isLoading: isLoadingProgress, isError: isProgressError, error: progressError, refetch: refetchProgress } = useCurrentMonthPmtProgress(childId);
+    const { data: schedules, isLoading: isLoadingSchedules, isError: isSchedulesError, error: schedulesError, refetch: refetchSchedules } = useCurrentMonthPmtSchedules(childId);
+
+    const isLoading = isLoadingChild || isLoadingProgress || isLoadingSchedules;
+    const isError = isProgressError || isSchedulesError;
+    const error = progressError || schedulesError;
+    const refetch = () => { refetchProgress(); refetchSchedules(); };
+
+    const getStatusBadge = (portion: PmtPortion | undefined) => {
+        if (!portion) {
+            return (
+                <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="flex-row items-center gap-1 rounded-full px-2.5 py-1">
+                    <MaterialIcons name="schedule" size={14} color={colors.outline} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="text-xs font-semibold">Belum Lapor</Text>
+                </View>
+            );
+        }
+        switch (portion) {
             case 'habis':
                 return (
                     <View style={{ backgroundColor: colors.primaryContainer }} className="flex-row items-center gap-1 rounded-full px-2.5 py-1">
@@ -53,6 +57,13 @@ export default function PMTHistoryScreen() {
                         <Text style={{ color: colors.onTertiaryContainer }} className="text-xs font-semibold">1/2 Porsi</Text>
                     </View>
                 );
+            case 'quarter':
+                return (
+                    <View style={{ backgroundColor: colors.tertiaryContainer }} className="flex-row items-center gap-1 rounded-full px-2.5 py-1">
+                        <MaterialIcons name="pie-chart" size={14} color={colors.tertiary} />
+                        <Text style={{ color: colors.onTertiaryContainer }} className="text-xs font-semibold">1/4 Porsi</Text>
+                    </View>
+                );
             case 'none':
                 return (
                     <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="flex-row items-center gap-1 rounded-full px-2.5 py-1">
@@ -63,6 +74,65 @@ export default function PMTHistoryScreen() {
         }
     };
 
+    // Loading state
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View testID="loading-indicator" className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
+                        Memuat data...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Error state
+    if (isError) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 p-4">
+                    <NetworkErrorView error={error} onRetry={refetch} />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Empty state
+    if (!schedules || schedules.length === 0) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                {/* Keep header with back button */}
+                <View style={{ backgroundColor: colors.surface }} className="flex-row items-center p-4 pb-2 justify-between">
+                    <TouchableOpacity
+                        testID="back-button"
+                        onPress={() => router.back()}
+                        style={{ backgroundColor: colors.surfaceContainerHigh }}
+                        className="w-10 h-10 items-center justify-center rounded-full"
+                    >
+                        <MaterialIcons name="arrow-back" size={24} color={colors.onSurface} />
+                    </TouchableOpacity>
+                    <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
+                        PMT Riwayat & Program
+                    </Text>
+                </View>
+                <View className="flex-1 items-center justify-center p-4">
+                    <EmptyStateView 
+                        icon="history"
+                        title="Belum Ada Riwayat"
+                        message="Belum ada riwayat konsumsi PMT yang tercatat."
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    const loggedSchedules = schedules.filter(s => s.is_logged);
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
             <Stack.Screen options={{ headerShown: false }} />
@@ -70,6 +140,7 @@ export default function PMTHistoryScreen() {
             {/* Header */}
             <View style={{ backgroundColor: colors.surface }} className="flex-row items-center p-4 pb-2 justify-between">
                 <TouchableOpacity
+                    testID="back-button"
                     onPress={() => router.back()}
                     style={{ backgroundColor: colors.surfaceContainerHigh }}
                     className="w-10 h-10 items-center justify-center rounded-full"
@@ -98,7 +169,9 @@ export default function PMTHistoryScreen() {
                         <View className="flex-1 justify-center gap-1">
                             <View className="flex-row items-center gap-2 mb-1">
                                 <View style={{ backgroundColor: colors.primaryContainer }} className="px-2 py-0.5 rounded-full">
-                                    <Text style={{ color: colors.primary }} className="text-xs font-bold uppercase tracking-wider">Aktif</Text>
+                                    <Text style={{ color: colors.primary }} className="text-xs font-bold uppercase tracking-wider">
+                                        {progress && progress.summary.total_scheduled > 0 ? 'Aktif' : 'Tidak Aktif'}
+                                    </Text>
                                 </View>
                             </View>
                             <Text style={{ color: colors.onSurface }} className="text-xl font-bold leading-tight">Program PMT Balita</Text>
@@ -117,13 +190,13 @@ export default function PMTHistoryScreen() {
                         <View className="flex-row justify-between items-end">
                             <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-medium">Progress Harian</Text>
                             <Text style={{ color: colors.onSurface }} className="text-sm font-bold">
-                                Hari 14 <Text style={{ color: colors.outline }} className="font-normal">/ 30</Text>
+                                Hari {progress?.summary.total_logged ?? 0} <Text style={{ color: colors.outline }} className="font-normal">/ {progress?.summary.total_scheduled ?? 0}</Text>
                             </Text>
                         </View>
                         <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="relative h-3 w-full rounded-full overflow-hidden">
-                            <View style={{ backgroundColor: colors.primary, width: '46%' }} className="absolute top-0 left-0 h-full rounded-full" />
+                            <View style={{ backgroundColor: colors.primary, width: `${progress?.summary.compliance_rate ?? 0}%` }} className="absolute top-0 left-0 h-full rounded-full" />
                         </View>
-                        <Text style={{ color: colors.outline }} className="text-xs text-right mt-1">Sisa 16 hari lagi</Text>
+                        <Text style={{ color: colors.outline }} className="text-xs text-right mt-1">Sisa {progress?.summary.pending ?? 0} hari lagi</Text>
                     </View>
                 </View>
 
@@ -152,24 +225,24 @@ export default function PMTHistoryScreen() {
 
                     {/* History List */}
                     <View className="gap-3">
-                        {historyData.map((item, index) => (
+                        {loggedSchedules.map((schedule) => (
                             <View
-                                key={index}
-                                style={{ backgroundColor: colors.surfaceContainerHigh, opacity: item.status === 'none' ? 0.7 : 1 }}
+                                key={schedule.id}
+                                style={{ backgroundColor: colors.surfaceContainerHigh, opacity: schedule.log?.portion === 'none' ? 0.7 : 1 }}
                                 className="flex-col gap-3 rounded-xl p-4"
                             >
                                 <View className="flex-row justify-between items-start">
                                     <View>
-                                        <Text style={{ color: colors.outline }} className="text-xs font-medium uppercase tracking-wide">{item.date}</Text>
-                                        <Text style={{ color: colors.onSurface }} className="text-base font-bold mt-1">{item.menu}</Text>
+                                        <Text style={{ color: colors.outline }} className="text-xs font-medium uppercase tracking-wide">{formatDate(schedule.scheduled_date)}</Text>
+                                        <Text style={{ color: colors.onSurface }} className="text-base font-bold mt-1">{schedule.menu.name}</Text>
                                     </View>
-                                    {getStatusBadge(item.status)}
+                                    {getStatusBadge(schedule.log?.portion)}
                                 </View>
                                 <View style={{ backgroundColor: colors.outlineVariant }} className="h-px w-full" />
                                 <View className="flex-row items-center">
                                     <MaterialIcons name="sticky-note-2" size={14} color={colors.outline} style={{ marginRight: 4 }} />
-                                    <Text style={{ color: item.note ? colors.onSurfaceVariant : colors.outline }} className="text-sm italic">
-                                        {item.note || 'Tidak ada catatan.'}
+                                    <Text style={{ color: schedule.log?.notes ? colors.onSurfaceVariant : colors.outline }} className="text-sm italic">
+                                        {schedule.log?.notes ? `"${schedule.log.notes}"` : 'Tidak ada catatan.'}
                                     </Text>
                                 </View>
                             </View>
