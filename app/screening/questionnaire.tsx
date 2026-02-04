@@ -53,6 +53,11 @@ export default function QuestionnaireScreen() {
             return;
         }
         
+        // Don't retry if mutation already failed (e.g., no questionnaire for child's age)
+        if (createScreeningMutation.isError) {
+            return;
+        }
+        
         // Otherwise, create a new screening when childId is valid
         if (childId > 0 && !isLoadingInProgress && !inProgressScreening && !currentScreeningId && !createScreeningMutation.isPending) {
             createScreeningMutation.mutate(undefined, {
@@ -65,7 +70,7 @@ export default function QuestionnaireScreen() {
                 }
             });
         }
-    }, [childId, isLoadingInProgress, inProgressScreening, screeningIdParam, currentScreeningId]);
+    }, [childId, isLoadingInProgress, inProgressScreening, screeningIdParam, currentScreeningId, createScreeningMutation.isError]);
     
     // Load questions from API
     const { 
