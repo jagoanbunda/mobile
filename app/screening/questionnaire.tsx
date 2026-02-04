@@ -1,64 +1,150 @@
 import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
-import { Stack, router } from 'expo-router';
-import { useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-
-// Mock questions data
-const questions = [
-    {
-        id: 1,
-        domain: 'Komunikasi',
-        domainColor: '#2563EB',
-        question: 'Apakah anak bisa menyebutkan minimal 2 kata untuk meminta sesuatu?',
-        hint: 'Contoh: "mau minum", "minta susu"',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFkUwnVOKng70MVTlwF8hf3SvINi_pPhf1p6DNVolH9owd3qpsN8LlgOUPUQ_mZwdEq8OuQxloE8z_cDvM3meZq1lVu8JVUhjTA5D7acYpjbhIs-ilLL5vHOw5XnoiJIjV-41j12gZbC7U55hgeQVarxUuZQW3ScsZF1BQDtEurqkxp-8-dMqh9dKVSWcBEbhiVLida-4Us7JaUk18ubFdf_q1fZXHNcRgVoWb1Xb_XNHSRs1P-shFSAKmCTb539fGAOa4N7F9umI',
-    },
-    {
-        id: 2,
-        domain: 'Motorik Halus',
-        domainColor: '#9333EA',
-        question: 'Apakah anak bisa menyusun 3 balok ke atas tanpa jatuh?',
-        hint: 'Amati gerakan anak dengan seksama. Jangan bantu menyusun balok.',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFkUwnVOKng70MVTlwF8hf3SvINi_pPhf1p6DNVolH9owd3qpsN8LlgOUPUQ_mZwdEq8OuQxloE8z_cDvM3meZq1lVu8JVUhjTA5D7acYpjbhIs-ilLL5vHOw5XnoiJIjV-41j12gZbC7U55hgeQVarxUuZQW3ScsZF1BQDtEurqkxp-8-dMqh9dKVSWcBEbhiVLida-4Us7JaUk18ubFdf_q1fZXHNcRgVoWb1Xb_XNHSRs1P-shFSAKmCTb539fGAOa4N7F9umI',
-    },
-    {
-        id: 3,
-        domain: 'Motorik Kasar',
-        domainColor: '#EA580C',
-        question: 'Apakah anak bisa berjalan mundur minimal 3 langkah?',
-        hint: 'Minta anak berjalan mundur tanpa berpegangan.',
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFkUwnVOKng70MVTlwF8hf3SvINi_pPhf1p6DNVolH9owd3qpsN8LlgOUPUQ_mZwdEq8OuQxloE8z_cDvM3meZq1lVu8JVUhjTA5D7acYpjbhIs-ilLL5vHOw5XnoiJIjV-41j12gZbC7U55hgeQVarxUuZQW3ScsZF1BQDtEurqkxp-8-dMqh9dKVSWcBEbhiVLida-4Us7JaUk18ubFdf_q1fZXHNcRgVoWb1Xb_XNHSRs1P-shFSAKmCTb539fGAOa4N7F9umI',
-    },
-];
-
-const childData = {
-    name: 'Ananda Rizky',
-    age: '24 Bulan',
-    screeningAge: '24 Bulan',
-    photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCMlymQ-A11UJdpVD6FzTQKd6nqjXVju5ztuJFHzyarGVtjPyz0BQXEK-RCGbMRVbN-LzFpO-PE0BISafrXDinVM2kXNB5QOjjV0j8oQQ6AXgtqmmgO_FHkyOO5ISfqh2zu46eaG7fKp2PF994MC3RwsNgQL583wBshfBBABlXuy8z5ARrCKAcSFUnY6Dwsd7wuRWnjja58_-BodVGsqKhcHunPFYjkiXK6JgWZ7a65cGGnCXDXHv5RjXQq9dpcI_nm-DwUUfjQUgo',
-};
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { useState, useEffect, useMemo } from 'react';
+import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { useActiveChild, useChild } from '@/services/hooks/use-children';
+import { useAsq3Questions, useCreateScreening, useSubmitAnswers, useInProgressScreening } from '@/services/hooks/use-screenings';
+import { NetworkErrorView } from '@/components/NetworkErrorView';
+import { AnswerValue, Asq3Question, ScreeningAnswerInput } from '@/types';
 
 export default function QuestionnaireScreen() {
     const { colors } = useTheme();
+    
+    // Route params
+    const params = useLocalSearchParams<{ 
+        screeningId?: string; 
+        childId?: string; 
+        ageIntervalId?: string; 
+    }>();
+    const screeningIdParam = params.screeningId ? parseInt(params.screeningId) : undefined;
+    const childIdParam = params.childId ? parseInt(params.childId) : 0;
+    const ageIntervalIdParam = params.ageIntervalId ? parseInt(params.ageIntervalId) : 0;
+    
+    // Get child data - use childIdParam OR fallback to activeChild
+    const { data: activeChild } = useActiveChild();
+    const childId = childIdParam || activeChild?.id || 0;
+    const { data: childData } = useChild(childId);
+    
+    // Check for in-progress screening first
+    const { data: inProgressScreening, isLoading: isLoadingInProgress } = useInProgressScreening(childId);
+    
+    // Mutation to create new screening
+    const createScreeningMutation = useCreateScreening(childId);
+    
+    // Track current screening ID (from param, in-progress, or newly created)
+    const [currentScreeningId, setCurrentScreeningId] = useState<number | undefined>(screeningIdParam);
+    const [currentAgeIntervalId, setCurrentAgeIntervalId] = useState<number>(ageIntervalIdParam);
+    
+    // Effect to handle screening setup
+    useEffect(() => {
+        // If we have a screeningId from params, use it
+        if (screeningIdParam) {
+            setCurrentScreeningId(screeningIdParam);
+            return;
+        }
+        
+        // If there's an in-progress screening, use that
+        if (inProgressScreening && !isLoadingInProgress) {
+            setCurrentScreeningId(inProgressScreening.id);
+            setCurrentAgeIntervalId(inProgressScreening.age_interval.id);
+            return;
+        }
+        
+        // Otherwise, create a new screening when childId is valid
+        if (childId > 0 && !isLoadingInProgress && !inProgressScreening && !currentScreeningId && !createScreeningMutation.isPending) {
+            createScreeningMutation.mutate(undefined, {
+                onSuccess: (screening) => {
+                    setCurrentScreeningId(screening.id);
+                    setCurrentAgeIntervalId(screening.age_interval.id);
+                },
+                onError: (error) => {
+                    console.error('Failed to create screening:', error);
+                }
+            });
+        }
+    }, [childId, isLoadingInProgress, inProgressScreening, screeningIdParam, currentScreeningId]);
+    
+    // Load questions from API
+    const { 
+        data: questionsData, 
+        isLoading: isLoadingQuestions, 
+        isError: isQuestionsError, 
+        error: questionsError,
+        refetch: refetchQuestions 
+    } = useAsq3Questions(currentAgeIntervalId);
+    
+    // Flatten questions from all domains into single ordered array
+    const allQuestions = useMemo(() => {
+        if (!questionsData?.questions_by_domain) return [];
+        
+        const questions: Asq3Question[] = [];
+        // Sort domains by their order (communication, gross_motor, fine_motor, problem_solving, personal_social)
+        const domainOrder = ['communication', 'gross_motor', 'fine_motor', 'problem_solving', 'personal_social'];
+        
+        for (const domainCode of domainOrder) {
+            const domainQuestions = questionsData.questions_by_domain[domainCode] || [];
+            questions.push(...domainQuestions.sort((a, b) => a.display_order - b.display_order));
+        }
+        
+        return questions;
+    }, [questionsData]);
+    
+    // Answer state
     const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [answers, setAnswers] = useState<Record<number, string>>({});
-
-    const question = questions[currentQuestion];
-    const selectedAnswer = answers[question.id];
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
-
-    const handleAnswer = (answer: string) => {
-        setAnswers({ ...answers, [question.id]: answer });
+    const [answers, setAnswers] = useState<Record<number, 'YA' | 'KADANG' | 'TIDAK'>>({});
+    
+    // Map UI answer to API value
+    const mapAnswerToApi = (uiAnswer: 'YA' | 'KADANG' | 'TIDAK'): AnswerValue => {
+        switch (uiAnswer) {
+            case 'YA': return 'yes';
+            case 'KADANG': return 'sometimes';
+            case 'TIDAK': return 'no';
+        }
+    };
+    
+    // Submit answers mutation
+    const submitAnswersMutation = useSubmitAnswers(childId, currentScreeningId || 0);
+    
+    const handleAnswer = (answer: 'YA' | 'KADANG' | 'TIDAK') => {
+        const question = allQuestions[currentQuestion];
+        if (question) {
+            setAnswers({ ...answers, [question.id]: answer });
+        }
     };
 
     const handleNext = () => {
-        if (currentQuestion < questions.length - 1) {
-            setCurrentQuestion(currentQuestion + 1);
-        } else {
-            router.push('/screening/result');
-        }
+        const question = allQuestions[currentQuestion];
+        const selectedAnswer = question ? answers[question.id] : undefined;
+        
+        if (!selectedAnswer || !question) return;
+        
+        // Submit this answer to API
+        const answerInput: ScreeningAnswerInput = {
+            question_id: question.id,
+            answer: mapAnswerToApi(selectedAnswer),
+        };
+        
+        submitAnswersMutation.mutate({ answers: [answerInput] }, {
+            onSuccess: () => {
+                if (currentQuestion < allQuestions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                } else {
+                    // All questions answered, navigate to results
+                    router.replace({
+                        pathname: '/screening/result',
+                        params: { 
+                            screeningId: currentScreeningId?.toString() || '', 
+                            childId: childId.toString() 
+                        }
+                    });
+                }
+            },
+            onError: (error) => {
+                console.error('Failed to submit answer:', error);
+            }
+        });
     };
 
     const handlePrev = () => {
@@ -66,6 +152,66 @@ export default function QuestionnaireScreen() {
             setCurrentQuestion(currentQuestion - 1);
         }
     };
+    
+    // Loading state
+    const isLoading = isLoadingInProgress || isLoadingQuestions || createScreeningMutation.isPending || !currentScreeningId;
+    
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
+                        {createScreeningMutation.isPending ? 'Membuat sesi screening...' : 'Memuat pertanyaan...'}
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+    
+    // Error state
+    const isError = isQuestionsError || createScreeningMutation.isError;
+    const error = questionsError || createScreeningMutation.error;
+    
+    if (isError) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 p-4">
+                    <NetworkErrorView 
+                        error={error} 
+                        onRetry={() => {
+                            if (createScreeningMutation.isError) {
+                                createScreeningMutation.reset();
+                                // Will auto-retry via useEffect
+                            } else {
+                                refetchQuestions();
+                            }
+                        }} 
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
+    
+    // Safety check for questions
+    const question = allQuestions[currentQuestion];
+    if (!question) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center p-4">
+                    <Text style={{ color: colors.onSurfaceVariant }} className="text-center">
+                        Tidak ada pertanyaan tersedia.
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+    
+    const selectedAnswer = answers[question.id];
+    const progress = ((currentQuestion + 1) / allQuestions.length) * 100;
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
@@ -90,17 +236,17 @@ export default function QuestionnaireScreen() {
             <ScrollView className="flex-1 px-4 pt-2" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
                 {/* Child Profile */}
                 <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center gap-4 rounded-2xl p-4 mb-4">
-                    <Image source={{ uri: childData.photo }} className="w-14 h-14 rounded-full" contentFit="cover" />
+                    <Image source={{ uri: childData?.avatar_url ?? 'https://via.placeholder.com/100' }} className="w-14 h-14 rounded-full" contentFit="cover" />
                     <View className="flex-1 gap-1">
-                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">{childData.name}</Text>
+                        <Text style={{ color: colors.onSurface }} className="text-lg font-bold leading-tight">{childData?.name ?? ''}</Text>
                         <View className="flex-row flex-wrap gap-x-4 gap-y-1">
                             <View className="flex-row items-center gap-1">
                                 <MaterialIcons name="cake" size={14} color={colors.onSurfaceVariant} />
-                                <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">{childData.age}</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">{childData?.age?.label ?? ''}</Text>
                             </View>
                             <View className="flex-row items-center gap-1">
                                 <MaterialIcons name="track-changes" size={14} color={colors.primary} />
-                                <Text style={{ color: colors.primary }} className="text-sm font-bold">Screening: {childData.screeningAge}</Text>
+                                <Text style={{ color: colors.primary }} className="text-sm font-bold">Screening: {questionsData?.age_interval?.age_label ?? ''}</Text>
                             </View>
                         </View>
                     </View>
@@ -110,7 +256,7 @@ export default function QuestionnaireScreen() {
                 <View className="gap-2 mb-4">
                     <View className="flex-row justify-between items-end">
                         <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-medium">Progress</Text>
-                        <Text style={{ color: colors.onSurface }} className="text-sm font-bold">Pertanyaan {currentQuestion + 1} dari {questions.length}</Text>
+                        <Text style={{ color: colors.onSurface }} className="text-sm font-bold">Pertanyaan {currentQuestion + 1} dari {allQuestions.length}</Text>
                     </View>
                     <View style={{ backgroundColor: colors.surfaceContainerHighest }} className="h-3 w-full rounded-full overflow-hidden">
                         <View style={{ backgroundColor: colors.primary, width: `${progress}%` }} className="h-3 rounded-full" />
@@ -119,24 +265,13 @@ export default function QuestionnaireScreen() {
 
                 {/* Question Card */}
                 <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-2xl overflow-hidden mb-4">
-                    <View className="relative w-full aspect-[4/3]">
-                        <Image source={{ uri: question.image }} className="w-full h-full" contentFit="cover" />
-                        <View className="absolute top-4 left-4">
-                            <View style={{ backgroundColor: question.domainColor }} className="px-3 py-1.5 rounded-full">
-                                <Text className="text-xs font-bold text-white uppercase tracking-wider">{question.domain}</Text>
-                            </View>
-                        </View>
-                    </View>
                     <View className="p-5 gap-3">
-                        <Text style={{ color: colors.onSurface }} className="text-xl font-bold leading-snug tracking-tight">
-                            {question.question}
-                        </Text>
-                        <View className="flex-row items-start gap-2">
-                            <MaterialIcons name="info-outline" size={18} color={colors.onSurfaceVariant} />
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm italic leading-relaxed flex-1">
-                                {question.hint}
-                            </Text>
+                        <View style={{ backgroundColor: question.domain.color }} className="self-start px-3 py-1.5 rounded-full mb-2">
+                            <Text className="text-xs font-bold text-white uppercase tracking-wider">{question.domain.name}</Text>
                         </View>
+                        <Text style={{ color: colors.onSurface }} className="text-xl font-bold leading-snug tracking-tight">
+                            {question.question_text}
+                        </Text>
                     </View>
                 </View>
 
@@ -211,14 +346,23 @@ export default function QuestionnaireScreen() {
 
                     <TouchableOpacity
                         onPress={handleNext}
-                        disabled={!selectedAnswer}
-                        style={{ backgroundColor: selectedAnswer ? colors.primary : colors.surfaceContainerHigh, opacity: selectedAnswer ? 1 : 0.5 }}
+                        disabled={!selectedAnswer || submitAnswersMutation.isPending}
+                        style={{ 
+                            backgroundColor: selectedAnswer && !submitAnswersMutation.isPending ? colors.primary : colors.surfaceContainerHigh, 
+                            opacity: selectedAnswer && !submitAnswersMutation.isPending ? 1 : 0.5 
+                        }}
                         className="flex-1 flex-row items-center justify-center gap-1 px-6 py-3 rounded-xl"
                     >
-                        <Text style={{ color: selectedAnswer ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
-                            {currentQuestion === questions.length - 1 ? 'Selesai' : 'Next'}
-                        </Text>
-                        <MaterialIcons name="chevron-right" size={20} color={selectedAnswer ? colors.onPrimary : colors.onSurfaceVariant} />
+                        {submitAnswersMutation.isPending ? (
+                            <ActivityIndicator size="small" color={colors.onPrimary} />
+                        ) : (
+                            <>
+                                <Text style={{ color: selectedAnswer ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
+                                    {currentQuestion === allQuestions.length - 1 ? 'Selesai' : 'Next'}
+                                </Text>
+                                <MaterialIcons name="chevron-right" size={20} color={selectedAnswer ? colors.onPrimary : colors.onSurfaceVariant} />
+                            </>
+                        )}
                     </TouchableOpacity>
                 </View>
             </View>
