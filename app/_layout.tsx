@@ -1,3 +1,8 @@
+// Load Reactotron in development for API debugging
+if (__DEV__) {
+  require('@/config/reactotron');
+}
+
 import {
   DarkTheme,
   DefaultTheme,

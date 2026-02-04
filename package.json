@@ -64,6 +64,7 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "jest-expo": "^54.0.16",
+    "reactotron-react-native": "^5.1.18",
     "semantic-release": "^22.0.12",
     "typescript": "~5.9.2"
   },
