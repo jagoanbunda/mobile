@@ -161,24 +161,7 @@ export default function QuestionnaireScreen() {
         }
     };
     
-    // Loading state
-    const isLoading = isLoadingInProgress || isLoadingQuestions || createScreeningMutation.isPending || !currentScreeningId;
-    
-    if (isLoading) {
-        return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
-                <Stack.Screen options={{ headerShown: false }} />
-                <View className="flex-1 items-center justify-center">
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
-                        {createScreeningMutation.isPending ? 'Membuat sesi screening...' : 'Memuat pertanyaan...'}
-                    </Text>
-                </View>
-            </SafeAreaView>
-        );
-    }
-    
-    // Error state
+    // Error state - check BEFORE loading to handle failed mutations
     const isError = isQuestionsError || createScreeningMutation.isError;
     const error = questionsError || createScreeningMutation.error;
     
@@ -229,8 +212,8 @@ export default function QuestionnaireScreen() {
                         error={error} 
                         onRetry={() => {
                             if (createScreeningMutation.isError) {
+                                hasAttemptedCreate.current = false;
                                 createScreeningMutation.reset();
-                                // Will auto-retry via useEffect
                             } else {
                                 refetchQuestions();
                             }
@@ -240,6 +223,24 @@ export default function QuestionnaireScreen() {
             </SafeAreaView>
         );
     }
+    
+    // Loading state - only show if not in error state
+    const isLoading = isLoadingInProgress || isLoadingQuestions || createScreeningMutation.isPending || !currentScreeningId;
+    
+    if (isLoading) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <View className="flex-1 items-center justify-center">
+                    <ActivityIndicator size="large" color={colors.primary} />
+                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
+                        {createScreeningMutation.isPending ? 'Membuat sesi screening...' : 'Memuat pertanyaan...'}
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+    
     
     // Safety check for questions
     const question = allQuestions[currentQuestion];
