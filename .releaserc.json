@@ -18,11 +18,18 @@
             }
         ],
         [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "node scripts/sync-version.js"
+            }
+        ],
+        [
             "@semantic-release/git",
             {
                 "assets": [
                     "CHANGELOG.md",
-                    "package.json"
+                    "package.json",
+                    "app.json"
                 ],
                 "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
             }
