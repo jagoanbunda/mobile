@@ -69,9 +69,7 @@ export default function QuestionnaireScreen() {
                     setCurrentScreeningId(screening.id);
                     setCurrentAgeIntervalId(screening.age_interval.id);
                 },
-                onError: (error) => {
-                    console.error('Failed to create screening:', error);
-                }
+                // Error handled by mutation state - UI shows friendly error screen
             });
         }
     }, [childId, isLoadingInProgress, inProgressScreening, screeningIdParam, currentScreeningId, createScreeningMutation.isError]);
