@@ -2,7 +2,7 @@ import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useActiveChild, useChild } from '@/services/hooks/use-children';
 import { useAsq3Questions, useCreateScreening, useSubmitAnswers, useInProgressScreening } from '@/services/hooks/use-screenings';
@@ -38,6 +38,9 @@ export default function QuestionnaireScreen() {
     const [currentScreeningId, setCurrentScreeningId] = useState<number | undefined>(screeningIdParam);
     const [currentAgeIntervalId, setCurrentAgeIntervalId] = useState<number>(ageIntervalIdParam);
     
+    // Ref to prevent double mutation calls during effect re-runs
+    const hasAttemptedCreate = useRef(false);
+    
     // Effect to handle screening setup
     useEffect(() => {
         // If we have a screeningId from params, use it
@@ -53,13 +56,14 @@ export default function QuestionnaireScreen() {
             return;
         }
         
-        // Don't retry if mutation already failed (e.g., no questionnaire for child's age)
-        if (createScreeningMutation.isError) {
+        // Don't retry if mutation already failed or we've already attempted
+        if (createScreeningMutation.isError || hasAttemptedCreate.current) {
             return;
         }
         
         // Otherwise, create a new screening when childId is valid
         if (childId > 0 && !isLoadingInProgress && !inProgressScreening && !currentScreeningId && !createScreeningMutation.isPending) {
+            hasAttemptedCreate.current = true;
             createScreeningMutation.mutate(undefined, {
                 onSuccess: (screening) => {
                     setCurrentScreeningId(screening.id);
