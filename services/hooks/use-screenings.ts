@@ -21,6 +21,8 @@ export const screeningKeys = {
     [...screeningKeys.details(), childId, screeningId] as const,
   results: (childId: number, screeningId: number) =>
     [...screeningKeys.all, 'results', childId, screeningId] as const,
+  progress: (childId: number, screeningId: number) =>
+    [...screeningKeys.all, 'progress', childId, screeningId] as const,
 };
 
 // === ASQ-3 Master Data ===
@@ -103,6 +105,18 @@ export function useScreeningResults(childId: number, screeningId: number) {
     queryKey: screeningKeys.results(childId, screeningId),
     queryFn: () => screeningService.getResults(childId, screeningId),
     enabled: childId > 0 && screeningId > 0,
+  });
+}
+
+/**
+ * Fetch screening progress/checkpoint
+ */
+export function useScreeningProgress(childId: number, screeningId: number) {
+  return useQuery({
+    queryKey: screeningKeys.progress(childId, screeningId),
+    queryFn: () => screeningService.getProgress(childId, screeningId),
+    enabled: childId > 0 && screeningId > 0,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 

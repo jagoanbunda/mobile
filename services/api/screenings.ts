@@ -17,6 +17,7 @@ import {
   SubmitAnswersRequest,
   SubmitAnswersResponse,
   ScreeningResultsResponse,
+  ScreeningProgressResponse,
 } from '@/types';
 
 /** ASQ-3 Master Data Service */
@@ -126,5 +127,15 @@ export const screeningService = {
     return api.get<ScreeningResultsResponse>(
       `/children/${childId}/screenings/${screeningId}/results`
     );
+  },
+
+  /**
+   * Get screening progress/checkpoint
+   */
+  async getProgress(childId: number, screeningId: number): Promise<ScreeningProgressResponse> {
+    const response = await api.get<{ data: ScreeningProgressResponse }>(
+      `/children/${childId}/screenings/${screeningId}/progress`
+    );
+    return response.data;
   },
 };
