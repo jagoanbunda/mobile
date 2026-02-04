@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/jagoanbunda/mobile/compare/v1.1.1...v1.2.0) (2026-02-04)
+
+
+### Bug Fixes
+
+* **screening:** restore progress when continuing ASQ-3 test ([9e78e92](https://github.com/jagoanbunda/mobile/commit/9e78e924039439bc5ef35f79c7d3f240af16a161))
+* **screening:** use correct field name for recommendations ([484c7dd](https://github.com/jagoanbunda/mobile/commit/484c7ddaad336f2dbe2d3f573023d9a8c77fd830))
+
+
+### Features
+
+* **screening:** add API method and hook for progress endpoint ([5fb070b](https://github.com/jagoanbunda/mobile/commit/5fb070bdb9478aabb3b2d7526ee947b796a9a7a3))
+* **screening:** add TypeScript types for progress API response ([bdc60f2](https://github.com/jagoanbunda/mobile/commit/bdc60f2fbe55a6dd93d3d56cadebf4f5076de6f8))
+
 ## [1.1.1](https://github.com/jagoanbunda/mobile/compare/v1.1.0...v1.1.1) (2026-02-04)
 
 
