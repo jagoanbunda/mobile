@@ -102,8 +102,22 @@ jobs:
           ls -la *.apk || echo "No APK in root"
           find . -name "*.apk" -type f 2>/dev/null || true
 
+      - name: Check if release was created
+        id: check_release
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if gh release view "v$VERSION" &>/dev/null; then
+            echo "release_exists=true" >> $GITHUB_OUTPUT
+            echo "Release v$VERSION exists, will upload APK"
+          else
+            echo "release_exists=false" >> $GITHUB_OUTPUT
+            echo "Release v$VERSION not found, skipping APK upload"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload APK to Release
-        if: steps.semantic.outputs.new_release_published == 'true'
+        if: steps.check_release.outputs.release_exists == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version.outputs.version }}
