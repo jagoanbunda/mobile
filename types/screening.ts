@@ -183,3 +183,33 @@ export interface ScreeningResultsResponse {
   results: ScreeningDomainResult[];
   recommendations: Asq3Recommendation[];
 }
+
+/** Individual answer in progress response */
+export interface ScreeningAnswer {
+  question_id: number;
+  answer: AnswerValue;
+  score: number;
+  created_at: DateTimeString;
+}
+
+/** Domain progress in progress response */
+export interface DomainProgress {
+  domain_code: string;
+  domain_name: string;
+  answered_questions: number;
+  total_questions: number;
+  progress_percent: number;
+}
+
+/** GET /children/{id}/screenings/{id}/progress response */
+export interface ScreeningProgressResponse {
+  screening_id: number;
+  status: ScreeningStatus;
+  total_questions: number;
+  answered_questions: number;
+  progress_percent: number;
+  last_saved_at: DateTimeString;
+  domains: DomainProgress[];
+  answered_question_ids: number[];
+  answers: ScreeningAnswer[];
+}
