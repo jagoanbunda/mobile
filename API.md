@@ -1062,6 +1062,61 @@ Mendapatkan hasil interpretasi skor skrining beserta rekomendasi.
 | `pantau` | Perlu Pemantauan | Skor antara cutoff dan monitoring |
 | `perlu_rujukan` | Perlu Rujukan | Skor di bawah cutoff score |
 
+#### GET /children/{child}/screenings/{screening}/progress
+Mendapatkan progress pengerjaan skrining (checkpoint).
+
+- **Autentikasi Diperlukan:** Ya
+- **Respon Berhasil (200 OK):**
+  ```json
+  {
+    "data": {
+      "screening_id": 456,
+      "status": "in_progress",
+      "total_questions": 30,
+      "answered_questions": 15,
+      "progress_percent": 50,
+      "last_saved_at": "2026-02-04T06:30:00+00:00",
+      "domains": [
+        {
+          "domain_code": "communication",
+          "domain_name": "Komunikasi",
+          "answered_questions": 4,
+          "total_questions": 6,
+          "progress_percent": 67
+        }
+      ],
+      "answered_question_ids": [1, 2, 3, 5, 7, 8, 10, 12, 14, 15],
+      "answers": [
+        {
+          "question_id": 1,
+          "answer": "yes",
+          "score": 10,
+          "created_at": "2026-02-04T06:00:00+00:00"
+        }
+      ]
+    }
+  }
+  ```
+- **Respon Gagal:**
+  | Status | Kondisi | Respon |
+  |--------|---------|--------|
+  | 401 | Tidak terautentikasi | `{"message": "Unauthenticated."}` |
+  | 403 | Bukan pemilik anak | `{"message": "Anda tidak memiliki akses ke data anak ini"}` |
+  | 404 | Screening tidak ditemukan | `{"message": "Data screening tidak ditemukan"}` |
+
+**Field Respon:**
+| Field | Type | Deskripsi |
+|-------|------|-----------|
+| screening_id | int | ID screening |
+| status | string | `in_progress`, `completed`, atau `cancelled` |
+| total_questions | int | Selalu 30 (5 domain × 6 pertanyaan) |
+| answered_questions | int | Jumlah pertanyaan yang sudah dijawab |
+| progress_percent | int | 0-100, dibulatkan ke integer |
+| last_saved_at | string | Timestamp ISO 8601 update terakhir |
+| domains | array | Progress per domain |
+| answered_question_ids | array | Daftar ID pertanyaan yang sudah dijawab |
+| answers | array | Semua jawaban yang sudah dikirim beserta skor |
+
 ---
 
 ### PMT (Pemberian Makanan Tambahan) (`/pmt`)
