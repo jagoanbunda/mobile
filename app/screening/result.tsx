@@ -253,7 +253,7 @@ export default function ScreeningResultScreen() {
                                         <View key={idx} className="flex-row gap-3 items-start">
                                             <MaterialIcons name="check" size={18} color={colors.primary} />
                                             <Text style={{ color: colors.onSurface }} className="text-sm leading-relaxed flex-1">
-                                                {rec.description}
+                                                {rec.recommendation_text}
                                             </Text>
                                         </View>
                                     ))}

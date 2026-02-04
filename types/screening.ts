@@ -63,11 +63,10 @@ export interface Asq3Recommendation {
   id: number;
   domain_id: number | null;
   age_interval_id: number | null;
-  title: string;
-  description: string;
+  recommendation_text: string;
   priority: number;
+  created_at: DateTimeString;
   domain: Asq3Domain | null;
-  ageInterval: Asq3AgeInterval | null;
 }
 
 /** GET /asq3/recommendations response */
