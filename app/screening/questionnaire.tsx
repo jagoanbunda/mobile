@@ -8,6 +8,7 @@ import { useActiveChild, useChild } from '@/services/hooks/use-children';
 import { useAsq3Questions, useCreateScreening, useSubmitAnswers, useInProgressScreening } from '@/services/hooks/use-screenings';
 import { NetworkErrorView } from '@/components/NetworkErrorView';
 import { AnswerValue, Asq3Question, ScreeningAnswerInput } from '@/types';
+import { ApiError } from '@/services/api/errors';
 
 export default function QuestionnaireScreen() {
     const { colors } = useTheme();
@@ -174,7 +175,45 @@ export default function QuestionnaireScreen() {
     const isError = isQuestionsError || createScreeningMutation.isError;
     const error = questionsError || createScreeningMutation.error;
     
+    // Check if this is a "no questionnaire for child's age" error (422 validation)
+    const isNoQuestionnaireError = error instanceof ApiError && error.status === 422 && 
+        error.message.toLowerCase().includes('kuesioner');
+    
     if (isError) {
+        // Special handling for "no questionnaire for age" - show friendly message with back button
+        if (isNoQuestionnaireError) {
+            return (
+                <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                    <Stack.Screen options={{ headerShown: false }} />
+                    <View className="flex-1 p-4 items-center justify-center">
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="rounded-xl p-8 items-center max-w-sm">
+                            <View style={{ backgroundColor: colors.tertiaryContainer }} className="w-20 h-20 rounded-full items-center justify-center mb-4">
+                                <MaterialIcons name="child-care" size={40} color={colors.tertiary} />
+                            </View>
+                            <Text style={{ color: colors.onSurface }} className="text-lg font-bold text-center">
+                                Screening Belum Tersedia
+                            </Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm text-center mt-2">
+                                Kuesioner ASQ-3 belum tersedia untuk usia {childData?.name || 'anak'} saat ini. 
+                                ASQ-3 tersedia untuk anak usia 1-66 bulan pada interval tertentu.
+                            </Text>
+                            <TouchableOpacity
+                                onPress={() => router.back()}
+                                style={{ backgroundColor: colors.primary }}
+                                className="mt-6 px-6 py-3 rounded-xl flex-row items-center gap-2"
+                            >
+                                <MaterialIcons name="arrow-back" size={20} color={colors.onPrimary} />
+                                <Text style={{ color: colors.onPrimary }} className="font-bold">
+                                    Kembali
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </SafeAreaView>
+            );
+        }
+        
+        // Generic error handling with retry
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
                 <Stack.Screen options={{ headerShown: false }} />
