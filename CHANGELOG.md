@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jagoanbunda/mobile/compare/v1.1.0...v1.1.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* **ci:** fix APK upload condition to check release existence ([4c8031a](https://github.com/jagoanbunda/mobile/commit/4c8031a5cb1e645fc895f15a0f170f701c314140))
+
 # [1.1.0](https://github.com/jagoanbunda/mobile/compare/v1.0.1...v1.1.0) (2026-02-04)
 
 
