@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.1 (2026-02-04)
+
+## What's Changed
+- fix(screening): check error state before loading state (d3bdb05)
+- chore(screening): remove console.error for expected 422 errors (9120b19)
+- fix(screening): use ref to prevent double mutation calls (89e0dc8)
+- fix(screening): prevent mutation retry loop after 422 error (25afebe)
+- fix(screening): show friendly error when no questionnaire for child's age (ac9f5e8)
+- chore(dev): add Reactotron for API debugging (e7445af)
+- feat(screening): integrate ASQ-3 screens with real API (3d5ddf2)
+- feat(pmt): connect PMT screens to API hooks (fb68978)
+- test(pmt): add unit tests for PMT screens (TDD RED) (2db7dd2)
+- chore(release): update changelog [skip ci] (60239df)
+## Downloads
+- 📱 **Android APK** - Download from assets below
+
 ## v1.0.1 (2026-01-29)
 
 ## What's Changed
