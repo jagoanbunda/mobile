@@ -5,7 +5,7 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useActiveChild, useChild } from '@/services/hooks/use-children';
-import { useAsq3Questions, useCreateScreening, useSubmitAnswers, useInProgressScreening } from '@/services/hooks/use-screenings';
+import { useAsq3Questions, useCreateScreening, useSubmitAnswers, useInProgressScreening, useScreeningProgress } from '@/services/hooks/use-screenings';
 import { NetworkErrorView } from '@/components/NetworkErrorView';
 import { AnswerValue, Asq3Question, ScreeningAnswerInput } from '@/types';
 import { ApiError } from '@/services/api/errors';
@@ -99,9 +99,18 @@ export default function QuestionnaireScreen() {
         return questions;
     }, [questionsData]);
     
+    // Fetch progress for in-progress screenings (when continuing from param or using existing in-progress)
+    // Only fetch when we have a screeningIdParam (resuming) or inProgressScreening (continuing)
+    const isResumingScreening = !!screeningIdParam || !!inProgressScreening;
+    const { 
+        data: progressData, 
+        isLoading: isLoadingProgress 
+    } = useScreeningProgress(childId, currentScreeningId || 0);
+    
     // Answer state
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<Record<number, 'YA' | 'KADANG' | 'TIDAK'>>({});
+    const [hasRestoredProgress, setHasRestoredProgress] = useState(false);
     
     // Map UI answer to API value
     const mapAnswerToApi = (uiAnswer: 'YA' | 'KADANG' | 'TIDAK'): AnswerValue => {
@@ -111,6 +120,41 @@ export default function QuestionnaireScreen() {
             case 'TIDAK': return 'no';
         }
     };
+    
+    // Map API answer to UI value
+    const mapApiToUiAnswer = (apiAnswer: AnswerValue): 'YA' | 'KADANG' | 'TIDAK' => {
+        switch (apiAnswer) {
+            case 'yes': return 'YA';
+            case 'sometimes': return 'KADANG';
+            case 'no': return 'TIDAK';
+        }
+    };
+    
+    // Effect to restore answers and set initial question from progress data
+    useEffect(() => {
+        if (!isResumingScreening || hasRestoredProgress || !progressData || allQuestions.length === 0) {
+            return;
+        }
+        
+        // Map API answers to local format
+        const restoredAnswers: Record<number, 'YA' | 'KADANG' | 'TIDAK'> = {};
+        progressData.answers.forEach(ans => {
+            restoredAnswers[ans.question_id] = mapApiToUiAnswer(ans.answer);
+        });
+        setAnswers(restoredAnswers);
+        
+        // Find first unanswered question
+        const answeredIds = new Set(progressData.answered_question_ids);
+        const firstUnansweredIdx = allQuestions.findIndex(q => !answeredIds.has(q.id));
+        if (firstUnansweredIdx > 0) {
+            setCurrentQuestion(firstUnansweredIdx);
+        } else if (firstUnansweredIdx === -1 && allQuestions.length > 0) {
+            // All questions answered, go to last one
+            setCurrentQuestion(allQuestions.length - 1);
+        }
+        
+        setHasRestoredProgress(true);
+    }, [isResumingScreening, hasRestoredProgress, progressData, allQuestions]);
     
     // Submit answers mutation
     const submitAnswersMutation = useSubmitAnswers(childId, currentScreeningId || 0);
@@ -225,7 +269,9 @@ export default function QuestionnaireScreen() {
     }
     
     // Loading state - only show if not in error state
-    const isLoading = isLoadingInProgress || isLoadingQuestions || createScreeningMutation.isPending || !currentScreeningId;
+    // Also wait for progress data when resuming (to restore answers before showing questions)
+    const needsProgressRestore = isResumingScreening && !hasRestoredProgress;
+    const isLoading = isLoadingInProgress || isLoadingQuestions || createScreeningMutation.isPending || !currentScreeningId || (needsProgressRestore && isLoadingProgress);
     
     if (isLoading) {
         return (
@@ -234,7 +280,7 @@ export default function QuestionnaireScreen() {
                 <View className="flex-1 items-center justify-center">
                     <ActivityIndicator size="large" color={colors.primary} />
                     <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
-                        {createScreeningMutation.isPending ? 'Membuat sesi screening...' : 'Memuat pertanyaan...'}
+                        {createScreeningMutation.isPending ? 'Membuat sesi screening...' : needsProgressRestore ? 'Memuat progress...' : 'Memuat pertanyaan...'}
                     </Text>
                 </View>
             </SafeAreaView>
