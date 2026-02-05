@@ -13,9 +13,9 @@ interface WeeklyTrendProps {
 
 /** Trend configuration with arrow, color, and label */
 const trendConfig: Record<TrendDirection, { arrow: string; color: string; label: string }> = {
-    up: { arrow: '↑', color: '#4CAF50', label: 'Meningkat' },
-    down: { arrow: '↓', color: '#F44336', label: 'Menurun' },
-    stable: { arrow: '→', color: '#9E9E9E', label: 'Stabil' },
+    up: { arrow: '↑', color: '#81C784', label: 'Meningkat' },
+    down: { arrow: '↓', color: '#E57373', label: 'Menurun' },
+    stable: { arrow: '→', color: '#A1887F', label: 'Stabil' },
 };
 
 /**
