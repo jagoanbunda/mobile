@@ -140,17 +140,19 @@ function ChildCard({
                     styles.card,
                     {
                         width: CARD_WIDTH,
-                        backgroundColor: colors.surfaceContainerLowest,
+                        backgroundColor: isActive
+                            ? colors.primaryContainer
+                            : colors.surfaceContainerLowest,
                         transform: [{ scale: scaleAnim }],
                     },
                     isActive && {
                         borderWidth: 2,
                         borderColor: colors.primary,
-                        elevation: 4,
-                        shadowColor: '#000',
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 4,
+                        elevation: 6,
+                        shadowColor: colors.primary,
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 6,
                     },
                 ]}
             >
@@ -160,7 +162,7 @@ function ChildCard({
                         styles.avatar,
                         {
                             backgroundColor: isActive
-                                ? colors.primaryContainer
+                                ? colors.primary
                                 : colors.surfaceContainerHigh,
                         },
                     ]}
@@ -168,7 +170,7 @@ function ChildCard({
                     <MaterialIcons
                         name="child-care"
                         size={24}
-                        color={isActive ? colors.primary : colors.onSurfaceVariant}
+                        color={isActive ? colors.onPrimary : colors.onSurfaceVariant}
                     />
                 </View>
 
