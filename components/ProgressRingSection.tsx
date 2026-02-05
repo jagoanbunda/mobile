@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ProgressRing } from '@/components/ProgressRing';
 import { useTheme } from '@/context/ThemeContext';
 import type { ProgressRingsData, ProgressRingData } from '@/types/dashboard';
@@ -16,7 +17,7 @@ type MetricKey = keyof ProgressRingsData;
 interface MetricConfig {
     key: MetricKey;
     label: string;
-    icon: string;
+    iconName: React.ComponentProps<typeof MaterialIcons>['name'];
     color: string;
 }
 
@@ -25,11 +26,11 @@ interface MetricConfig {
  * Grid layout: 3 top row, 2 bottom row
  */
 const metricsConfig: MetricConfig[] = [
-    { key: 'calories', label: 'Energi', icon: '🔥', color: '#FF5722' },
-    { key: 'protein', label: 'Protein', icon: '🥩', color: '#8BC34A' },
-    { key: 'carbs', label: 'Karbohidrat', icon: '🍞', color: '#FFC107' },
-    { key: 'fat', label: 'Lemak', icon: '🥑', color: '#FF9800' },
-    { key: 'fiber', label: 'Serat', icon: '🥬', color: '#4CAF50' },
+    { key: 'calories', label: 'Energi', iconName: 'whatshot', color: '#FF5722' },
+    { key: 'protein', label: 'Protein', iconName: 'restaurant', color: '#8BC34A' },
+    { key: 'carbs', label: 'Karbohidrat', iconName: 'grain', color: '#FFC107' },
+    { key: 'fat', label: 'Lemak', iconName: 'water-drop', color: '#FF9800' },
+    { key: 'fiber', label: 'Serat', iconName: 'eco', color: '#4CAF50' },
 ];
 
 const RING_SIZE = 60;
@@ -134,9 +135,13 @@ export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProp
                     color={metric.color}
                     label={metric.label}
                     icon={
-                        <Text style={styles.iconText}>
-                            {metric.icon}
-                        </Text>
+                        <View style={[styles.iconContainer, { backgroundColor: colors.primaryContainer }]}>
+                            <MaterialIcons
+                                name={metric.iconName}
+                                size={24}
+                                color={metric.color}
+                            />
+                        </View>
                     }
                 />
                 <Text 
@@ -178,8 +183,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         minWidth: 90,
     },
-    iconText: {
-        fontSize: 18,
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     valueText: {
         marginTop: 4,
