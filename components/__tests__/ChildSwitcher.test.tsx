@@ -54,7 +54,7 @@ describe('ChildSwitcher', () => {
         it('renders all child cards', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -69,7 +69,7 @@ describe('ChildSwitcher', () => {
         it('displays child names', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -83,7 +83,7 @@ describe('ChildSwitcher', () => {
         it('returns null for empty children array', () => {
             render(
                 <ChildSwitcher
-                    children={[]}
+                    childProfiles={[]}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -97,7 +97,7 @@ describe('ChildSwitcher', () => {
         it('formats age with years and months', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -110,7 +110,7 @@ describe('ChildSwitcher', () => {
         it('formats age with years only', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -123,7 +123,7 @@ describe('ChildSwitcher', () => {
         it('formats age with months only', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -146,7 +146,7 @@ describe('ChildSwitcher', () => {
 
             render(
                 <ChildSwitcher
-                    children={manyChildren}
+                    childProfiles={manyChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -167,7 +167,7 @@ describe('ChildSwitcher', () => {
         it('calls onChildSelect when card is pressed', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -181,7 +181,7 @@ describe('ChildSwitcher', () => {
         it('calls onChildSelect with correct id for each card', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                 />
@@ -199,7 +199,7 @@ describe('ChildSwitcher', () => {
         it('renders skeleton placeholders when loading', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                     isLoading={true}
@@ -214,7 +214,7 @@ describe('ChildSwitcher', () => {
         it('renders 3 skeleton cards when loading', () => {
             render(
                 <ChildSwitcher
-                    children={[]}
+                    childProfiles={[]}
                     activeChildId={1}
                     onChildSelect={mockOnChildSelect}
                     isLoading={true}
@@ -229,7 +229,7 @@ describe('ChildSwitcher', () => {
         it('renders with active child highlighted', () => {
             render(
                 <ChildSwitcher
-                    children={mockChildren}
+                    childProfiles={mockChildren}
                     activeChildId={2}
                     onChildSelect={mockOnChildSelect}
                 />

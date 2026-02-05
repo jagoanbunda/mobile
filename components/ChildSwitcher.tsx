@@ -15,7 +15,7 @@ import type { ChildProfile } from '@/types/dashboard';
 /** Props for ChildSwitcher component */
 export interface ChildSwitcherProps {
     /** Array of child profiles to display */
-    children: ChildProfile[];
+    childProfiles: ChildProfile[];
     /** Currently active child ID */
     activeChildId: number;
     /** Callback when a child is selected */
@@ -222,7 +222,7 @@ function ChildCard({
  * @example
  * ```tsx
  * <ChildSwitcher
- *   children={childProfiles}
+ *   childProfiles={profiles}
  *   activeChildId={1}
  *   onChildSelect={(id) => setActiveChildId(id)}
  *   isLoading={false}
@@ -230,7 +230,7 @@ function ChildCard({
  * ```
  */
 export function ChildSwitcher({
-    children: childProfiles,
+    childProfiles,
     activeChildId,
     onChildSelect,
     isLoading = false,

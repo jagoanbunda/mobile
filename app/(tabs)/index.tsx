@@ -70,7 +70,7 @@ export default function HomeScreen() {
         {/* Child Switcher */}
         <View className="px-4 mb-4">
           <ChildSwitcher
-            children={(allChildren || []).slice(0, 3).map(c => ({
+            childProfiles={(allChildren || []).slice(0, 3).map(c => ({
               id: c.id,
               name: c.name,
               age_in_months: c.age?.months || 0,
