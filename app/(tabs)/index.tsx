@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useActiveChild } from '@/services/hooks/use-children';
@@ -8,7 +8,6 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { ChildSwitcher } from '@/components/ChildSwitcher';
 import { QuickActions } from '@/components/QuickActions';
 import { ProgressRingSection } from '@/components/ProgressRingSection';
 import { WeeklyTrend } from '@/components/WeeklyTrend';
@@ -23,14 +22,6 @@ export default function HomeScreen() {
 
   // Dashboard data hook
   const { data: dashboardData, isLoading: isLoadingDashboard } = useDashboard(childId);
-
-  // Child switching state
-  const [selectedChildId, setSelectedChildId] = useState<number>(0);
-
-  // Update selected when active child changes
-  useEffect(() => {
-    if (activeChild?.id) setSelectedChildId(activeChild.id);
-  }, [activeChild?.id]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, paddingTop: 48 }}>
@@ -65,20 +56,6 @@ export default function HomeScreen() {
           <Text style={{ color: colors.text }} className="text-3xl font-bold tracking-tight leading-tight">
             Good Morning,{"\n"}{user?.name || 'Parent'} 👋
           </Text>
-        </View>
-
-        {/* Child Switcher */}
-        <View className="px-4 mb-4">
-          <ChildSwitcher
-            childProfiles={(allChildren || []).slice(0, 3).map(c => ({
-              id: c.id,
-              name: c.name,
-              age_in_months: c.age?.months || 0,
-            }))}
-            activeChildId={selectedChildId}
-            onChildSelect={setSelectedChildId}
-            isLoading={isLoadingChild}
-          />
         </View>
 
         {/* Quick Actions */}
