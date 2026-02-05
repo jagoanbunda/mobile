@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { ProgressRing } from '@/components/ProgressRing';
+import { ActivityRings } from '@/components/ActivityRings';
 import { useTheme } from '@/context/ThemeContext';
 import type { ProgressRingsData, ProgressRingData } from '@/types/dashboard';
 
@@ -12,159 +12,90 @@ export interface ProgressRingSectionProps {
     isLoading?: boolean;
 }
 
-type MetricKey = keyof ProgressRingsData;
-
-interface MetricConfig {
-    key: MetricKey;
-    label: string;
-    iconName: React.ComponentProps<typeof MaterialIcons>['name'];
-    color: string;
-}
-
-/**
- * Metric configuration with Indonesian labels
- * Grid layout: 3 top row, 2 bottom row
- */
-const metricsConfig: MetricConfig[] = [
-    { key: 'calories', label: 'Energi', iconName: 'whatshot', color: '#FF5722' },
-    { key: 'protein', label: 'Protein', iconName: 'restaurant', color: '#8BC34A' },
-    { key: 'carbs', label: 'Karbohidrat', iconName: 'grain', color: '#FFC107' },
-    { key: 'fat', label: 'Lemak', iconName: 'water-drop', color: '#FF9800' },
-    { key: 'fiber', label: 'Serat', iconName: 'eco', color: '#4CAF50' },
+const BOTTOM_METRICS = [
+    { key: 'fat' as const, label: 'Lemak', iconName: 'water-drop' as const, color: '#FF9800' },
+    { key: 'fiber' as const, label: 'Serat', iconName: 'eco' as const, color: '#4CAF50' },
 ];
 
-const RING_SIZE = 60;
-const STROKE_WIDTH = 6;
-
-/**
- * Skeleton placeholder ring for loading state
- */
-function SkeletonRing() {
-    const { colors } = useTheme();
-    
-    return (
-        <View style={styles.metricItem}>
-            <View 
-                style={[
-                    styles.skeletonRing, 
-                    { 
-                        width: RING_SIZE, 
-                        height: RING_SIZE,
-                        borderRadius: RING_SIZE / 2,
-                        backgroundColor: colors.surfaceContainerHighest,
-                    }
-                ]} 
-            />
-            <View 
-                style={[
-                    styles.skeletonLabel,
-                    { backgroundColor: colors.surfaceContainerHighest }
-                ]} 
-            />
-            <View 
-                style={[
-                    styles.skeletonValue,
-                    { backgroundColor: colors.surfaceContainerHighest }
-                ]} 
-            />
-        </View>
-    );
-}
-
-/**
- * Formats the value display below the ring
- * Example: "850/1350 kcal"
- */
 function formatValueDisplay(ringData: ProgressRingData): string {
     const current = Math.round(ringData.current);
     const target = Math.round(ringData.target);
     return `${current}/${target} ${ringData.unit}`;
 }
 
-/**
- * ProgressRingSection - Grid of 5 nutrition metric rings
- * 
- * Displays calories, protein, carbs, fat, and fiber progress rings
- * in a 2-row grid layout (3 top, 2 bottom).
- * 
- * Features:
- * - Indonesian labels for all metrics
- * - Animated progress rings with icons
- * - Skeleton loading state
- * - Graceful handling of partial/null data
- */
-export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProps) {
+function MiniStat({ 
+    label, 
+    value, 
+    icon, 
+    color 
+}: { 
+    label: string; 
+    value: string; 
+    icon: keyof typeof MaterialIcons.glyphMap; 
+    color: string;
+}) {
     const { colors } = useTheme();
-
-    // Show skeleton grid during loading
-    if (isLoading) {
-        return (
-            <View style={styles.container}>
-                <View style={styles.row}>
-                    {[1, 2, 3].map((i) => <SkeletonRing key={i} />)}
-                </View>
-                <View style={styles.row}>
-                    {[4, 5].map((i) => <SkeletonRing key={i} />)}
-                </View>
+    
+    return (
+        <View style={[styles.miniStatCard, { backgroundColor: colors.surfaceContainer }]}>
+            <View style={styles.miniStatHeader}>
+                <MaterialIcons name={icon} size={20} color={color} />
+                <Text style={[styles.miniStatLabel, { color: colors.onSurfaceVariant }]}>{label}</Text>
             </View>
-        );
+            <Text style={[styles.miniStatValue, { color: colors.onSurface }]}>{value}</Text>
+        </View>
+    );
+}
+
+function SkeletonLayout() {
+    const { colors } = useTheme();
+    
+    return (
+        <View style={styles.container}>
+            <View style={styles.ringsContainer}>
+                 {/* Placeholder for rings - just a large circle */}
+                 <View style={[styles.skeletonRing, { backgroundColor: colors.surfaceContainerHighest }]} />
+            </View>
+            <View style={styles.miniStatsRow}>
+                <View style={[styles.skeletonCard, { backgroundColor: colors.surfaceContainerHighest }]} />
+                <View style={[styles.skeletonCard, { backgroundColor: colors.surfaceContainerHighest }]} />
+            </View>
+        </View>
+    );
+}
+
+export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProps) {
+    if (isLoading) {
+        return <SkeletonLayout />;
     }
 
-    // No data - render nothing
     if (!data) {
         return null;
     }
 
-    /**
-     * Renders a single metric ring with icon, label, and value
-     */
-    const renderMetric = (metric: MetricConfig) => {
-        const ringData = data[metric.key];
-        
-        // Skip metrics with missing data
-        if (!ringData) {
-            return null;
-        }
-
-        return (
-            <View key={metric.key} style={styles.metricItem}>
-                <ProgressRing
-                    value={ringData.percentage}
-                    size={RING_SIZE}
-                    strokeWidth={STROKE_WIDTH}
-                    color={metric.color}
-                    label={metric.label}
-                    icon={
-                        <View style={[styles.iconContainer, { backgroundColor: colors.primaryContainer }]}>
-                            <MaterialIcons
-                                name={metric.iconName}
-                                size={24}
-                                color={metric.color}
-                            />
-                        </View>
-                    }
-                />
-                <Text 
-                    style={[
-                        styles.valueText,
-                        { color: colors.onSurfaceVariant }
-                    ]}
-                >
-                    {formatValueDisplay(ringData)}
-                </Text>
-            </View>
-        );
-    };
-
     return (
         <View style={styles.container}>
-            {/* Top row: Energi, Protein, Karbohidrat */}
-            <View style={styles.row}>
-                {metricsConfig.slice(0, 3).map(renderMetric)}
+            {/* Top Section: Activity Rings */}
+            <View style={styles.ringsContainer}>
+                <ActivityRings data={data} />
             </View>
-            {/* Bottom row: Lemak, Serat */}
-            <View style={styles.row}>
-                {metricsConfig.slice(3, 5).map(renderMetric)}
+
+            {/* Bottom Section: Mini Stats (Fat & Fiber) */}
+            <View style={styles.miniStatsRow}>
+                {BOTTOM_METRICS.map((metric) => {
+                    const metricData = data[metric.key];
+                    if (!metricData) return null;
+                    
+                    return (
+                        <MiniStat 
+                            key={metric.key}
+                            label={metric.label}
+                            value={formatValueDisplay(metricData)}
+                            icon={metric.iconName}
+                            color={metric.color}
+                        />
+                    );
+                })}
             </View>
         </View>
     );
@@ -172,46 +103,49 @@ export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProp
 
 const styles = StyleSheet.create({
     container: {
-        gap: 16,
+        gap: 24,
     },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'flex-start',
-    },
-    metricItem: {
-        alignItems: 'center',
-        minWidth: 90,
-    },
-    iconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+    ringsContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+        paddingVertical: 8,
     },
-    valueText: {
-        marginTop: 4,
-        fontSize: 10,
+    miniStatsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 12,
+    },
+    miniStatCard: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 12,
+        gap: 8,
+    },
+    miniStatHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    miniStatLabel: {
+        fontSize: 12,
         fontWeight: '500',
-        textAlign: 'center',
+    },
+    miniStatValue: {
+        fontSize: 14,
+        fontWeight: '600',
+        paddingLeft: 28, // Align with text start (icon size + gap)
     },
     skeletonRing: {
-        opacity: 0.6,
+        width: 180,
+        height: 180,
+        borderRadius: 90,
+        opacity: 0.5,
     },
-    skeletonLabel: {
-        marginTop: 6,
-        width: 50,
-        height: 12,
-        borderRadius: 4,
-        opacity: 0.6,
-    },
-    skeletonValue: {
-        marginTop: 4,
-        width: 60,
-        height: 10,
-        borderRadius: 4,
-        opacity: 0.4,
+    skeletonCard: {
+        flex: 1,
+        height: 72,
+        borderRadius: 12,
+        opacity: 0.5,
     },
 });
 
