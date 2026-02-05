@@ -12,6 +12,7 @@ export * from './food';
 export * from './screening';
 export * from './pmt';
 export * from './notification';
+export * from './dashboard';
 
 // API Utilities
 export * from './api';
