@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     listContent: {
-        paddingHorizontal: 16,
+        // Horizontal padding handled by parent container
     },
     card: {
         height: CARD_HEIGHT,
