@@ -25,14 +25,6 @@ const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.75);
 const CARD_GAP = 12;
 const CARD_HEIGHT = 100;
 
-/** Category accent colors for visual distinction */
-const categoryColors: Record<TipCategory, string> = {
-    reminder: '#2196F3',   // Blue
-    nutrition: '#4CAF50',  // Green
-    development: '#9C27B0', // Purple
-    health: '#F44336',     // Red
-};
-
 /**
  * Single tip card with emoji icon and message
  */
@@ -42,7 +34,6 @@ function TipCard({
     tip: PersonalizedTip;
 }) {
     const { colors } = useTheme();
-    const accentColor = categoryColors[tip.category];
 
     return (
         <View
@@ -51,7 +42,6 @@ function TipCard({
                 {
                     width: CARD_WIDTH,
                     backgroundColor: colors.surfaceContainerLowest,
-                    borderLeftColor: accentColor,
                 },
             ]}
             testID={`tip-card-${tip.category}`}
@@ -185,7 +175,6 @@ const styles = StyleSheet.create({
         height: CARD_HEIGHT,
         borderRadius: 16,
         padding: 16,
-        borderLeftWidth: 4,
         // Subtle shadow for depth
         elevation: 2,
         shadowColor: '#000',
