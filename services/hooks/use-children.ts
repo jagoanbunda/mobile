@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { childService } from '@/services/api/children';
 import { CreateChildRequest, UpdateChildRequest } from '@/types';
+import { useAuth } from '@/context/AuthContext';
 
 /** Query keys */
 export const childKeys = {
@@ -16,11 +17,12 @@ export const childKeys = {
 /**
  * Fetch all children
  */
-export function useChildren(activeOnly?: boolean) {
+export function useChildren(activeOnly?: boolean, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: childKeys.list(activeOnly),
     queryFn: () => childService.getAll(activeOnly),
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: options?.enabled !== false,
   });
 }
 
@@ -105,7 +107,12 @@ export function useDeleteChild() {
  * Get the first (or selected) child - useful for single-child scenarios
  */
 export function useActiveChild() {
-  const { data: children, ...rest } = useChildren(true);
+  const { isAuthenticated, isLoading: isAuthLoading, isVerifying } = useAuth();
+  
+  // Don't fetch children until auth is fully verified
+  const shouldFetch = isAuthenticated && !isAuthLoading && !isVerifying;
+  
+  const { data: children, ...rest } = useChildren(true, { enabled: shouldFetch });
   
   // TODO: In the future, support child selection via context/storage
   const activeChild = children?.[0] ?? null;

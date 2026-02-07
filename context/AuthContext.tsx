@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useRef,
   ReactNode,
 } from 'react';
 import { authService } from '@/services/api/auth';
@@ -16,12 +17,14 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   isVerifying: boolean;
+  verifyError: Error | null;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: UpdateProfileRequest) => Promise<void>;
   refreshUser: () => Promise<void>;
   verifyAuth: () => Promise<boolean>;
+  retryVerification: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,36 +33,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<Error | null>(null);
+  
+  // Use ref to track verification state without causing re-renders
+  const isVerifyingRef = useRef(false);
 
-  // Initialize auth state from storage
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const storedUser = await tokenStorage.getUser();
-        const token = await tokenStorage.getToken();
+    // Initialize auth state from storage
+    useEffect(() => {
+      const initAuth = async () => {
+        try {
+          const storedUser = await tokenStorage.getUser();
+          const token = await tokenStorage.getToken();
 
-        if (storedUser && token) {
-          setUser(storedUser);
-          // Optionally verify token is still valid
-          try {
-            const freshUser = await authService.getMe();
-            setUser(freshUser);
-            await tokenStorage.setUser(freshUser);
-          } catch (error) {
-            // Token invalid, clear auth state
-            if (error instanceof ApiError && error.isUnauthorized) {
-              await tokenStorage.clear();
-              setUser(null);
-            }
+          if (storedUser && token) {
+            // Just load from storage - verifyAuth will validate with API
+            setUser(storedUser);
           }
+        } finally {
+          setIsLoading(false);
         }
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      };
 
-    initAuth();
-  }, []);
+      initAuth();
+    }, []);
 
   const login = useCallback(async (credentials: LoginRequest) => {
     const response = await authService.login(credentials);
@@ -89,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * Verify authentication status with token refresh support.
+   * Uses ref to prevent concurrent verification without causing re-renders.
    * 1. Checks if token exists in storage
    * 2. Calls /auth/me to verify token validity
    * 3. If 401, attempts authService.refreshToken()
@@ -96,76 +93,89 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * 5. If refresh fails, clears auth state and returns false
    * @returns true if authenticated, false otherwise
    */
-  const verifyAuth = useCallback(async (): Promise<boolean> => {
-    // Prevent concurrent verification
-    if (isVerifying) {
-      return !!user;
-    }
+    const verifyAuth = useCallback(async (): Promise<boolean> => {
+      // Prevent concurrent verification using ref (not state)
+      // If already verifying, return true to indicate pending verification
+      if (isVerifyingRef.current) {
+        return true; // Return true to prevent redirect while verification is in progress
+      }
 
-    setIsVerifying(true);
-    try {
-      const token = await tokenStorage.getToken();
+      setVerifyError(null);
+      isVerifyingRef.current = true;
+      setIsVerifying(true);
       
-      // No token stored - not authenticated
-      if (!token) {
-        setUser(null);
-        return false;
-      }
-
       try {
-        // Verify token by calling /auth/me
-        const freshUser = await authService.getMe();
-        setUser(freshUser);
-        await tokenStorage.setUser(freshUser);
-        return true;
-      } catch (error) {
-        // If 401, attempt token refresh
-        if (error instanceof ApiError && error.isUnauthorized) {
-          try {
-            // Attempt to refresh the token
-            await authService.refreshToken();
-            
-            // Token refreshed successfully, fetch fresh user data
-            const freshUser = await authService.getMe();
-            setUser(freshUser);
-            await tokenStorage.setUser(freshUser);
-            return true;
-          } catch (refreshError) {
-            // Refresh failed - clear auth state
-            await tokenStorage.clear();
-            setUser(null);
-            return false;
-          }
-        }
+        const token = await tokenStorage.getToken();
         
-        // Non-401 error (network, server error, etc.) - keep current state
-        // but return false to indicate verification failed
-        return false;
-      }
-    } finally {
-      setIsVerifying(false);
-    }
-  }, [user, isVerifying]);
+        // No token stored - not authenticated
+        if (!token) {
+          setUser(null);
+          return false;
+        }
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        isVerifying,
-        login,
-        register,
-        logout,
-        updateProfile,
-        refreshUser,
-        verifyAuth,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-}
+        try {
+          // Verify token by calling /auth/me
+          const freshUser = await authService.getMe();
+          setUser(freshUser);
+          await tokenStorage.setUser(freshUser);
+          return true;
+        } catch (error) {
+          // If 401, attempt token refresh
+          if (error instanceof ApiError && error.isUnauthorized) {
+            try {
+              // Attempt to refresh the token
+              await authService.refreshToken();
+              
+              // Token refreshed successfully, fetch fresh user data
+              const freshUser = await authService.getMe();
+              setUser(freshUser);
+              await tokenStorage.setUser(freshUser);
+              return true;
+            } catch (refreshError) {
+              // Refresh failed - clear auth state
+              await tokenStorage.clear();
+              setUser(null);
+              return false;
+            }
+          }
+          
+          // Non-401 error (network, server error, etc.) - keep current state
+          // but return false to indicate verification failed
+          setVerifyError(error instanceof Error ? error : new Error('Network error'));
+          return false;
+        }
+      } finally {
+        isVerifyingRef.current = false;
+        setIsVerifying(false);
+      }
+    }, []);
+
+   const retryVerification = useCallback(async () => {
+     setVerifyError(null);
+     await verifyAuth();
+   }, [verifyAuth]);
+
+   return (
+     <AuthContext.Provider
+       value={{
+         user,
+         isAuthenticated: !!user,
+         isLoading,
+         isVerifying,
+         verifyError,
+         login,
+         register,
+         logout,
+         updateProfile,
+         refreshUser,
+         verifyAuth,
+         retryVerification,
+       }}
+     >
+       {children}
+     </AuthContext.Provider>
+   );
+ }
 
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
