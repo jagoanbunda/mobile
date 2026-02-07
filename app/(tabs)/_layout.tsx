@@ -14,8 +14,8 @@ type TabConfig = {
 };
 
 const tabs: TabConfig[] = [
-  { name: 'index', title: 'Home', icon: 'home' },
-  { name: 'input', title: 'Meals', icon: 'restaurant' },
+  { name: 'index', title: 'Beranda', icon: 'home' },
+  { name: 'input', title: 'Makanan', icon: 'restaurant' },
   { name: 'progress', title: 'Antropometri', icon: 'show-chart' },
   { name: 'screening', title: 'ASQ-3', icon: 'psychology' },
   { name: 'pmt', title: 'PMT', icon: 'fact-check' },
