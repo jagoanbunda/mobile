@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/jagoanbunda/mobile/compare/v1.3.1...v1.4.0) (2026-02-07)
+
+
+### Bug Fixes
+
+* **auth:** logout now properly redirects to login page ([ffd198a](https://github.com/jagoanbunda/mobile/commit/ffd198accf3732ce9422152e77cd36d06bd53668))
+* **auth:** use contextLogout as mutationFn to avoid double API call ([2c0cbb8](https://github.com/jagoanbunda/mobile/commit/2c0cbb82600248b668299778aea7e9875abddd0d))
+
+
+### Features
+
+* **i18n:** translate tab labels to Indonesian ([380fa6c](https://github.com/jagoanbunda/mobile/commit/380fa6cfe1088fe8315e944bd89e42b0b8a75134))
+* **ux:** add child management, dynamic greeting, and full Indonesian translation ([3c72fc4](https://github.com/jagoanbunda/mobile/commit/3c72fc4eecc85a4efc6eeec671d736b3d9c72477))
+* **ux:** integrate skeleton loading on all main tabs ([4d05c32](https://github.com/jagoanbunda/mobile/commit/4d05c329032d5319c0ec05480f11f4901f9803cd))
+
 ## [1.3.1](https://github.com/jagoanbunda/mobile/compare/v1.3.0...v1.3.1) (2026-02-07)
 
 
