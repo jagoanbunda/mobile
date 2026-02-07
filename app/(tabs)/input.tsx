@@ -9,6 +9,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { ActivityIndicator, Alert, Platform, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View, FlatList, Modal, KeyboardAvoidingView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SystemFoodCard } from '@/components/SystemFoodCard';
+import { ListItemSkeleton } from '@/components/Skeleton';
 
 // Helper function to format date in Indonesian
 const formatDateIndonesian = (date: Date): string => {
@@ -412,7 +413,13 @@ export default function InputScreen() {
                         </View>
 
                         {/* Category Filter Pills */}
-                        {!categoriesLoading && categories && (
+                        {categoriesLoading ? (
+                            <View className="mt-3 gap-3">
+                                <ListItemSkeleton />
+                                <ListItemSkeleton />
+                                <ListItemSkeleton />
+                            </View>
+                        ) : categories && (
                             <ScrollView 
                                 horizontal 
                                 showsHorizontalScrollIndicator={false} 

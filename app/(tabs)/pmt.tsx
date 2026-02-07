@@ -2,6 +2,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
 import { useCurrentMonthPmtProgress, useTodayPmtSchedule, usePmtSchedules } from '@/services/hooks/use-pmt';
 import { NetworkErrorView, EmptyStateView } from '@/components/NetworkErrorView';
+import { CardSkeleton, ListItemSkeleton } from '@/components/Skeleton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React from 'react';
@@ -28,11 +29,16 @@ export default function PMTTabScreen() {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
                 <Stack.Screen options={{ headerShown: false }} />
-                <View testID="loading-indicator" className="flex-1 items-center justify-center">
-                    <ActivityIndicator size="large" color={colors.primary} />
-                    <Text style={{ color: colors.onSurfaceVariant }} className="mt-4 text-sm">
-                        Memuat data...
-                    </Text>
+                <View testID="loading-indicator" className="flex-1 px-4 pt-4 pb-6 gap-6">
+                    <View className="flex-row items-center justify-between pb-2">
+                        <Text style={{ color: colors.onSurface }} className="text-2xl font-bold tracking-tight">PMT</Text>
+                    </View>
+                    <CardSkeleton />
+                    <View className="gap-4">
+                        <ListItemSkeleton />
+                        <ListItemSkeleton />
+                        <ListItemSkeleton />
+                    </View>
                 </View>
             </SafeAreaView>
         );

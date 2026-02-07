@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Line, Path } from 'react-native-svg';
 import { GrowthChartMeasurement } from '@/types';
+import { ChartSkeleton, StatCardSkeleton } from '@/components/Skeleton';
 
 type ChartType = 'BB/U' | 'TB/U' | 'BB/TB';
 
@@ -98,8 +99,15 @@ export default function ProgressScreen() {
         return (
             <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
                 <Stack.Screen options={{ headerShown: false }} />
-                <View className="flex-1 items-center justify-center">
-                    <ActivityIndicator size="large" color={colors.primary} />
+                <View className="flex-1 px-4 pt-4 pb-6 gap-6">
+                    <View className="flex-row items-center justify-between pb-2">
+                        <Text style={{ color: colors.onSurface }} className="text-2xl font-bold tracking-tight">Progress</Text>
+                    </View>
+                    <ChartSkeleton />
+                    <View className="flex-row gap-4">
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                    </View>
                 </View>
             </SafeAreaView>
         );

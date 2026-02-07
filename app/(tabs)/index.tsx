@@ -1,3 +1,4 @@
+import { ProfileHeaderSkeleton, CardSkeleton, ChartSkeleton, StatCardSkeleton } from '@/components/Skeleton';
 import { ProgressRingSection } from '@/components/ProgressRingSection';
 import { TasksCard } from '@/components/TasksCard';
 import { TipsCarousel } from '@/components/TipsCarousel';
@@ -21,6 +22,24 @@ export default function HomeScreen() {
 
   // Dashboard data hook
   const { data: dashboardData, isLoading: isLoadingDashboard } = useDashboard(childId);
+
+  const isLoading = isLoadingDashboard || isLoadingChild;
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, paddingTop: 48 }}>
+        <View className="px-4 pt-4 pb-6 gap-6">
+          <ProfileHeaderSkeleton />
+          <CardSkeleton />
+          <ChartSkeleton />
+          <View className="flex-row gap-4">
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, paddingTop: 48 }}>
