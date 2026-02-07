@@ -1,17 +1,17 @@
-import React from 'react';
-import { useTheme } from '@/context/ThemeContext';
+import { ProgressRingSection } from '@/components/ProgressRingSection';
+import { TasksCard } from '@/components/TasksCard';
+import { TipsCarousel } from '@/components/TipsCarousel';
+import { WeeklyTrend } from '@/components/WeeklyTrend';
+import { getAvatarUrl } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
 import { useDashboard } from '@/services/hooks/use-dashboard';
-import { getAvatarUrl } from '@/config/env';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import React from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { ProgressRingSection } from '@/components/ProgressRingSection';
-import { WeeklyTrend } from '@/components/WeeklyTrend';
-import { TasksCard } from '@/components/TasksCard';
-import { TipsCarousel } from '@/components/TipsCarousel';
 
 export default function HomeScreen() {
   const { colors, isDark } = useTheme();
@@ -44,7 +44,7 @@ export default function HomeScreen() {
                 </View>
               )}
             </TouchableOpacity>
-            <Text style={{ color: colors.text }} className="text-sm font-bold tracking-wide opacity-80">KREANOVA</Text>
+            <Text style={{ color: colors.text }} className="text-sm font-bold tracking-wide opacity-80">JagoanBunda</Text>
           </View>
           <TouchableOpacity style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} className="w-10 h-10 items-center justify-center rounded-full active:bg-white/20">
             <MaterialIcons name="notifications-none" size={24} color={colors.primary} />

@@ -54,3 +54,9 @@ specs
 templates
 
 nul
+
+# Package manager lockfiles (use npm only)
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml
