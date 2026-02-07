@@ -2,7 +2,7 @@
   "expo": {
     "name": "JagoanBunda",
     "slug": "jagoanbunda",
-    "version": "1.4.0",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "mobile",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "10400"
+      "buildNumber": "10500"
     },
     "android": {
       "package": "com.jagoanbunda.app",
@@ -22,7 +22,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "versionCode": 10400
+      "versionCode": 10500
     },
     "web": {
       "output": "static",

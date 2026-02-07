@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/jagoanbunda/mobile/compare/v1.4.0...v1.5.0) (2026-02-07)
+
+
+### Bug Fixes
+
+* **auth:** add explicit router.replace to login after logout ([57fe3e8](https://github.com/jagoanbunda/mobile/commit/57fe3e87356f9f1003fe6ef167d6ec635bb5d467))
+* **child-dropdown:** resolve avatar URLs with getAvatarUrl and use expo-image ([157be74](https://github.com/jagoanbunda/mobile/commit/157be743cec0ed992ed36adfa7e919f7fb7123cb))
+
+
+### Features
+
+* **dashboard:** add colored dot indicators to nutrition stats row ([694e04b](https://github.com/jagoanbunda/mobile/commit/694e04bfdb9d55e7fb4947cb004f1cb13e34beec)), closes [#FF5722](https://github.com/jagoanbunda/mobile/issues/FF5722) [#8BC34](https://github.com/jagoanbunda/mobile/issues/8BC34) [#FFC107](https://github.com/jagoanbunda/mobile/issues/FFC107)
+
 # [1.4.0](https://github.com/jagoanbunda/mobile/compare/v1.3.1...v1.4.0) (2026-02-07)
 
 
