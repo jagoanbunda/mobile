@@ -30,10 +30,11 @@ export function useLogout() {
   const { logout: contextLogout } = useAuth();
 
   return useMutation({
-    mutationFn: () => authService.logout(),
-    onSuccess: async () => {
+    mutationFn: async () => {
+      await contextLogout(); // This calls authService.logout() AND sets user to null
+    },
+    onSuccess: () => {
       queryClient.clear(); // Clear all queries on logout
-      await contextLogout(); // This sets user to null, triggering navigation
     },
   });
 }
