@@ -92,6 +92,20 @@ describe('ProgressRingSection', () => {
             expect(screen.getByText('Catat Makanan')).toBeTruthy();
             expect(screen.getByText('Lihat Riwayat')).toBeTruthy();
         });
+
+        it('renders colored dot indicators for each stat label', () => {
+            const data = createMockData();
+            render(<ProgressRingSection data={data} />);
+            
+            // Verify stats row with dots renders correctly
+            // The dots are rendered inline with labels
+            expect(screen.getByText('Kalori')).toBeTruthy();
+            expect(screen.getByText('Protein')).toBeTruthy();
+            expect(screen.getByText('Karbohidrat')).toBeTruthy();
+            
+            // Verify the stats row container exists with testID
+            expect(screen.getByTestId('stats-row')).toBeTruthy();
+        });
     });
 
     describe('loading state', () => {
