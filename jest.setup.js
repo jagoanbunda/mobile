@@ -1,40 +1,14 @@
 import '@testing-library/jest-native/extend-expect';
 
+// Suppress TurboModule errors for DevMenu
+global.RN$Bridging_createCallableModule = jest.fn();
+
 // Mock AsyncStorage
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-// Mock expo-router
-jest.mock('expo-router', () => ({
-  router: {
-    push: jest.fn(),
-    replace: jest.fn(),
-    back: jest.fn(),
-    canGoBack: jest.fn(() => true),
-  },
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    back: jest.fn(),
-    canGoBack: jest.fn(() => true),
-  }),
-  useLocalSearchParams: jest.fn(() => ({})),
-  useSegments: jest.fn(() => []),
-  usePathname: jest.fn(() => '/'),
-  useFocusEffect: jest.fn((callback) => {
-    // Execute the callback immediately for testing
-    callback();
-  }),
-  Redirect: jest.fn(({ href }) => null),
-  Stack: {
-    Screen: jest.fn(() => null),
-  },
-  Tabs: {
-    Screen: jest.fn(() => null),
-  },
-  Link: jest.fn(({ children }) => children),
-}));
+// Note: expo-router is mocked in individual test files to avoid module resolution issues
 
 // Mock expo-splash-screen
 jest.mock('expo-splash-screen', () => ({
@@ -48,3 +22,17 @@ jest.mock('react-native-reanimated', () => {
   Reanimated.default.call = () => {};
   return Reanimated;
 });
+
+// Suppress console warnings for DevMenu and other deprecated modules
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  if (
+    args[0]?.includes?.('DevMenu') ||
+    args[0]?.includes?.('ProgressBarAndroid') ||
+    args[0]?.includes?.('SafeAreaView') ||
+    args[0]?.includes?.('Clipboard')
+  ) {
+    return;
+  }
+  originalWarn(...args);
+};

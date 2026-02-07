@@ -8,7 +8,6 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { QuickActions } from '@/components/QuickActions';
 import { ProgressRingSection } from '@/components/ProgressRingSection';
 import { WeeklyTrend } from '@/components/WeeklyTrend';
 import { TasksCard } from '@/components/TasksCard';
@@ -58,12 +57,7 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Quick Actions */}
-        <View className="px-4 mb-6">
-          <QuickActions isPmtEnrolled={false} />
-        </View>
-
-        {/* Progress Rings */}
+        {/* Progress Rings (includes action buttons) */}
         <View className="px-4 mb-6">
           <ProgressRingSection
             data={dashboardData?.progressRings || null}
@@ -72,9 +66,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Weekly Trend */}
-        {dashboardData?.weeklyTrend && (
+        {childId > 0 && (
           <View className="px-4 mb-6">
-            <WeeklyTrend data={dashboardData.weeklyTrend} />
+            <WeeklyTrend childId={childId} />
           </View>
         )}
 

@@ -4,6 +4,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ActivityRings } from '@/components/ActivityRings';
 import { useTheme } from '@/context/ThemeContext';
 import type { ProgressRingsData, ProgressRingData } from '@/types/dashboard';
+import { PillButton } from './PillButton';
+import { useRouter } from 'expo-router';
 
 export interface ProgressRingSectionProps {
     /** Nutrition progress data for 5 metrics */
@@ -65,6 +67,9 @@ function SkeletonLayout() {
 }
 
 export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProps) {
+    const { colors } = useTheme();
+    const router = useRouter();
+
     if (isLoading) {
         return <SkeletonLayout />;
     }
@@ -78,6 +83,28 @@ export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProp
             {/* Top Section: Activity Rings */}
             <View style={styles.ringsContainer}>
                 <ActivityRings data={data} />
+            </View>
+
+            {/* Stats Row - Calories, Protein, Carbs */}
+            <View style={styles.statsRow}>
+                <View style={styles.statItem}>
+                    <Text style={[styles.statValue, { color: colors.onSurface }]}>
+                        {Math.round(data.calories.current)}/{Math.round(data.calories.target)}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Kalori</Text>
+                </View>
+                <View style={styles.statItem}>
+                    <Text style={[styles.statValue, { color: colors.onSurface }]}>
+                        {Math.round(data.protein.current)}/{Math.round(data.protein.target)}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Protein</Text>
+                </View>
+                <View style={styles.statItem}>
+                    <Text style={[styles.statValue, { color: colors.onSurface }]}>
+                        {Math.round(data.carbs.current)}/{Math.round(data.carbs.target)}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.onSurfaceVariant }]}>Karbohidrat</Text>
+                </View>
             </View>
 
             {/* Bottom Section: Mini Stats (Fat & Fiber) */}
@@ -97,6 +124,22 @@ export function ProgressRingSection({ data, isLoading }: ProgressRingSectionProp
                     );
                 })}
             </View>
+
+            {/* Action Buttons */}
+            <View style={styles.buttonRow}>
+                <PillButton
+                    label="Catat Makanan"
+                    icon="restaurant"
+                    onPress={() => router.push('/input')}
+                    variant="primary"
+                />
+                <PillButton
+                    label="Lihat Riwayat"
+                    icon="history"
+                    onPress={() => router.push('/progress')}
+                    variant="secondary"
+                />
+            </View>
         </View>
     );
 }
@@ -110,10 +153,33 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 8,
     },
+    statsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 16,
+        paddingHorizontal: 8,
+    },
+    statItem: {
+        alignItems: 'center',
+    },
+    statValue: {
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    statLabel: {
+        fontSize: 12,
+        marginTop: 2,
+    },
     miniStatsRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         gap: 12,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 12,
+        marginTop: 16,
     },
     miniStatCard: {
         flex: 1,

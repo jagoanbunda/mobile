@@ -1,137 +1,90 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/context/ThemeContext';
-import type { WeeklyTrendData, WeeklyDataPoint, TrendDirection } from '@/types/dashboard';
+import { useNutritionTrends } from '@/services/hooks/use-nutrition-trends';
+import { NutrientTrendCard } from './NutrientTrendCard';
 
 interface WeeklyTrendProps {
-    /** Weekly trend data with 4 weeks of data points */
-    data: WeeklyTrendData;
-    /** Indonesian title for the component */
-    title?: string;
+    childId: number;
 }
-
-/** Trend configuration with arrow, color, and label */
-const trendConfig: Record<TrendDirection, { arrow: string; color: string; label: string }> = {
-    up: { arrow: '↑', color: '#81C784', label: 'Meningkat' },
-    down: { arrow: '↓', color: '#E57373', label: 'Menurun' },
-    stable: { arrow: '→', color: '#A1887F', label: 'Stabil' },
-};
-
-/**
- * Generate SVG path data for sparkline from weekly data points
- */
-const generateSparklinePath = (values: number[], width: number, height: number): string => {
-    if (values.length === 0) return '';
-    if (values.length === 1) {
-        // Single point - draw a horizontal line in the middle
-        const y = height / 2;
-        return `M0,${y} L${width},${y}`;
-    }
-
-    const max = Math.max(...values);
-    const min = Math.min(...values);
-    const range = max - min || 1; // Avoid division by zero
-
-    // Add padding to avoid clipping at edges
-    const padding = 4;
-    const effectiveWidth = width - padding * 2;
-    const effectiveHeight = height - padding * 2;
-
-    const points = values.map((val, i) => {
-        const x = padding + (i / (values.length - 1)) * effectiveWidth;
-        const y = padding + effectiveHeight - ((val - min) / range) * effectiveHeight;
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-
-    return `M${points.join(' L')}`;
-};
-
-/**
- * Calculate percentage change between first and last week
- */
-const calculateChange = (weeks: WeeklyDataPoint[]): number => {
-    if (weeks.length < 2) return 0;
-    const first = weeks[0].average_calories;
-    const last = weeks[weeks.length - 1].average_calories;
-    if (first === 0) return last > 0 ? 100 : 0;
-    return Math.round(((last - first) / first) * 100);
-};
 
 /**
  * WeeklyTrend Component
  * 
- * Mini sparkline chart showing weekly nutrition progress with trend indicator.
- * Displays 4 weeks of data as a clean sparkline with direction arrow and percentage change.
+ * Displays nutrient trend cards for Calories, Protein, and Carbohydrates.
+ * Uses useNutritionTrends hook to fetch data.
  */
-export function WeeklyTrend({ data, title = 'Tren Mingguan' }: WeeklyTrendProps) {
+export function WeeklyTrend({ childId }: WeeklyTrendProps) {
     const { colors } = useTheme();
+    const { data, isLoading, error } = useNutritionTrends(childId);
 
-    const values = data.weeks.map((w) => w.average_calories);
-    const percentChange = calculateChange(data.weeks);
-    const trend = trendConfig[data.trend_direction];
+    if (isLoading) {
+        return (
+            <View style={styles.container}>
+                <Text style={[styles.title, { color: colors.onSurface }]}>Tren Mingguan</Text>
+                <ActivityIndicator color={colors.primary} />
+            </View>
+        );
+    }
 
-    // Sparkline dimensions
-    const sparklineWidth = 120;
-    const sparklineHeight = 40;
-    const pathData = generateSparklinePath(values, sparklineWidth, sparklineHeight);
+    if (error || !data) {
+        return (
+            <View style={styles.container}>
+                <Text style={[styles.title, { color: colors.onSurface }]}>Tren Mingguan</Text>
+                <Text style={{ color: colors.error }}>Gagal memuat data</Text>
+            </View>
+        );
+    }
+
+    const { weekly } = data.data;
 
     return (
-        <View
-            style={{ backgroundColor: colors.surfaceContainerHigh }}
-            className="p-4 rounded-2xl"
-        >
-            {/* Title */}
-            <Text
-                style={{ color: colors.onSurface }}
-                className="text-sm font-semibold mb-3"
-            >
-                {title}
-            </Text>
-
-            {/* Sparkline Chart */}
-            <View className="items-center mb-3">
-                <Svg
-                    width={sparklineWidth}
-                    height={sparklineHeight}
-                    viewBox={`0 0 ${sparklineWidth} ${sparklineHeight}`}
-                >
-                    {pathData && (
-                        <Path
-                            d={pathData}
-                            fill="none"
-                            stroke={colors.primary}
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    )}
-                </Svg>
-            </View>
-
-            {/* Trend Indicator */}
-            <View className="flex-row items-center justify-center gap-1">
-                <Text
-                    style={{ color: trend.color }}
-                    className="text-lg font-bold"
-                >
-                    {trend.arrow}
-                </Text>
-                <Text
-                    style={{ color: trend.color }}
-                    className="text-sm font-semibold"
-                >
-                    {percentChange > 0 ? '+' : ''}{percentChange}%
-                </Text>
-                <Text
-                    style={{ color: colors.onSurfaceVariant }}
-                    className="text-sm ml-1"
-                >
-                    {trend.label}
-                </Text>
+        <View style={styles.container}>
+            <Text style={[styles.title, { color: colors.onSurface }]}>Tren Mingguan</Text>
+            <View style={styles.cardsRow}>
+                <NutrientTrendCard
+                    label="Kalori"
+                    value={Math.round(weekly.calories.average)}
+                    unit="kcal"
+                    trend={weekly.calories.trend_direction}
+                    icon="local-fire-department"
+                    color="#FF5722"
+                />
+                <NutrientTrendCard
+                    label="Protein"
+                    value={Math.round(weekly.protein.average)}
+                    unit="g"
+                    trend={weekly.protein.trend_direction}
+                    icon="egg"
+                    color="#8BC34A"
+                />
+                <NutrientTrendCard
+                    label="Karbohidrat"
+                    value={Math.round(weekly.carbohydrate.average)}
+                    unit="g"
+                    trend={weekly.carbohydrate.trend_direction}
+                    icon="grain"
+                    color="#FFC107"
+                />
             </View>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 12,
+    },
+    cardsRow: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+});
 
 export default WeeklyTrend;

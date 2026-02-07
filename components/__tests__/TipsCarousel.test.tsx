@@ -17,17 +17,6 @@ jest.mock('@/context/ThemeContext', () => ({
     }),
 }));
 
-// Mock Dimensions
-jest.mock('react-native', () => {
-    const RN = jest.requireActual('react-native');
-    return {
-        ...RN,
-        Dimensions: {
-            get: () => ({ width: 375, height: 812 }),
-        },
-    };
-});
-
 describe('TipsCarousel', () => {
     // Test data
     const mockTips: PersonalizedTip[] = [

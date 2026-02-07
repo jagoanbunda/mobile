@@ -28,6 +28,14 @@ jest.mock('@/components/ActivityRings', () => {
 // Mock MaterialIcons
 jest.mock('@expo/vector-icons/MaterialIcons', () => 'MaterialIcons');
 
+// Mock expo-router
+const mockPush = jest.fn();
+jest.mock('expo-router', () => ({
+    useRouter: () => ({
+        push: mockPush,
+    }),
+}));
+
 const createMockData = (overrides?: Partial<ProgressRingsData>): ProgressRingsData => ({
     calories: { current: 850, target: 1350, percentage: 63, unit: 'kcal' },
     protein: { current: 25, target: 40, percentage: 62, unit: 'g' },
@@ -61,6 +69,28 @@ describe('ProgressRingSection', () => {
 
             expect(screen.getByText('30/50 g')).toBeTruthy(); // Fat
             expect(screen.getByText('8/15 g')).toBeTruthy(); // Fiber
+        });
+
+        // Add test for stats row
+        it('renders stats row with macro nutrients', () => {
+            const data = createMockData();
+            render(<ProgressRingSection data={data} isLoading={false} />);
+            expect(screen.getByText('Kalori')).toBeTruthy();
+            expect(screen.getByText('Protein')).toBeTruthy();
+            expect(screen.getByText('Karbohidrat')).toBeTruthy();
+            
+            // Check values
+            expect(screen.getByText('850/1350')).toBeTruthy();
+            expect(screen.getByText('25/40')).toBeTruthy();
+            expect(screen.getByText('120/200')).toBeTruthy();
+        });
+
+        // Add test for pill buttons
+        it('renders pill buttons', () => {
+            const data = createMockData();
+            render(<ProgressRingSection data={data} isLoading={false} />);
+            expect(screen.getByText('Catat Makanan')).toBeTruthy();
+            expect(screen.getByText('Lihat Riwayat')).toBeTruthy();
         });
     });
 

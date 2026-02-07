@@ -1,6 +1,6 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { useUpdateProfileWithAvatar } from '@/services/hooks/use-auth';
+import { useUpdateProfileWithAvatar, useLogout } from '@/services/hooks/use-auth';
 import { getAvatarUrl } from '@/config/env';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -12,6 +12,7 @@ export default function EditParentScreen() {
     const { colors } = useTheme();
     const { user, refreshUser } = useAuth();
     const { mutate: updateProfile, isPending: isSaving } = useUpdateProfileWithAvatar();
+    const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
     // Initialize form with user data (convert avatar_url to full URL for display)
     const [fullName, setFullName] = useState(user?.name || '');
@@ -40,6 +41,21 @@ export default function EditParentScreen() {
                 Alert.alert('Error', 'Failed to update profile. Please try again.');
             }
         });
+    };
+
+    const handleLogout = () => {
+        Alert.alert(
+            'Log Out',
+            'Are you sure you want to log out?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Log Out',
+                    style: 'destructive',
+                    onPress: () => logout()
+                }
+            ]
+        );
     };
 
     return (
@@ -161,6 +177,25 @@ export default function EditParentScreen() {
                             />
                         </View>
                     </View>
+                </View>
+
+                {/* Logout Section */}
+                <View className="mt-8">
+                    <TouchableOpacity
+                        onPress={handleLogout}
+                        disabled={isLoggingOut}
+                        style={{ backgroundColor: colors.errorContainer, opacity: isLoggingOut ? 0.6 : 1 }}
+                        className="flex-row items-center justify-center gap-3 p-4 rounded-xl"
+                    >
+                        {isLoggingOut ? (
+                            <ActivityIndicator size="small" color={colors.error} />
+                        ) : (
+                            <>
+                                <MaterialIcons name="logout" size={20} color={colors.error} />
+                                <Text style={{ color: colors.error }} className="text-base font-semibold">Log Out</Text>
+                            </>
+                        )}
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
 

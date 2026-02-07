@@ -1,7 +1,6 @@
-import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -18,15 +17,15 @@ export default function RegisterScreen() {
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const { register } = useAuth();
 
     const handleRegister = async () => {
         setError(null);
         setFieldErrors({});
-        
+
         const errors: Record<string, string> = {};
-        
+
         // Validation
         if (!fullName.trim()) {
             errors.name = 'Full name is required';
@@ -50,12 +49,12 @@ export default function RegisterScreen() {
         if (!termsAccepted) {
             errors.terms = 'You must accept the Terms & Conditions';
         }
-        
+
         if (Object.keys(errors).length > 0) {
             setFieldErrors(errors);
             return;
         }
-        
+
         setIsLoading(true);
         try {
             await register({
@@ -115,7 +114,7 @@ export default function RegisterScreen() {
                 {/* Title */}
                 <View className="px-4 pt-4 pb-6">
                     <Text style={{ color: colors.onSurface }} className="tracking-tight text-[32px] font-bold leading-tight">
-                        Join KREANOVA
+                        Join JagoanBunda
                     </Text>
                     <Text style={{ color: colors.onSurfaceVariant }} className="text-base font-normal leading-normal pt-2">
                         Create a parent account to monitor your child's growth.
@@ -267,9 +266,9 @@ export default function RegisterScreen() {
                     <TouchableOpacity
                         onPress={handleRegister}
                         disabled={isLoading}
-                        style={{ 
+                        style={{
                             backgroundColor: isLoading ? colors.surfaceContainerHigh : colors.primary,
-                            opacity: isLoading ? 0.7 : 1 
+                            opacity: isLoading ? 0.7 : 1
                         }}
                         className="w-full h-12 rounded-xl items-center justify-center shadow-md active:scale-[0.98]"
                     >
@@ -280,29 +279,6 @@ export default function RegisterScreen() {
                                 Sign Up
                             </Text>
                         )}
-                    </TouchableOpacity>
-                </View>
-
-                {/* Divider */}
-                <View className="px-4 py-2 flex-row items-center gap-4">
-                    <View style={{ backgroundColor: colors.outlineVariant }} className="flex-1 h-px" />
-                    <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">Or sign up with</Text>
-                    <View style={{ backgroundColor: colors.outlineVariant }} className="flex-1 h-px" />
-                </View>
-
-                {/* Social Buttons */}
-                <View className="px-4 py-4 flex-row gap-4">
-                    <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border p-3">
-                        <Image
-                            source={{ uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCDTgev5KwxHCQIbyWTSUhNR_W6pnOWynZaIXnS5KLyOtnMc-Ti5M9Oe1WuXld-ZubbAYiuJIhndEoB2HAFkp-2bhgLU8VS8G6i0uOfwTN4Pv1BLKA9Z9VvFRJBjncIOP0v49x0NUvr0182arVQjLSceVHT051-zBWM_PiMGCCaqXoasvJJWhPvyOELo7Ho1OC_wHadoOGd93An3ZJQNk2wQsf_yOYGrTxJBtWjpFmOF5YCWNdpa4jCW0d_J_H_4TyOm3mE28GeXdM" }}
-                            className="w-5 h-5"
-                            contentFit="contain"
-                        />
-                        <Text style={{ color: colors.onSurface }} className="text-sm font-medium">Google</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ backgroundColor: colors.surfaceContainerHigh, borderColor: colors.outline }} className="flex-1 flex-row items-center justify-center gap-3 rounded-xl border p-3">
-                        <MaterialIcons name="apple" size={20} color={colors.onSurface} />
-                        <Text style={{ color: colors.onSurface }} className="text-sm font-medium">Apple</Text>
                     </TouchableOpacity>
                 </View>
 

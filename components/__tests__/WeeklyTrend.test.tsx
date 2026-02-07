@@ -1,7 +1,7 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 import { render, screen } from '@testing-library/react-native';
 import { WeeklyTrend } from '@/components/WeeklyTrend';
-import type { WeeklyTrendData } from '@/types/dashboard';
 
 // Mock ThemeContext
 jest.mock('@/context/ThemeContext', () => ({
@@ -11,175 +11,108 @@ jest.mock('@/context/ThemeContext', () => ({
             onSurface: '#1A1C19',
             onSurfaceVariant: '#44483E',
             surfaceContainerHigh: '#ECEFE5',
+            error: '#BA1A1A',
         },
     }),
 }));
 
-// Mock react-native-svg
-jest.mock('react-native-svg', () => {
-    const React = require('react');
-    const { View } = require('react-native');
+// Mock useNutritionTrends hook
+const mockGetNutritionTrends = jest.fn();
+jest.mock('@/services/hooks/use-nutrition-trends', () => ({
+    useNutritionTrends: (childId: number) => mockGetNutritionTrends(childId),
+}));
 
+// Mock NutrientTrendCard to simplify testing content
+jest.mock('@/components/NutrientTrendCard', () => {
+    const { View, Text } = require('react-native');
     return {
-        __esModule: true,
-        default: ({ children, ...props }: any) => (
-            <View testID="svg" {...props}>{children}</View>
+        NutrientTrendCard: ({ label, value, unit, trend }: any) => (
+            <View 
+                testID={`card-${label}`}
+                // @ts-ignore
+                label={label}
+            >
+                <Text>{label}: {value} {unit} ({trend})</Text>
+            </View>
         ),
-        Svg: ({ children, ...props }: any) => (
-            <View testID="svg" {...props}>{children}</View>
-        ),
-        Path: (props: any) => <View testID="path" {...props} />,
     };
 });
-
-// Sample test data
-const mockUpTrendData: WeeklyTrendData = {
-    weeks: [
-        { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 1200 },
-        { week_start: '2026-01-08', week_end: '2026-01-14', average_calories: 1300 },
-        { week_start: '2026-01-15', week_end: '2026-01-21', average_calories: 1350 },
-        { week_start: '2026-01-22', week_end: '2026-01-28', average_calories: 1400 },
-    ],
-    trend_direction: 'up',
-};
-
-const mockDownTrendData: WeeklyTrendData = {
-    weeks: [
-        { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 1400 },
-        { week_start: '2026-01-08', week_end: '2026-01-14', average_calories: 1350 },
-        { week_start: '2026-01-15', week_end: '2026-01-21', average_calories: 1250 },
-        { week_start: '2026-01-22', week_end: '2026-01-28', average_calories: 1200 },
-    ],
-    trend_direction: 'down',
-};
-
-const mockStableTrendData: WeeklyTrendData = {
-    weeks: [
-        { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 1300 },
-        { week_start: '2026-01-08', week_end: '2026-01-14', average_calories: 1310 },
-        { week_start: '2026-01-15', week_end: '2026-01-21', average_calories: 1295 },
-        { week_start: '2026-01-22', week_end: '2026-01-28', average_calories: 1300 },
-    ],
-    trend_direction: 'stable',
-};
 
 describe('WeeklyTrend', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
-    describe('rendering', () => {
-        it('renders with default title', () => {
-            render(<WeeklyTrend data={mockUpTrendData} />);
-
-            expect(screen.getByText('Tren Mingguan')).toBeTruthy();
+    it('renders loading state correctly', () => {
+        mockGetNutritionTrends.mockReturnValue({
+            isLoading: true,
+            data: null,
+            error: null,
         });
 
-        it('renders with custom title', () => {
-            render(<WeeklyTrend data={mockUpTrendData} title="Nutrisi Minggu Ini" />);
-
-            expect(screen.getByText('Nutrisi Minggu Ini')).toBeTruthy();
-        });
-
-        it('renders SVG sparkline', () => {
-            render(<WeeklyTrend data={mockUpTrendData} />);
-
-            expect(screen.getByTestId('svg')).toBeTruthy();
-            expect(screen.getByTestId('path')).toBeTruthy();
-        });
+        render(<WeeklyTrend childId={1} />);
+        expect(screen.getByText('Tren Mingguan')).toBeTruthy();
+        // ActivityIndicator is hard to find by text, usually check for existence or absence of content
     });
 
-    describe('trend direction indicators', () => {
-        it('displays up arrow and Meningkat for upward trend', () => {
-            render(<WeeklyTrend data={mockUpTrendData} />);
-
-            expect(screen.getByText('↑')).toBeTruthy();
-            expect(screen.getByText('Meningkat')).toBeTruthy();
+    it('renders error state correctly', () => {
+        mockGetNutritionTrends.mockReturnValue({
+            isLoading: false,
+            data: null,
+            error: new Error('Failed to fetch'),
         });
 
-        it('displays down arrow and Menurun for downward trend', () => {
-            render(<WeeklyTrend data={mockDownTrendData} />);
-
-            expect(screen.getByText('↓')).toBeTruthy();
-            expect(screen.getByText('Menurun')).toBeTruthy();
-        });
-
-        it('displays right arrow and Stabil for stable trend', () => {
-            render(<WeeklyTrend data={mockStableTrendData} />);
-
-            expect(screen.getByText('→')).toBeTruthy();
-            expect(screen.getByText('Stabil')).toBeTruthy();
-        });
+        render(<WeeklyTrend childId={1} />);
+        expect(screen.getByText('Gagal memuat data')).toBeTruthy();
     });
 
-    describe('percentage calculation', () => {
-        it('calculates positive percentage change correctly', () => {
-            // 1200 -> 1400 = +16.67% ≈ +17%
-            render(<WeeklyTrend data={mockUpTrendData} />);
-
-            expect(screen.getByText('+17%')).toBeTruthy();
+    it('renders three nutrient trend cards with correct data', () => {
+        mockGetNutritionTrends.mockReturnValue({
+            isLoading: false,
+            data: {
+                data: {
+                    weekly: {
+                        calories: { average: 1500, trend_direction: 'up', weeks: [] },
+                        protein: { average: 45, trend_direction: 'stable', weeks: [] },
+                        carbohydrate: { average: 200, trend_direction: 'down', weeks: [] },
+                        fat: { average: 50, trend_direction: 'stable', weeks: [] },
+                    }
+                }
+            },
+            error: null,
         });
 
-        it('calculates negative percentage change correctly', () => {
-            // 1400 -> 1200 = -14.29% ≈ -14%
-            render(<WeeklyTrend data={mockDownTrendData} />);
+        render(<WeeklyTrend childId={1} />);
 
-            expect(screen.getByText('-14%')).toBeTruthy();
-        });
-
-        it('calculates stable percentage change correctly', () => {
-            // 1300 -> 1300 = 0%
-            render(<WeeklyTrend data={mockStableTrendData} />);
-
-            expect(screen.getByText('0%')).toBeTruthy();
-        });
+        // Check for labels (using the mock text)
+        expect(screen.getByText('Kalori: 1500 kcal (up)')).toBeTruthy();
+        expect(screen.getByText('Protein: 45 g (stable)')).toBeTruthy();
+        expect(screen.getByText('Karbohidrat: 200 g (down)')).toBeTruthy();
     });
 
-    describe('edge cases', () => {
-        it('handles single week data point', () => {
-            const singleWeekData: WeeklyTrendData = {
-                weeks: [
-                    { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 1200 },
-                ],
-                trend_direction: 'stable',
-            };
-
-            render(<WeeklyTrend data={singleWeekData} />);
-
-            expect(screen.getByText('Tren Mingguan')).toBeTruthy();
-            expect(screen.getByText('0%')).toBeTruthy();
+    it('handles rounding of values correctly', () => {
+        mockGetNutritionTrends.mockReturnValue({
+            isLoading: false,
+            data: {
+                data: {
+                    weekly: {
+                        calories: { average: 1500.6, trend_direction: 'up', weeks: [] },
+                        protein: { average: 45.2, trend_direction: 'stable', weeks: [] },
+                        carbohydrate: { average: 200.9, trend_direction: 'down', weeks: [] },
+                        fat: { average: 50, trend_direction: 'stable', weeks: [] },
+                    }
+                }
+            },
+            error: null,
         });
 
-        it('handles zero starting calories', () => {
-            const zeroStartData: WeeklyTrendData = {
-                weeks: [
-                    { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 0 },
-                    { week_start: '2026-01-08', week_end: '2026-01-14', average_calories: 1000 },
-                ],
-                trend_direction: 'up',
-            };
+        render(<WeeklyTrend childId={1} />);
 
-            render(<WeeklyTrend data={zeroStartData} />);
-
-            // Should show 100% when starting from zero
-            expect(screen.getByText('+100%')).toBeTruthy();
-        });
-
-        it('handles uniform values across all weeks', () => {
-            const uniformData: WeeklyTrendData = {
-                weeks: [
-                    { week_start: '2026-01-01', week_end: '2026-01-07', average_calories: 1000 },
-                    { week_start: '2026-01-08', week_end: '2026-01-14', average_calories: 1000 },
-                    { week_start: '2026-01-15', week_end: '2026-01-21', average_calories: 1000 },
-                    { week_start: '2026-01-22', week_end: '2026-01-28', average_calories: 1000 },
-                ],
-                trend_direction: 'stable',
-            };
-
-            render(<WeeklyTrend data={uniformData} />);
-
-            expect(screen.getByText('0%')).toBeTruthy();
-            expect(screen.getByText('Stabil')).toBeTruthy();
-        });
+        // 1500.6 -> 1501
+        expect(screen.getByText(/Kalori: 1501/)).toBeTruthy();
+        // 45.2 -> 45
+        expect(screen.getByText(/Protein: 45/)).toBeTruthy();
+        // 200.9 -> 201
+        expect(screen.getByText(/Karbohidrat: 201/)).toBeTruthy();
     });
 });

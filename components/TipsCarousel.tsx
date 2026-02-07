@@ -23,7 +23,7 @@ export interface TipsCarouselProps {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.75);
 const CARD_GAP = 12;
-const CARD_HEIGHT = 100;
+const CARD_HEIGHT = 80;
 
 /**
  * Single tip card with emoji icon and message
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     card: {
         height: CARD_HEIGHT,
         borderRadius: 16,
-        padding: 16,
+        padding: 12,
         // Subtle shadow for depth
         elevation: 2,
         shadowColor: '#000',
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
     },
     icon: {
-        fontSize: 24,
-        marginBottom: 8,
+        fontSize: 20,
+        marginBottom: 4,
     },
     message: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '500',
-        lineHeight: 20,
+        lineHeight: 18,
     },
     pagination: {
         flexDirection: 'row',
