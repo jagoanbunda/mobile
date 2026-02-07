@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/jagoanbunda/mobile/compare/v1.3.0...v1.3.1) (2026-02-07)
+
+
+### Bug Fixes
+
+* **build:** remove bun.lock to use npm for EAS builds ([4734092](https://github.com/jagoanbunda/mobile/commit/4734092e721ed1d39fc353c2f2aa6db832b74126))
+
 # [1.3.0](https://github.com/jagoanbunda/mobile/compare/v1.2.0...v1.3.0) (2026-02-07)
 
 
