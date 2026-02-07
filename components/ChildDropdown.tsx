@@ -5,13 +5,14 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  Image,
   Pressable,
 } from 'react-native';
+import { Image } from 'expo-image';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
+import { getAvatarUrl } from '@/config/env';
 import { Child } from '@/types';
 
 interface ChildDropdownProps {
@@ -88,12 +89,15 @@ export function ChildDropdown({
       );
     }
 
-    if (child.avatar_url) {
+    const resolvedUrl = getAvatarUrl(child.avatar_url);
+    if (resolvedUrl) {
       return (
         <Image
-          source={{ uri: child.avatar_url }}
-          style={{ width: size, height: size }}
-          className="rounded-full"
+          source={{ uri: resolvedUrl }}
+          style={{ width: size, height: size, borderRadius: size / 2 }}
+          contentFit="cover"
+          placeholder={colors.surfaceContainerHigh}
+          transition={200}
         />
       );
     }
