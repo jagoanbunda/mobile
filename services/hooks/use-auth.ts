@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/services/api/auth';
+import { useAuth } from '@/context/AuthContext';
 import { LoginRequest, RegisterRequest, UpdateProfileRequest } from '@/types';
 
 export function useLogin() {
@@ -26,11 +27,13 @@ export function useRegister() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
+  const { logout: contextLogout } = useAuth();
 
   return useMutation({
     mutationFn: () => authService.logout(),
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.clear(); // Clear all queries on logout
+      await contextLogout(); // This sets user to null, triggering navigation
     },
   });
 }
