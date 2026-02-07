@@ -1,3 +1,29 @@
+# [1.3.0](https://github.com/jagoanbunda/mobile/compare/v1.2.0...v1.3.0) (2026-02-07)
+
+
+### Bug Fixes
+
+* **auth:** prevent infinite loop and add network error handling ([c1a3885](https://github.com/jagoanbunda/mobile/commit/c1a388580c5f266fb926c84f680c7e26f56fbfd4))
+* **auth:** wrap tabs layout with ProtectedRoute to fix dev mode auth bypass ([8287d5a](https://github.com/jagoanbunda/mobile/commit/8287d5ac4ed13fce03a62d710972b1846d6ce86f))
+* **ChildSwitcher:** rename children prop to childProfiles (ESLint fix) ([9dc0fb1](https://github.com/jagoanbunda/mobile/commit/9dc0fb1021d3a74ebc4b5b1ae4ecc88ba404fa2a))
+* **tips:** remove duplicate horizontal padding causing misalignment ([2d5e96a](https://github.com/jagoanbunda/mobile/commit/2d5e96ac1cf4d28c91d696861f8e0ddd484908f7))
+
+
+### Features
+
+* **components:** add ChildSwitcher horizontal profile selector ([ff6bd21](https://github.com/jagoanbunda/mobile/commit/ff6bd21c500f1911f00abc399ad3a3aa6a63100a))
+* **components:** add ProgressRingSection with 5 health metrics ([f0d4457](https://github.com/jagoanbunda/mobile/commit/f0d44577b4b28f6994c144b90e8f3ecae5fdf33c))
+* **components:** add QuickActions button row ([6d65ba0](https://github.com/jagoanbunda/mobile/commit/6d65ba09d8a4f1f6ef0bbbcbaa1822382313b6bc))
+* **components:** add TasksCard reminder list ([97ca1b1](https://github.com/jagoanbunda/mobile/commit/97ca1b1d176f5e26cfa3b6a5ba91f72b4efbe132))
+* **components:** add TipsCarousel horizontal tip cards ([567dd13](https://github.com/jagoanbunda/mobile/commit/567dd13bd3fffca82f7be729a54024003d72213e))
+* **components:** add WeeklyTrend sparkline with trend arrow ([f1a1184](https://github.com/jagoanbunda/mobile/commit/f1a1184244825aa139462bc46ddd43b067c1e302))
+* **dashboard:** add Apple Fitness-style ActivityRings for nutrition progress ([d01e529](https://github.com/jagoanbunda/mobile/commit/d01e5298c4e04dcda39969160360a825de5fa266))
+* **dashboard:** add remaining hook, mock, and test infrastructure ([e6b3ac2](https://github.com/jagoanbunda/mobile/commit/e6b3ac23ab49d78c11e0b8183410fb5bc924842b))
+* **dashboard:** integrate all new components into home screen ([5932c6b](https://github.com/jagoanbunda/mobile/commit/5932c6ba5fbf83d28a800634139b833b627f38b6))
+* enhance login screen UI and add logout button ([0e9686c](https://github.com/jagoanbunda/mobile/commit/0e9686c49b3c60a591d242de74a3b654d2ffd5fe))
+* **QuickActions:** add spring animation for press feedback ([3cb0a47](https://github.com/jagoanbunda/mobile/commit/3cb0a476d40935108790098b8807c8c2c7053a1c))
+* **types:** add dashboard data type definitions ([056d3ca](https://github.com/jagoanbunda/mobile/commit/056d3caf53031448fada141203aec87eda3f7b72))
+
 # [1.2.0](https://github.com/jagoanbunda/mobile/compare/v1.1.1...v1.2.0) (2026-02-04)
 
 
