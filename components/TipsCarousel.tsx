@@ -23,7 +23,6 @@ export interface TipsCarouselProps {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = Math.round(SCREEN_WIDTH * 0.75);
 const CARD_GAP = 12;
-const CARD_HEIGHT = 80;
 
 /**
  * Single tip card with emoji icon and message
@@ -41,13 +40,20 @@ function TipCard({
                 styles.card,
                 {
                     width: CARD_WIDTH,
-                    backgroundColor: colors.surfaceContainerLowest,
+                    backgroundColor: colors.surfaceContainer,
                 },
             ]}
             testID={`tip-card-${tip.category}`}
         >
-            {/* Emoji Icon */}
-            <Text style={styles.icon}>{tip.icon}</Text>
+            {/* Icon Container */}
+            <View
+                style={[
+                    styles.iconContainer,
+                    { backgroundColor: colors.primaryContainer },
+                ]}
+            >
+                <Text style={styles.icon}>{tip.icon}</Text>
+            </View>
 
             {/* Tip Message */}
             <Text
@@ -95,14 +101,20 @@ export function TipsCarousel({
     // Empty state
     if (tips.length === 0) {
         return (
-            <View style={styles.container} testID="tips-carousel-empty">
+            <View
+                style={[
+                    styles.container,
+                    { backgroundColor: colors.surfaceContainerHigh },
+                ]}
+                testID="tips-carousel-empty"
+            >
                 <Text style={[styles.title, { color: colors.onSurface }]}>
                     {title}
                 </Text>
                 <View
                     style={[
                         styles.emptyContainer,
-                        { backgroundColor: colors.surfaceContainerLow },
+                        { backgroundColor: colors.surfaceContainer },
                     ]}
                 >
                     <Text style={[styles.emptyText, { color: colors.onSurfaceVariant }]}>
@@ -114,7 +126,13 @@ export function TipsCarousel({
     }
 
     return (
-        <View style={styles.container} testID="tips-carousel">
+        <View
+            style={[
+                styles.container,
+                { backgroundColor: colors.surfaceContainerHigh },
+            ]}
+            testID="tips-carousel"
+        >
             {/* Section Title */}
             <Text style={[styles.title, { color: colors.onSurface }]}>
                 {title}
@@ -160,36 +178,41 @@ export function TipsCarousel({
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 12,
+        padding: 16,
+        borderRadius: 16,
+        marginVertical: 12,
     },
     title: {
         fontSize: 18,
         fontWeight: '700',
         marginBottom: 12,
-        paddingHorizontal: 16,
     },
     listContent: {
         // Horizontal padding handled by parent container
     },
     card: {
-        height: CARD_HEIGHT,
-        borderRadius: 16,
+        minHeight: 52,
+        borderRadius: 12,
         padding: 12,
-        // Subtle shadow for depth
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    iconContainer: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
     },
     icon: {
         fontSize: 20,
-        marginBottom: 4,
     },
     message: {
         fontSize: 13,
         fontWeight: '500',
         lineHeight: 18,
+        flex: 1,
     },
     pagination: {
         flexDirection: 'row',
@@ -208,10 +231,9 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     emptyContainer: {
-        marginHorizontal: 16,
         paddingVertical: 24,
         paddingHorizontal: 16,
-        borderRadius: 16,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
     },
