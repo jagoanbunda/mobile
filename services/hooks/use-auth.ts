@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { authService } from '@/services/api/auth';
 import { useAuth } from '@/context/AuthContext';
 import { LoginRequest, RegisterRequest, UpdateProfileRequest } from '@/types';
@@ -35,6 +36,7 @@ export function useLogout() {
     },
     onSuccess: () => {
       queryClient.clear(); // Clear all queries on logout
+      router.replace('/auth/login'); // Navigate to login screen
     },
   });
 }
