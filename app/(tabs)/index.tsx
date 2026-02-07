@@ -3,11 +3,13 @@ import { ProgressRingSection } from '@/components/ProgressRingSection';
 import { TasksCard } from '@/components/TasksCard';
 import { TipsCarousel } from '@/components/TipsCarousel';
 import { WeeklyTrend } from '@/components/WeeklyTrend';
+import { ChildDropdown } from '@/components/ChildDropdown';
 import { getAvatarUrl } from '@/config/env';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
 import { useDashboard } from '@/services/hooks/use-dashboard';
+import { getTimeBasedGreeting } from '@/utils/greeting';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -65,14 +67,17 @@ export default function HomeScreen() {
             </TouchableOpacity>
             <Text style={{ color: colors.text }} className="text-sm font-bold tracking-wide opacity-80">JagoanBunda</Text>
           </View>
-          <TouchableOpacity style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} className="w-10 h-10 items-center justify-center rounded-full active:bg-white/20">
-            <MaterialIcons name="notifications-none" size={24} color={colors.primary} />
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-2">
+            <ChildDropdown avatarSize={36} />
+            <TouchableOpacity style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} className="w-10 h-10 items-center justify-center rounded-full active:bg-white/20">
+              <MaterialIcons name="notifications-none" size={24} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="px-4 mt-2 mb-6">
           <Text style={{ color: colors.text }} className="text-3xl font-bold tracking-tight leading-tight">
-            Good Morning,{"\n"}{user?.name || 'Parent'} 👋
+            {getTimeBasedGreeting()},{"\n"}{user?.name || 'Bunda'} 👋
           </Text>
         </View>
 

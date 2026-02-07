@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState, useCallback } from 'react';
 import { childService } from '@/services/api/children';
-import { CreateChildRequest, UpdateChildRequest } from '@/types';
+import { CreateChildRequest, UpdateChildRequest, Child } from '@/types';
 import { useAuth } from '@/context/AuthContext';
+import { preferencesStorage } from '@/services/storage/preferences';
 
 /** Query keys */
 export const childKeys = {
@@ -104,22 +106,85 @@ export function useDeleteChild() {
 }
 
 /**
- * Get the first (or selected) child - useful for single-child scenarios
+ * Get the active (selected) child with persistence
+ * Supports child selection via AsyncStorage
  */
 export function useActiveChild() {
   const { isAuthenticated, isLoading: isAuthLoading, isVerifying } = useAuth();
-  
+  const [activeChildId, setActiveChildId] = useState<number | null>(null);
+  const [isLoadingPreference, setIsLoadingPreference] = useState(true);
+
   // Don't fetch children until auth is fully verified
   const shouldFetch = isAuthenticated && !isAuthLoading && !isVerifying;
-  
+
   const { data: children, ...rest } = useChildren(true, { enabled: shouldFetch });
-  
-  // TODO: In the future, support child selection via context/storage
-  const activeChild = children?.[0] ?? null;
-  
+
+  // Load persisted child preference on mount
+  useEffect(() => {
+    async function loadPreference() {
+      try {
+        const storedChildId = await preferencesStorage.getActiveChildId();
+        setActiveChildId(storedChildId);
+      } catch (error) {
+        console.error('Failed to load active child preference:', error);
+      } finally {
+        setIsLoadingPreference(false);
+      }
+    }
+    loadPreference();
+  }, []);
+
+  // Determine the active child:
+  // 1. Use stored preference if valid (child still exists)
+  // 2. Fall back to first child
+  const activeChild = (() => {
+    if (!children || children.length === 0) return null;
+
+    // If we have a stored preference, verify it's still valid
+    if (activeChildId !== null) {
+      const storedChild = children.find((c: Child) => c.id === activeChildId);
+      if (storedChild) return storedChild;
+    }
+
+    // Fall back to first child
+    return children[0];
+  })();
+
+  /**
+   * Select a different child as active
+   * @param childId - The child ID to set as active
+   */
+  const selectChild = useCallback(async (childId: number) => {
+    try {
+      await preferencesStorage.setActiveChildId(childId);
+      setActiveChildId(childId);
+    } catch (error) {
+      console.error('Failed to save active child preference:', error);
+      throw error;
+    }
+  }, []);
+
+  /**
+   * Clear the active child selection (resets to first child)
+   */
+  const clearSelection = useCallback(async () => {
+    try {
+      await preferencesStorage.removeActiveChildId();
+      setActiveChildId(null);
+    } catch (error) {
+      console.error('Failed to clear active child preference:', error);
+      throw error;
+    }
+  }, []);
+
   return {
     ...rest,
+    isLoading: rest.isLoading || isLoadingPreference,
     data: activeChild,
     children,
+    activeChildId: activeChild?.id ?? null,
+    selectChild,
+    clearSelection,
+    hasChildren: (children?.length ?? 0) > 0,
   };
 }

@@ -2,6 +2,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useActiveChild } from '@/services/hooks/use-children';
 import { useGrowthChart } from '@/services/hooks/use-anthropometry';
 import { getAvatarUrl } from '@/config/env';
+import { RequireChild } from '@/components/RequireChild';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -70,7 +71,7 @@ export default function ProgressScreen() {
     const { colors } = useTheme();
     const [selectedChart, setSelectedChart] = useState<ChartType>('BB/U');
     
-    const { data: activeChild, isLoading: isLoadingChild } = useActiveChild();
+    const { data: activeChild, isLoading: isLoadingChild, hasChildren } = useActiveChild();
     const childId = activeChild?.id || 0;
     const { data: growthData, isLoading: isLoadingGrowth } = useGrowthChart(childId);
 
@@ -109,6 +110,18 @@ export default function ProgressScreen() {
                         <StatCardSkeleton />
                     </View>
                 </View>
+            </SafeAreaView>
+        );
+    }
+
+    // No children registered - show RequireChild prompt
+    if (!hasChildren) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <RequireChild message="Tambahkan data anak terlebih dahulu untuk melihat progress pertumbuhan.">
+                    <View />
+                </RequireChild>
             </SafeAreaView>
         );
     }

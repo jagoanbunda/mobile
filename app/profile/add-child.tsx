@@ -152,7 +152,7 @@ export default function AddChildScreen() {
                 >
                     <MaterialIcons name="arrow-back-ios-new" size={20} color={colors.onSurface} />
                 </TouchableOpacity>
-                <Text style={{ color: colors.onSurface }} className="text-lg font-bold tracking-tight">Add Baby Profile</Text>
+                <Text style={{ color: colors.onSurface }} className="text-lg font-bold tracking-tight">Tambah Profil Anak</Text>
                 <View className="w-10" />
             </View>
 
@@ -173,10 +173,10 @@ export default function AddChildScreen() {
                 {/* Headline */}
                 <View className="items-center mt-4 mb-8">
                     <Text style={{ color: colors.onSurface }} className="text-2xl font-bold mb-2 text-center">
-                        Tell us about your little one
+                        Ceritakan tentang si kecil
                     </Text>
                     <Text style={{ color: colors.onSurfaceVariant }} className="text-base text-center">
-                        We'll use this to track their growth milestones.
+                        Kami akan menggunakan ini untuk memantau tumbuh kembang anak.
                     </Text>
                 </View>
 
@@ -196,7 +196,7 @@ export default function AddChildScreen() {
                 <View className="gap-6">
                     {/* Baby's Name */}
                     <View className="gap-2">
-                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Baby's Name</Text>
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Nama Anak</Text>
                         <TextInput
                             style={{ backgroundColor: colors.surfaceContainerHigh, color: colors.onSurface }}
                             className="w-full rounded-xl px-4 py-3.5"
@@ -215,7 +215,7 @@ export default function AddChildScreen() {
 
                     {/* Date of Birth */}
                     <View className="gap-2">
-                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Date of Birth</Text>
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Tanggal Lahir</Text>
                         <View className="flex-row items-center gap-2">
                             <TextInput
                                 style={{ backgroundColor: colors.surfaceContainerHigh, color: colors.onSurface }}
@@ -253,7 +253,7 @@ export default function AddChildScreen() {
 
                     {/* Gender Selector */}
                     <View className="gap-2">
-                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Gender</Text>
+                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Jenis Kelamin</Text>
                         <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row gap-3 p-1 rounded-xl">
                             <TouchableOpacity
                                 onPress={() => setGender('male')}
@@ -262,7 +262,7 @@ export default function AddChildScreen() {
                             >
                                 <MaterialIcons name="male" size={18} color={gender === 'male' ? colors.onPrimary : colors.onSurfaceVariant} />
                                 <Text style={{ color: gender === 'male' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
-                                    Boy
+                                    Laki-laki
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -272,7 +272,7 @@ export default function AddChildScreen() {
                             >
                                 <MaterialIcons name="female" size={18} color={gender === 'female' ? colors.onPrimary : colors.onSurfaceVariant} />
                                 <Text style={{ color: gender === 'female' ? colors.onPrimary : colors.onSurfaceVariant }} className="text-sm font-bold">
-                                    Girl
+                                    Perempuan
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -282,7 +282,7 @@ export default function AddChildScreen() {
                     <View className="flex-row gap-4">
                         {/* Birth Weight */}
                         <View className="flex-1 gap-2">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Birth Weight</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Berat Lahir</Text>
                             <View className="relative">
                                 <TextInput
                                     style={{ backgroundColor: colors.surfaceContainerHigh, color: colors.onSurface }}
@@ -301,7 +301,7 @@ export default function AddChildScreen() {
 
                         {/* Birth Height */}
                         <View className="flex-1 gap-2">
-                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Birth Height</Text>
+                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-semibold ml-1">Panjang Lahir</Text>
                             <View className="relative">
                                 <TextInput
                                     style={{ backgroundColor: colors.surfaceContainerHigh, color: colors.onSurface }}
@@ -333,7 +333,7 @@ export default function AddChildScreen() {
                         <ActivityIndicator size="small" color={colors.primary} />
                     ) : (
                         <>
-                            <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Save & Continue</Text>
+                            <Text style={{ color: colors.onPrimary }} className="font-bold text-lg">Simpan & Lanjutkan</Text>
                             <MaterialIcons name="arrow-forward" size={20} color={colors.onPrimary} />
                         </>
                     )}

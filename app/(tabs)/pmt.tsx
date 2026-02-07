@@ -3,6 +3,7 @@ import { useActiveChild } from '@/services/hooks/use-children';
 import { useCurrentMonthPmtProgress, useTodayPmtSchedule, usePmtSchedules } from '@/services/hooks/use-pmt';
 import { NetworkErrorView, EmptyStateView } from '@/components/NetworkErrorView';
 import { CardSkeleton, ListItemSkeleton } from '@/components/Skeleton';
+import { RequireChild } from '@/components/RequireChild';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Stack, router } from 'expo-router';
 import React from 'react';
@@ -11,7 +12,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicat
 export default function PMTTabScreen() {
     const { colors } = useTheme();
 
-    const { data: child, isLoading: isLoadingChild } = useActiveChild();
+    const { data: child, isLoading: isLoadingChild, hasChildren } = useActiveChild();
     const childId = child?.id ?? 0;
 
     const { data: progress, isLoading: isLoadingProgress, isError: isProgressError, error: progressError, refetch: refetchProgress } = useCurrentMonthPmtProgress(childId);
@@ -40,6 +41,18 @@ export default function PMTTabScreen() {
                         <ListItemSkeleton />
                     </View>
                 </View>
+            </SafeAreaView>
+        );
+    }
+
+    // No children registered - show RequireChild prompt
+    if (!hasChildren) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <RequireChild message="Tambahkan data anak terlebih dahulu untuk melihat program PMT.">
+                    <View />
+                </RequireChild>
             </SafeAreaView>
         );
     }

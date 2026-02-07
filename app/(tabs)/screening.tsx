@@ -3,6 +3,7 @@ import { useActiveChild } from '@/services/hooks/use-children';
 import { useLatestScreening, useInProgressScreening } from '@/services/hooks/use-screenings';
 import { NetworkErrorView, EmptyStateView } from '@/components/NetworkErrorView';
 import { CardSkeleton, ListItemSkeleton } from '@/components/Skeleton';
+import { RequireChild } from '@/components/RequireChild';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Image } from 'expo-image';
 import { Stack, router } from 'expo-router';
@@ -11,7 +12,7 @@ import { SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicat
 export default function ScreeningTabScreen() {
     const { colors } = useTheme();
 
-    const { data: child, isLoading: isLoadingChild } = useActiveChild();
+    const { data: child, isLoading: isLoadingChild, hasChildren } = useActiveChild();
     const childId = child?.id ?? 0;
 
     const {
@@ -108,6 +109,18 @@ export default function ScreeningTabScreen() {
                         <ListItemSkeleton />
                     </View>
                 </View>
+            </SafeAreaView>
+        );
+    }
+
+    // No children registered - show RequireChild prompt
+    if (!hasChildren) {
+        return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface, paddingTop: 48 }}>
+                <Stack.Screen options={{ headerShown: false }} />
+                <RequireChild message="Tambahkan data anak terlebih dahulu untuk melakukan screening ASQ-3.">
+                    <View />
+                </RequireChild>
             </SafeAreaView>
         );
     }
