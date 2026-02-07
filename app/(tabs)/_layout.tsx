@@ -5,6 +5,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 type TabConfig = {
   name: string;
@@ -90,21 +91,23 @@ export default function TabLayout() {
   const { colors } = useTheme();
 
   return (
-    <Tabs
-      tabBar={(props) => <FloatingTabBar {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      {tabs.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-          }}
-        />
-      ))}
-    </Tabs>
+    <ProtectedRoute>
+      <Tabs
+        tabBar={(props) => <FloatingTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {tabs.map((tab) => (
+          <Tabs.Screen
+            key={tab.name}
+            name={tab.name}
+            options={{
+              title: tab.title,
+            }}
+          />
+        ))}
+      </Tabs>
+    </ProtectedRoute>
   );
 }
