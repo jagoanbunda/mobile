@@ -72,9 +72,27 @@ export const pmtService = {
    * Log PMT consumption for a schedule
    */
   async createLog(scheduleId: number, data: CreatePmtLogRequest): Promise<PmtSchedule> {
-    const response = await api.post<PmtLogMutationResponse>(
+    const formData = new FormData();
+    formData.append('portion', data.portion);
+    if (data.food_id !== undefined) {
+      formData.append('food_id', String(data.food_id));
+    }
+    if (data.notes) {
+      formData.append('notes', data.notes);
+    }
+    if (data.photo && data.photo.startsWith('file://')) {
+      const filename = data.photo.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      formData.append('photo', {
+        uri: data.photo,
+        name: filename,
+        type,
+      } as unknown as Blob);
+    }
+    const response = await api.postMultipart<PmtLogMutationResponse>(
       `/pmt-schedules/${scheduleId}/log`,
-      data
+      formData
     );
     return response.schedule;
   },
@@ -83,9 +101,29 @@ export const pmtService = {
    * Update PMT log
    */
   async updateLog(scheduleId: number, data: UpdatePmtLogRequest): Promise<PmtSchedule> {
-    const response = await api.put<PmtLogMutationResponse>(
+    const formData = new FormData();
+    if (data.portion) {
+      formData.append('portion', data.portion);
+    }
+    if (data.food_id !== undefined) {
+      formData.append('food_id', String(data.food_id));
+    }
+    if (data.notes) {
+      formData.append('notes', data.notes);
+    }
+    if (data.photo && data.photo.startsWith('file://')) {
+      const filename = data.photo.split('/').pop() || 'photo.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : 'image/jpeg';
+      formData.append('photo', {
+        uri: data.photo,
+        name: filename,
+        type,
+      } as unknown as Blob);
+    }
+    const response = await api.putMultipart<PmtLogMutationResponse>(
       `/pmt-schedules/${scheduleId}/log`,
-      data
+      formData
     );
     return response.schedule;
   },

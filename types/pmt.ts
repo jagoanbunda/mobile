@@ -54,6 +54,7 @@ export interface PmtLog {
   portion_percentage: number;
   portion_label: string;
   photo_url: string | null;
+  food: PmtLogFood | null;
   notes: string | null;
   logged_at: DateTimeString;
 }
@@ -67,13 +68,24 @@ export interface PmtScheduleMenu {
   protein: number;
 }
 
+/** Food details in PMT log response (flat structure, differs from Food type) */
+export interface PmtLogFood {
+  id: number;
+  name: string;
+  category: string;
+  icon: string | null;
+  serving_size: number;
+  calories: number;
+  protein: number;
+}
+
 /** PMT Schedule entity */
 export interface PmtSchedule {
   id: number;
   child_id: number;
   scheduled_date: DateString;
   is_logged: boolean;
-  menu: PmtScheduleMenu;
+  menu: PmtScheduleMenu | null;
   log: PmtLog | null;
   created_at: DateTimeString;
 }
@@ -128,14 +140,16 @@ export interface PmtProgressResponse {
 /** POST /pmt-schedules/{id}/log request */
 export interface CreatePmtLogRequest {
   portion: PmtPortion;
-  photo_url?: string;
+  food_id?: number;
+  photo?: string;  // Local file URI (file://...) - uploaded as multipart
   notes?: string;
 }
 
 /** PUT /pmt-schedules/{id}/log request */
 export interface UpdatePmtLogRequest {
   portion?: PmtPortion;
-  photo_url?: string;
+  food_id?: number;
+  photo?: string;  // Local file URI (file://...) - uploaded as multipart
   notes?: string;
 }
 
