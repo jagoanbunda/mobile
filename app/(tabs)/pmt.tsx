@@ -157,7 +157,7 @@ export default function PMTTabScreen() {
                         </View>
                         <View className="flex-1">
                             <Text style={{ color: colors.onSurface }} className="font-bold">
-                                {todaySchedule ? todaySchedule.menu.name : 'Tidak ada jadwal hari ini'}
+                                {todaySchedule ? (todaySchedule.menu?.name ?? 'Menu belum ditentukan') : 'Tidak ada jadwal hari ini'}
                             </Text>
                             <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">
                                 {todaySchedule ? 'Disiapkan oleh Kader Posyandu' : 'Silakan cek kembali besok'}
@@ -206,7 +206,7 @@ export default function PMTTabScreen() {
                                         <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">
                                             {schedule.scheduled_date}
                                         </Text>
-                                        <Text style={{ color: colors.onSurface }} className="font-bold mt-1">{schedule.menu.name}</Text>
+                                        <Text style={{ color: colors.onSurface }} className="font-bold mt-1">{schedule.menu?.name ?? 'Menu tidak tersedia'}</Text>
                                     </View>
                                     <View className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${color.bg}`}>
                                         <MaterialIcons name={iconName as keyof typeof MaterialIcons.glyphMap} size={14} color={color.icon} />
