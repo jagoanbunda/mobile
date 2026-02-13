@@ -1,3 +1,19 @@
+# [1.6.0](https://github.com/jagoanbunda/mobile/compare/v1.5.0...v1.6.0) (2026-02-13)
+
+
+### Bug Fixes
+
+* **pmt:** handle null menu in report screen to prevent crash ([59add43](https://github.com/jagoanbunda/mobile/commit/59add43150f9c9ec560b14c2848f67ab3151fc48))
+* **pmt:** handle null menu in schedule to prevent crash ([0238477](https://github.com/jagoanbunda/mobile/commit/0238477f2d4b1b13434fe550ad2d622e898e1da4))
+
+
+### Features
+
+* **pmt:** add food search picker to report screen ([b64c6c6](https://github.com/jagoanbunda/mobile/commit/b64c6c64b209df0e80f86c6a3a4358609f048af7))
+* **pmt:** display food info in history and fix null-safety ([3f4ef83](https://github.com/jagoanbunda/mobile/commit/3f4ef83fbbe277b15ae13e28f6ad0c0f2c3b2977))
+* **pmt:** show food info in tab screen history ([db02806](https://github.com/jagoanbunda/mobile/commit/db02806c7265d76e944abfa3ffd17abbbc4aaa0a))
+* **pmt:** update types and API service for food logger and multipart upload ([1c9b70e](https://github.com/jagoanbunda/mobile/commit/1c9b70ead8799ba0d2d88f0e4c4e0599622defe3))
+
 # [1.5.0](https://github.com/jagoanbunda/mobile/compare/v1.4.0...v1.5.0) (2026-02-07)
 
 
