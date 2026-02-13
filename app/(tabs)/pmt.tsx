@@ -206,7 +206,14 @@ export default function PMTTabScreen() {
                                         <Text style={{ color: colors.onSurfaceVariant }} className="text-xs uppercase tracking-wide">
                                             {schedule.scheduled_date}
                                         </Text>
-                                        <Text style={{ color: colors.onSurface }} className="font-bold mt-1">{schedule.menu?.name ?? 'Menu tidak tersedia'}</Text>
+                                        <Text style={{ color: colors.onSurface }} className="font-bold mt-1">
+                                            {schedule.log?.food?.name ?? schedule.menu?.name ?? 'Menu tidak tersedia'}
+                                        </Text>
+                                        {schedule.log?.food && (
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-xs mt-0.5">
+                                                {schedule.log.food.icon ? `${schedule.log.food.icon} ` : ''}{schedule.log.food.calories} kkal · {schedule.log.food.protein}g protein
+                                            </Text>
+                                        )}
                                     </View>
                                     <View className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${color.bg}`}>
                                         <MaterialIcons name={iconName as keyof typeof MaterialIcons.glyphMap} size={14} color={color.icon} />
