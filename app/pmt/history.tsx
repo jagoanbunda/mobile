@@ -234,7 +234,14 @@ export default function PMTHistoryScreen() {
                                 <View className="flex-row justify-between items-start">
                                     <View>
                                         <Text style={{ color: colors.outline }} className="text-xs font-medium uppercase tracking-wide">{formatDate(schedule.scheduled_date)}</Text>
-                                        <Text style={{ color: colors.onSurface }} className="text-base font-bold mt-1">{schedule.menu.name}</Text>
+                                        <Text style={{ color: colors.onSurface }} className="text-base font-bold mt-1">
+                                            {schedule.log?.food?.name ?? schedule.menu?.name ?? 'Menu tidak tersedia'}
+                                        </Text>
+                                        {schedule.log?.food && (
+                                            <Text style={{ color: colors.outline }} className="text-xs mt-0.5">
+                                                {schedule.log.food.icon ? `${schedule.log.food.icon} ` : ''}{schedule.log.food.calories} kkal · {schedule.log.food.protein}g protein
+                                            </Text>
+                                        )}
                                     </View>
                                     {getStatusBadge(schedule.log?.portion)}
                                 </View>
