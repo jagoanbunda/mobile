@@ -6,11 +6,13 @@ import {
     useCreatePmtLog, 
     useUpdatePmtLog 
 } from '@/services/hooks/use-pmt';
+import { useFoodSearch, useFoodCategories } from '@/services/hooks/use-foods';
 import { ApiError } from '@/services/api/errors';
-import { PmtPortion, PMT_PORTION_LABEL } from '@/types';
+import { PmtPortion, PMT_PORTION_LABEL, Food } from '@/types';
 import { ImagePickerButton } from '@/components/ImagePickerButton';
+import { SystemFoodCard } from '@/components/SystemFoodCard';
+import { getCategoryIcon, getCategoryColor } from '@/utils/food-category-helpers';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Image } from 'expo-image';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -62,6 +64,13 @@ export default function PMTReportScreen() {
     const [selectedPortion, setSelectedPortion] = useState<PmtPortion | null>(null);
     const [notes, setNotes] = useState('');
     const [photoUrl, setPhotoUrl] = useState('');
+    const [selectedFood, setSelectedFood] = useState<Food | null>(null);
+    const [foodSearchQuery, setFoodSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [showFoodResults, setShowFoodResults] = useState(false);
+    
+    const { data: searchResults, isLoading: isSearching } = useFoodSearch(foodSearchQuery, selectedCategory || undefined);
+    const { data: categories } = useFoodCategories();
     
     // Initialize form with existing log data
     useEffect(() => {
@@ -69,6 +78,23 @@ export default function PMTReportScreen() {
             setSelectedPortion(schedule.log.portion);
             setNotes(schedule.log.notes || '');
             setPhotoUrl(schedule.log.photo_url || '');
+            if (schedule.log.food) {
+                setSelectedFood({
+                    id: schedule.log.food.id,
+                    name: schedule.log.food.name,
+                    category: schedule.log.food.category,
+                    icon: schedule.log.food.icon,
+                    serving_size: schedule.log.food.serving_size,
+                    nutrition: {
+                        calories: schedule.log.food.calories,
+                        protein: schedule.log.food.protein,
+                        fat: 0,
+                        carbohydrate: 0,
+                    },
+                    is_system: true,
+                    is_active: true,
+                } as Food);
+            }
         }
     }, [schedule]);
     
@@ -80,7 +106,8 @@ export default function PMTReportScreen() {
 
         const data = {
             portion: selectedPortion,
-            photo_url: photoUrl || undefined,
+            food_id: selectedFood?.id,
+            photo: photoUrl || undefined,
             notes: notes || undefined,
         };
 
@@ -246,30 +273,178 @@ export default function PMTReportScreen() {
                     </View>
                 </View>
 
-                {/* Menu Info */}
-                <View style={{ backgroundColor: colors.surface }} className="flex-row items-center gap-4 px-4 py-2">
-                    {schedule.menu?.image_url ? (
-                        <Image
-                            source={{ uri: schedule.menu.image_url }}
-                            className="w-12 h-12 rounded-lg"
-                            contentFit="cover"
-                        />
+                {/* Food Selection */}
+                <View className="px-4 py-2">
+                    <Text style={{ color: colors.onSurface }} className="text-sm font-bold mb-3">
+                        Pilih Makanan
+                    </Text>
+
+                    {selectedFood ? (
+                        <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row items-center rounded-xl p-4">
+                            <View style={{ backgroundColor: colors.primaryContainer }} className="w-10 h-10 rounded-lg items-center justify-center mr-3">
+                                <Text className="text-lg">{selectedFood.icon || '🍽️'}</Text>
+                            </View>
+                            <View className="flex-1">
+                                <Text style={{ color: colors.onSurface }} className="text-base font-bold">{selectedFood.name}</Text>
+                                <Text style={{ color: colors.onSurfaceVariant }} className="text-xs">
+                                    {selectedFood.nutrition.calories} kkal · {selectedFood.nutrition.protein}g protein
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={() => { setSelectedFood(null); setShowFoodResults(true); }}
+                                style={{ backgroundColor: colors.primary }}
+                                className="px-3 py-1.5 rounded-full"
+                            >
+                                <Text style={{ color: colors.onPrimary }} className="text-xs font-bold">Ganti</Text>
+                            </TouchableOpacity>
+                        </View>
                     ) : (
-                        <View style={{ backgroundColor: colors.primaryContainer }} className="w-12 h-12 items-center justify-center rounded-lg">
-                            <MaterialIcons name="restaurant-menu" size={24} color={colors.primary} />
+                        <View>
+                            {/* Search Bar */}
+                            <View style={{ backgroundColor: colors.surfaceContainerHigh }} className="flex-row w-full items-center rounded-2xl h-14 shadow-sm overflow-hidden">
+                                <View className="pl-4 pr-2">
+                                    <MaterialIcons name="search" size={24} color={colors.onSurfaceVariant} />
+                                </View>
+                                <TextInput
+                                    style={{ color: colors.onSurface }}
+                                    className="flex-1 bg-transparent text-base font-medium h-full"
+                                    placeholder="Cari makanan..."
+                                    placeholderTextColor={colors.onSurfaceVariant}
+                                    value={foodSearchQuery}
+                                    onChangeText={setFoodSearchQuery}
+                                    onFocus={() => setShowFoodResults(true)}
+                                />
+                                {(foodSearchQuery.length > 0 || selectedCategory) && (
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setFoodSearchQuery('');
+                                            setSelectedCategory(null);
+                                            setShowFoodResults(false);
+                                        }}
+                                        className="pr-4"
+                                    >
+                                        <MaterialIcons name="close" size={20} color={colors.onSurfaceVariant} />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+
+                            {/* Category Filter Pills */}
+                            {categories && (
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    className="mt-3"
+                                    contentContainerStyle={{ gap: 8 }}
+                                >
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setSelectedCategory(null);
+                                            if (foodSearchQuery.length >= 2 || selectedCategory) {
+                                                setShowFoodResults(true);
+                                            }
+                                        }}
+                                        style={{
+                                            backgroundColor: selectedCategory === null ? colors.primary : colors.surfaceContainerHigh,
+                                            paddingHorizontal: 14,
+                                            paddingVertical: 8,
+                                            borderRadius: 20,
+                                        }}
+                                    >
+                                        <Text style={{
+                                            color: selectedCategory === null ? colors.onPrimary : colors.onSurface,
+                                            fontSize: 12,
+                                            fontWeight: '500',
+                                        }}>
+                                            Semua
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {(categories as string[]).map((cat: string) => (
+                                        <TouchableOpacity
+                                            key={cat}
+                                            onPress={() => {
+                                                setSelectedCategory(cat);
+                                                setShowFoodResults(true);
+                                            }}
+                                            style={{
+                                                backgroundColor: selectedCategory === cat ? colors.primary : colors.surfaceContainerHigh,
+                                                paddingHorizontal: 14,
+                                                paddingVertical: 8,
+                                                borderRadius: 20,
+                                                flexDirection: 'row',
+                                                alignItems: 'center',
+                                                gap: 4,
+                                            }}
+                                        >
+                                            <View
+                                                style={{
+                                                    backgroundColor: selectedCategory === cat ? colors.onPrimary + '30' : getCategoryColor(cat) + '20',
+                                                    width: 20,
+                                                    height: 20,
+                                                    borderRadius: 10,
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }}
+                                            >
+                                                <MaterialIcons
+                                                    name={getCategoryIcon(cat) as any}
+                                                    size={12}
+                                                    color={selectedCategory === cat ? colors.onPrimary : getCategoryColor(cat)}
+                                                />
+                                            </View>
+                                            <Text style={{
+                                                color: selectedCategory === cat ? colors.onPrimary : colors.onSurface,
+                                                fontSize: 12,
+                                                fontWeight: '500',
+                                            }}>
+                                                {cat.length > 15 ? cat.substring(0, 15) + '...' : cat}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                            )}
+
+                            {/* Search Results */}
+                            {showFoodResults && (foodSearchQuery.length >= 2 || selectedCategory) && (
+                                <View style={{ backgroundColor: colors.surface, borderRadius: 12, marginTop: 8, maxHeight: 300, borderWidth: 1, borderColor: colors.outline }} className="shadow-lg">
+                                    {isSearching && (
+                                        <View className="p-4 items-center">
+                                            <ActivityIndicator size="small" color={colors.primary} />
+                                        </View>
+                                    )}
+
+                                    {!isSearching && searchResults?.data && searchResults.data.length > 0 && (
+                                        <ScrollView
+                                            nestedScrollEnabled={true}
+                                            showsVerticalScrollIndicator={true}
+                                            contentContainerStyle={{ padding: 8 }}
+                                        >
+                                            {searchResults.data.map((food) => (
+                                                <SystemFoodCard
+                                                    key={food.id}
+                                                    food={food}
+                                                    onSelect={(f) => {
+                                                        setSelectedFood(f);
+                                                        setShowFoodResults(false);
+                                                        setFoodSearchQuery('');
+                                                        setSelectedCategory(null);
+                                                    }}
+                                                    showExpandedDetails={false}
+                                                />
+                                            ))}
+                                        </ScrollView>
+                                    )}
+
+                                    {!isSearching && searchResults?.data?.length === 0 && (
+                                        <View className="p-4 items-center">
+                                            <Text style={{ color: colors.onSurfaceVariant }} className="text-sm">
+                                                Tidak ada makanan ditemukan
+                                            </Text>
+                                        </View>
+                                    )}
+                                </View>
+                            )}
                         </View>
                     )}
-                    <View className="flex-1">
-                        <Text style={{ color: colors.onSurface }} className="text-base font-bold leading-normal">Menu Hari Ini</Text>
-                        <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-normal leading-normal">
-                            {schedule.menu?.name ?? 'Menu belum ditentukan'}
-                        </Text>
-                        {schedule.menu && (
-                            <Text style={{ color: colors.outline }} className="text-xs mt-0.5">
-                                {schedule.menu.calories} kkal · {schedule.menu.protein}g protein
-                            </Text>
-                        )}
-                    </View>
                 </View>
 
                 <View className="h-4" />
