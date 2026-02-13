@@ -248,7 +248,7 @@ export default function PMTReportScreen() {
 
                 {/* Menu Info */}
                 <View style={{ backgroundColor: colors.surface }} className="flex-row items-center gap-4 px-4 py-2">
-                    {schedule.menu.image_url ? (
+                    {schedule.menu?.image_url ? (
                         <Image
                             source={{ uri: schedule.menu.image_url }}
                             className="w-12 h-12 rounded-lg"
@@ -262,11 +262,13 @@ export default function PMTReportScreen() {
                     <View className="flex-1">
                         <Text style={{ color: colors.onSurface }} className="text-base font-bold leading-normal">Menu Hari Ini</Text>
                         <Text style={{ color: colors.onSurfaceVariant }} className="text-sm font-normal leading-normal">
-                            {schedule.menu.name}
+                            {schedule.menu?.name ?? 'Menu belum ditentukan'}
                         </Text>
-                        <Text style={{ color: colors.outline }} className="text-xs mt-0.5">
-                            {schedule.menu.calories} kkal · {schedule.menu.protein}g protein
-                        </Text>
+                        {schedule.menu && (
+                            <Text style={{ color: colors.outline }} className="text-xs mt-0.5">
+                                {schedule.menu.calories} kkal · {schedule.menu.protein}g protein
+                            </Text>
+                        )}
                     </View>
                 </View>
 
