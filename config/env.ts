@@ -1,6 +1,6 @@
 export const API_URL =
   process.env.EXPO_PUBLIC_API_URL ??
-  'https://web.jagoanbunda.udahdikerjain.my.id/api/v1';
+  'https://jagoanbunda.web.id/api/v1';
 
 // Base URL without /api/v1 for storage paths
 export const BASE_URL = API_URL.replace(/\/api\/v1$/, '');
